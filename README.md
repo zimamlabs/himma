@@ -34,7 +34,7 @@ sha256sum -c Himma_<version>_Android_arm64-v8a.apk.sha256
 Every APK is signed with Himma's own key. Android installs it without a store because the signature is valid, and shows its usual "unknown source" notice for anything that did not come from Google Play. To check a file is really ours, compare its signing certificate with this fingerprint:
 
 ```
-SHA-256: FINGERPRINT
+SHA-256: A0:72:C4:14:70:6B:43:88:D5:7C:3B:A8:1C:B1:7E:E3:54:EE:81:4C:CA:88:78:20:33:C2:D0:A7:25:0D:31:76
 ```
 
 ```
