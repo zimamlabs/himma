@@ -8,14 +8,18 @@ Himma (همّة, drive and determination) keeps your meals, water and fasting in
 
 ## What is in it
 
-- **Home** first: a greeting, calories eaten and left, water, the fasting state, the next medicine dose, quick actions (log a meal, add a glass of water) and what's new. Each card opens its section.
-- **Meals**: name, calories and optional protein, carbs and fat. A daily calorie goal, the day's total and what is left. Tap a meal to edit or delete it; step back through earlier days.
+- **Home** first, built like a dashboard: a greeting with a progress ring for today's goals, rings for water, calories and steps, a protein, carbs and fat bar, the fasting window, seven-day charts of water, calories and steps, the next medicine dose, today's workout, a weekly summary, quick actions and what's new. Each card opens its section.
+- **Meals**: name, calories and optional protein, carbs and fat. A daily calorie goal, the day's total and what is left. Tap a meal to edit or delete it; step back through earlier days. Save a meal to log it again in one tap, and recent meals are offered too.
 - **Water**: a daily goal (2 L to start), a tap for a 250 ml glass or any amount, undo, and a progress ring.
 - **Fasting**: 16:8, 18:6, 20:4 or your own window. Shows eating or fasting now, the time left, and remembers when you start eating.
 - **Medicine**: add a medicine with a dose note, times and days. Today's doses show on Home and in the Medicine section with Taken and Skip, and a notification at each dose time has Taken and Skip buttons. Alarms are set again after a restart or a change of time zone. Android asks once for notification permission; if exact alarms are not allowed a reminder can come a few minutes late.
+- **Gym**: routines with exercises, sets, reps and weight; a workout screen where you tick sets off, with a rest timer; history, volume and personal bests (a trophy marks a new one).
+- **Steps**: the phone's step counter with a daily goal and a seven-day chart. Android asks once for the activity permission. Steps taken on days you never open Himma cannot be split by day, so they are not counted.
+- **Weight**: log your weight, see the latest, the change over four weeks and a trend line.
+- **Theme**: System, Light or Dark.
 - **Tour and updates**: a short tour on first install (open it again from About or Settings), and a one-time What's new note after each update.
-- **Settings**: the calorie and water goals, the data folder and the tour.
-- **Plain files**: `meals/<year>/<date>.csv`, `water/<year>.csv`, `medicines/medicines.json`, `medicines/log.csv` and `.himma/settings.json`. Open them in any editor or spreadsheet.
+- **Settings**: the calorie, water and step goals, the theme, the data folder and the tour.
+- **Plain files**: `meals/<year>/<date>.csv`, `water/<year>.csv`, `medicines/medicines.json`, `medicines/log.csv`, `gym/routines.json`, `gym/<year>.json`, `steps/<year>.csv`, `body/weight.csv`, `meals/templates.json` and `.himma/settings.json`. Open them in any editor or spreadsheet.
 
 ## Your data folder
 
@@ -63,7 +67,7 @@ You need JDK 17 or newer and, for Android, the Android SDK (platform 36).
 
 ## Roadmap
 
-Planned next: gym routines and sessions with streaks, steps and other sports, meal reminders, diet and gym plans, body measurements, backup and export, and a Linux edition after version 1.
+Planned next: gym plans and streaks, other sports, meal reminders, diet plans, more body measurements, backup and export, and a Linux edition after version 1.
 
 ## Licence
 

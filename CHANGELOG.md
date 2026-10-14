@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.0
+
+- **New icon.** The flowing runner shape with the Zimam diamond, on the launcher, the splash screen and the About page.
+- **A richer Home.** A progress ring for today's goals, rings for water, calories and steps, a protein, carbs and fat bar, seven-day charts, today's workout and a weekly summary.
+- **Gym.** Routines, a workout screen with a rest timer, history, volume and personal bests.
+- **Steps.** The phone's step counter with a daily goal and a seven-day chart; Android asks once for the activity permission. Steps on days Himma is never opened are not counted.
+- **Weight.** A weight log with the change over four weeks and a trend chart.
+- **Meal templates.** Save a meal and log it again in one tap; recent meals are offered as well.
+- **Theme.** System, Light or Dark, chosen in the tour or Settings.
+- All the new data is in new plain files; nothing from 0.2.0 changes.
+
 ## 0.2.0
 
 - **Home.** The app opens on a Home page: greeting, calories, water, fasting, the next medicine dose, quick actions and what's new. Each card opens its section.

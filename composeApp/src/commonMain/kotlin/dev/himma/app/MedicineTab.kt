@@ -38,7 +38,6 @@ import dev.himma.core.parseTimes
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.minus
 
-private val tabPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp)
 
 @Composable
 fun MedicineTab(store: HimmaStore, onEdit: (Medicine) -> Unit) {

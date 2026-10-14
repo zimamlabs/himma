@@ -209,3 +209,11 @@ class BodyVaultTest {
         assertEquals(1800, s.calorieGoal); assertEquals("system", s.themeMode); assertEquals(8000, s.stepGoal)
     }
 }
+
+class DayScoreTest {
+    @Test fun averagesOnlyThePartsThatApply() {
+        assertEquals(0.5f, dayScore(listOf(1f, 0f, null)))
+        assertEquals(0f, dayScore(listOf(null, null)))
+        assertEquals(1f, dayScore(listOf(2f, 1f)))
+    }
+}

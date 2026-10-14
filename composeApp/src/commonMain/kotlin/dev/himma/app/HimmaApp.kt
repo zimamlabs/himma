@@ -16,11 +16,11 @@ import androidx.compose.ui.Modifier
 import dev.himma.core.Startup
 import kotlinx.coroutines.delay
 
-const val APP_VERSION = "0.2.0"
+const val APP_VERSION = "0.3.0"
 
 @Composable
 fun HimmaApp(store: HimmaStore) {
-    HimmaTheme {
+    HimmaTheme(store.settings.themeMode) {
         var splash by remember { mutableStateOf(true) }
         var about by remember { mutableStateOf(false) }
         var tour by remember { mutableStateOf(store.startup is Startup.Fresh) }
