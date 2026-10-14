@@ -68,8 +68,8 @@ internal class Nav(
 @Composable
 private fun SectionTitle(icon: ImageVector, title: String, trailing: String = "") {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Box(Modifier.size(28.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
-            Icon(icon, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer)
+        Box(Modifier.size(30.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)), contentAlignment = Alignment.Center) {
+            Icon(icon, null, Modifier.size(17.dp), tint = MaterialTheme.colorScheme.primary)
         }
         Text(title, Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
         if (trailing.isNotEmpty()) Text(trailing, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -104,7 +104,7 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
     val summary = weekSummary(store.week, s.waterGoalMl, weightTrend(store.weights, store.today, 7).changeKg)
     LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
-            Panel {
+            Glow(Modifier.clip(RoundedCornerShape(28.dp))) { Panel {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(dev.himma.core.greeting(store.now.hour), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
@@ -113,7 +113,7 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
                     }
                     Ring(score, Modifier.size(96.dp)) { Text("${(score * 100).toInt()}%", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold) }
                 }
-            }
+            } }
         }
         item {
             Panel {

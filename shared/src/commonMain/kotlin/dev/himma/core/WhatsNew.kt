@@ -18,6 +18,10 @@ val releaseNotes: List<ReleaseNote> = listOf(
         "Steps from the phone's step counter, a weight log with a trend, and meal templates.",
         "Light, Dark or System theme.",
     )),
+    ReleaseNote("0.3.1", listOf(
+        "A new look: warm surfaces, a soft orange glow, rounded cards and the diamond accent.",
+        "A new About page.",
+    )),
 )
 
 /** What the first open should show. */

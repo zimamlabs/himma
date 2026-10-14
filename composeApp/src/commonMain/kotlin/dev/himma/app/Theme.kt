@@ -10,15 +10,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+private val Orange = Color(0xFFFF5A1F)
+
 private val Light = lightColorScheme(
-    primary = Color(0xFFE5481A), onPrimary = Color.White, primaryContainer = Color(0xFFFFDDD0), onPrimaryContainer = Color(0xFF3A0E00),
-    secondary = Color(0xFF6B5B4B), background = Color(0xFFF5F1E8), surface = Color(0xFFF5F1E8), surfaceContainer = Color(0xFFFFFBF3),
-    surfaceContainerHigh = Color(0xFFEDE6D8), onSurface = Color(0xFF121214), onSurfaceVariant = Color(0xFF5E5A52), outlineVariant = Color(0xFFD8D0C0),
+    primary = Color(0xFFE5481A), onPrimary = Color.White, primaryContainer = Color(0xFFFFE2D4), onPrimaryContainer = Color(0xFF3A0E00),
+    secondary = Color(0xFF8A6A4F), tertiary = Color(0xFFC79A3B), background = Color(0xFFFFF8F0), surface = Color(0xFFFFF8F0), surfaceContainer = Color(0xFFFFFFFF),
+    surfaceContainerHigh = Color(0xFFF1E7DA), onSurface = Color(0xFF1A1613), onSurfaceVariant = Color(0xFF6B6157), outlineVariant = Color(0xFFE6DACB),
 )
 private val Dark = darkColorScheme(
-    primary = Color(0xFFFF5A1F), onPrimary = Color(0xFF1A0A02), primaryContainer = Color(0xFF4A1D0B), onPrimaryContainer = Color(0xFFFFDDD0),
-    secondary = Color(0xFFD9CDB8), background = Color(0xFF121214), surface = Color(0xFF121214), surfaceContainer = Color(0xFF1B1B1E),
-    surfaceContainerHigh = Color(0xFF26262A), onSurface = Color(0xFFF5F1E8), onSurfaceVariant = Color(0xFFA9A59B), outlineVariant = Color(0xFF3A3A40),
+    primary = Orange, onPrimary = Color(0xFF1A0A02), primaryContainer = Color(0xFF3B1A0C), onPrimaryContainer = Color(0xFFFFDDD0),
+    secondary = Color(0xFFD9B99A), tertiary = Color(0xFFE2B857), background = Color(0xFF0F0F0F), surface = Color(0xFF0F0F0F), surfaceContainer = Color(0xFF1A1613),
+    surfaceContainerHigh = Color(0xFF2A241F), onSurface = Color(0xFFF5EFE6), onSurfaceVariant = Color(0xFFA89E92), outlineVariant = Color(0xFF332C26),
 )
 
 @Composable
@@ -26,7 +28,7 @@ fun HimmaTheme(mode: String = "system", content: @Composable () -> Unit) {
     val dark = when (mode) { "dark" -> true; "light" -> false; else -> isSystemInDarkTheme() }
     MaterialTheme(
         colorScheme = if (dark) Dark else Light,
-        shapes = Shapes(small = RoundedCornerShape(10.dp), medium = RoundedCornerShape(16.dp), large = RoundedCornerShape(24.dp)),
+        shapes = Shapes(small = RoundedCornerShape(12.dp), medium = RoundedCornerShape(20.dp), large = RoundedCornerShape(28.dp)),
         content = content,
     )
 }
