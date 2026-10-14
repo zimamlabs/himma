@@ -77,18 +77,20 @@ object MedicineAlarms {
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
-    private fun notify(context: Context, dose: Dose) {
+    private fun notify(base: Context, dose: Dose) {
+        // The notification speaks the language chosen in the app, not only the phone's.
+        val context = AppLanguagePrefs.load(base).wrap(base)
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.createNotificationChannel(NotificationChannel(CHANNEL, "Medicine reminders", NotificationManager.IMPORTANCE_HIGH))
+        manager.createNotificationChannel(NotificationChannel(CHANNEL, context.getString(R.string.channel_medicine), NotificationManager.IMPORTANCE_HIGH))
         val open = PendingIntent.getActivity(context, 1, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
-        val text = if (dose.medicine.dose.isNotBlank()) "${dose.medicine.dose}, at ${dose.time}" else "It is ${dose.time}"
+        val text = if (dose.medicine.dose.isNotBlank()) context.getString(R.string.notify_dose_at, dose.medicine.dose, dose.time) else context.getString(R.string.notify_it_is, dose.time)
         val n = NotificationCompat.Builder(context, CHANNEL)
             .setSmallIcon(R.drawable.ic_launcher_monochrome)
-            .setContentTitle("Time for ${dose.medicine.name}")
+            .setContentTitle(context.getString(R.string.notify_title, dose.medicine.name))
             .setContentText(text)
             .setAutoCancel(true).setContentIntent(open).setCategory(NotificationCompat.CATEGORY_REMINDER)
-            .addAction(0, "Taken", action(context, dose, DoseMark.Taken))
-            .addAction(0, "Skip", action(context, dose, DoseMark.Skipped))
+            .addAction(0, context.getString(R.string.notify_taken), action(context, dose, DoseMark.Taken))
+            .addAction(0, context.getString(R.string.notify_skip), action(context, dose, DoseMark.Skipped))
             .build()
         manager.notify(dose.key.hashCode(), n)
     }

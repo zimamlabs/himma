@@ -1,5 +1,17 @@
 package dev.himma.app
 
+import dev.himma.app.res.every_day
+
+import org.jetbrains.compose.resources.stringArrayResource
+
+import dev.himma.app.res.months_short
+
+import dev.himma.app.res.weekday_initials
+
+import dev.himma.app.res.weekdays_short
+
+import dev.himma.app.res.Res
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.Color
@@ -71,8 +83,22 @@ fun EmptyHint(title: String, hint: String) {
     }
 }
 
+@Composable
 fun prettyDate(d: LocalDate): String = "${dayName(d.dayOfWeek)} ${d.dayOfMonth} ${monthName(d.monthNumber)}"
 
-fun dayName(d: DayOfWeek): String = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")[d.ordinal]
+@Composable
+fun dayName(d: DayOfWeek): String = stringArrayResource(Res.array.weekdays_short)[d.ordinal]
 
-fun monthName(n: Int): String = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")[(n - 1).coerceIn(0, 11)]
+@Composable
+fun dayInitial(d: DayOfWeek): String = stringArrayResource(Res.array.weekday_initials)[d.ordinal]
+
+@Composable
+fun monthName(n: Int): String = stringArrayResource(Res.array.months_short)[(n - 1).coerceIn(0, 11)]
+
+/** "Mon, Wed" or "Every day", in the language of the app. */
+@Composable
+fun daysLabel(days: Set<Int>): String {
+    if (days.isEmpty() || days.size == 7) return s(Res.string.every_day)
+    val names = stringArrayResource(Res.array.weekdays_short)
+    return days.sorted().filter { it in 1..7 }.joinToString(", ") { names[it - 1] }
+}

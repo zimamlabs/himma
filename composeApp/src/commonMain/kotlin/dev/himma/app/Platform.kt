@@ -13,6 +13,12 @@ interface PlatformActions {
     val canAskAllFiles: Boolean get() = false
     fun allowAllFiles() {}
     fun allowNotifications() {}
+    /** The language of the app: "system", "en" or "ar". */
+    val language: String get() = "system"
+    fun setLanguage(code: String) {}
+    /** Show numbers in Arabic-Indic digits. */
+    val arabicDigits: Boolean get() = false
+    fun setArabicDigits(on: Boolean) {}
     val stepSupport: StepSupport get() = StepSupport.Unavailable
     fun allowStepCounting() {}
     /** An old private copy is still there and every file in it is safely in the new folder. */

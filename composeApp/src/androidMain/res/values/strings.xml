@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Himma</string>
+    <string name="channel_medicine">Medicine reminders</string>
+    <string name="notify_title">Time for %1$s</string>
+    <string name="notify_dose_at">%1$s, at %2$s</string>
+    <string name="notify_it_is">It is %1$s</string>
+    <string name="notify_taken">Taken</string>
+    <string name="notify_skip">Skip</string>
+</resources>

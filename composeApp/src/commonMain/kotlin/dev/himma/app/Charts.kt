@@ -50,7 +50,7 @@ fun BarChart(values: List<Float>, dates: List<LocalDate>, goal: Float?, modifier
             }
         }
         Row(Modifier.fillMaxWidth()) {
-            dates.forEach { d -> Text(dayName(d.dayOfWeek).take(1), Modifier.weight(1f), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
+            dates.forEach { d -> Text(dayInitial(d.dayOfWeek), Modifier.weight(1f), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
         }
     }
 }

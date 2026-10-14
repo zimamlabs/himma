@@ -1,5 +1,9 @@
 package dev.himma.app
 
+import dev.himma.app.res.Res
+import dev.himma.app.res.by_zimam
+import dev.himma.app.res.himma
+
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -63,8 +67,8 @@ fun Splash(onDone: () -> Unit) {
     Column(Modifier.fillMaxSize().background(Ink), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         BrandMark(Modifier.size(150.dp).alpha(outer.value).graphicsLayer { val k = 0.82f + 0.18f * dot.value; scaleX = k; scaleY = k })
         Spacer(Modifier.height(28.dp))
-        Text("Himma", Modifier.alpha(name.value).graphicsLayer { translationY = (1f - name.value) * 14.dp.toPx() }, color = Cream, fontSize = 30.sp, fontWeight = FontWeight.SemiBold)
+        Text(s(Res.string.himma), Modifier.alpha(name.value).graphicsLayer { translationY = (1f - name.value) * 14.dp.toPx() }, color = Cream, fontSize = 30.sp, fontWeight = FontWeight.SemiBold)
         Spacer(Modifier.height(4.dp))
-        Text("by Zimam", Modifier.alpha(by.value), color = Orange, fontSize = 14.sp, fontWeight = FontWeight.Medium, letterSpacing = 1.sp)
+        Text(s(Res.string.by_zimam), Modifier.alpha(by.value), color = Orange, fontSize = 14.sp, fontWeight = FontWeight.Medium, letterSpacing = 1.sp)
     }
 }

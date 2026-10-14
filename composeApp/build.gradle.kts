@@ -18,6 +18,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
+            implementation(compose.components.resources)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
             implementation(libs.okio)
@@ -47,8 +48,8 @@ android {
         applicationId = "dev.himma.health"
         minSdk = 26
         targetSdk = 35
-        versionCode = 4
-        versionName = "0.3.1"
+        versionCode = 5
+        versionName = "0.4.0"
     }
     signingConfigs {
         create("release") {
@@ -105,4 +106,9 @@ compose.desktop {
             }
         }
     }
+}
+
+compose.resources {
+    packageOfResClass = "dev.himma.app.res"
+    generateResClass = always
 }

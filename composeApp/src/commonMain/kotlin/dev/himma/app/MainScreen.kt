@@ -1,5 +1,84 @@
 package dev.himma.app
 
+import dev.himma.app.res.arabic_digits
+
+import dev.himma.app.res.language
+
+import dev.himma.app.res.remove_x
+
+import dev.himma.app.res.dark
+import dev.himma.app.res.eating
+import dev.himma.app.res.fasting_label
+import dev.himma.app.res.gym
+import dev.himma.app.res.home
+import dev.himma.app.res.left_label
+import dev.himma.app.res.light
+import dev.himma.app.res.meals
+import dev.himma.app.res.medicine
+import dev.himma.app.res.menu
+import dev.himma.app.res.over
+import dev.himma.app.res.steps
+import dev.himma.app.res.system
+import dev.himma.app.res.today
+import dev.himma.app.res.track
+import dev.himma.app.res.water
+import dev.himma.app.res.weight
+
+import dev.himma.app.res.Res
+import dev.himma.app.res.about
+import dev.himma.app.res.add
+import dev.himma.app.res.add_a_medicine
+import dev.himma.app.res.add_water
+import dev.himma.app.res.allow_all_files_access
+import dev.himma.app.res.calories
+import dev.himma.app.res.cancel
+import dev.himma.app.res.carbs_g_ce6a
+import dev.himma.app.res.custom
+import dev.himma.app.res.custom_amount
+import dev.himma.app.res.daily_calorie_goal
+import dev.himma.app.res.daily_step_goal
+import dev.himma.app.res.daily_water_goal_ml
+import dev.himma.app.res.data_folder
+import dev.himma.app.res.delete
+import dev.himma.app.res.done
+import dev.himma.app.res.eat_from_hh_mm
+import dev.himma.app.res.eating_to
+import dev.himma.app.res.edit_meal
+import dev.himma.app.res.edit_saved_meals
+import dev.himma.app.res.fast_hours
+import dev.himma.app.res.fat_g_e7c0
+import dev.himma.app.res.himma
+import dev.himma.app.res.kcal
+import dev.himma.app.res.kcal_06b1
+import dev.himma.app.res.keep_it
+import dev.himma.app.res.left
+import dev.himma.app.res.log_a_meal
+import dev.himma.app.res.log_again
+import dev.himma.app.res.millilitres
+import dev.himma.app.res.ml_glass
+import dev.himma.app.res.name
+import dev.himma.app.res.next_day
+import dev.himma.app.res.no_meals_logged
+import dev.himma.app.res.nothing_saved_open_a_meal
+import dev.himma.app.res.of_fcd7
+import dev.himma.app.res.previous_day
+import dev.himma.app.res.protein_g_29f5
+import dev.himma.app.res.protein_g_carbs_g_fat
+import dev.himma.app.res.remove
+import dev.himma.app.res.remove_the_old_copy
+import dev.himma.app.res.remove_the_old_copy_495b
+import dev.himma.app.res.save
+import dev.himma.app.res.save_as_meal
+import dev.himma.app.res.saved_meals
+import dev.himma.app.res.settings
+import dev.himma.app.res.show_the_tour_again
+import dev.himma.app.res.tap_to_add_one_each
+import dev.himma.app.res.theme
+import dev.himma.app.res.time_hh_mm
+import dev.himma.app.res.total
+import dev.himma.app.res.undo
+import dev.himma.app.res.your_files_are_safe_in
+
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,8 +103,6 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.FitnessCenter
 import androidx.compose.material.icons.rounded.MonitorHeart
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.ChevronLeft
-import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Medication
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Restaurant
@@ -55,6 +132,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import org.jetbrains.compose.resources.StringResource
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -81,16 +161,16 @@ import dev.himma.core.formatWater
 import dev.himma.core.parseClock
 import dev.himma.core.waterProgress
 
-internal enum class Tab(val label: String, val icon: ImageVector) {
-    Home("Home", Icons.Rounded.Home),
-    Meals("Meals", Icons.Rounded.Restaurant),
-    Gym("Gym", Icons.Rounded.FitnessCenter),
-    Track("Track", Icons.Rounded.MonitorHeart),
-    Medicine("Medicine", Icons.Rounded.Medication),
+internal enum class Tab(val label: StringResource, val icon: ImageVector) {
+    Home(Res.string.home, Icons.Rounded.Home),
+    Meals(Res.string.meals, Icons.Rounded.Restaurant),
+    Gym(Res.string.gym, Icons.Rounded.FitnessCenter),
+    Track(Res.string.track, Icons.Rounded.MonitorHeart),
+    Medicine(Res.string.medicine, Icons.Rounded.Medication),
 }
 
 /** The pages inside the Track tab. */
-internal enum class TrackPage(val label: String) { Water("Water"), Fasting("Fasting"), Steps("Steps"), Weight("Weight") }
+internal enum class TrackPage(val label: StringResource) { Water(Res.string.water), Fasting(Res.string.fasting_label), Steps(Res.string.steps), Weight(Res.string.weight) }
 
 /** A workout about to start: from a routine, or empty. */
 class WorkoutStart(val routine: dev.himma.core.Routine?)
@@ -112,22 +192,22 @@ fun MainScreen(store: HimmaStore, onAbout: () -> Unit, onTour: () -> Unit) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(title = { Text("Himma", fontWeight = FontWeight.SemiBold) }, colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background), actions = {
-                IconButton(onClick = { menu = true }) { Icon(Icons.Rounded.MoreVert, "Menu") }
+            TopAppBar(title = { Text(s(Res.string.himma), fontWeight = FontWeight.SemiBold) }, colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background), actions = {
+                IconButton(onClick = { menu = true }) { Icon(Icons.Rounded.MoreVert, s(Res.string.menu)) }
                 DropdownMenu(menu, { menu = false }) {
-                    DropdownMenuItem(text = { Text("Settings") }, onClick = { menu = false; settings = true })
-                    DropdownMenuItem(text = { Text("About") }, onClick = { menu = false; onAbout() })
+                    DropdownMenuItem(text = { Text(s(Res.string.settings)) }, onClick = { menu = false; settings = true })
+                    DropdownMenuItem(text = { Text(s(Res.string.about)) }, onClick = { menu = false; onAbout() })
                 }
             })
         },
         bottomBar = {
             NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer, tonalElevation = 0.dp) {
-                Tab.entries.forEach { t -> NavigationBarItem(tab == t, { tab = t }, { Icon(t.icon, t.label) }, label = { Text(t.label) }) }
+                Tab.entries.forEach { t -> NavigationBarItem(tab == t, { tab = t }, { Icon(t.icon, s(t.label)) }, label = { Text(s(t.label)) }) }
             }
         },
         floatingActionButton = {
-            if (tab == Tab.Meals) FloatingActionButton(onClick = { adding = true }) { Icon(Icons.Rounded.Add, "Log a meal") }
-            if (tab == Tab.Medicine) FloatingActionButton(onClick = { addingMedicine = true }) { Icon(Icons.Rounded.Add, "Add a medicine") }
+            if (tab == Tab.Meals) FloatingActionButton(onClick = { adding = true }) { Icon(Icons.Rounded.Add, s(Res.string.log_a_meal)) }
+            if (tab == Tab.Medicine) FloatingActionButton(onClick = { addingMedicine = true }) { Icon(Icons.Rounded.Add, s(Res.string.add_a_medicine)) }
         },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
@@ -171,7 +251,7 @@ internal fun Ring(progress: Float, modifier: Modifier = Modifier.size(180.dp), c
 private fun TrackTab(store: HimmaStore, page: TrackPage, onPage: (TrackPage) -> Unit) {
     Column(Modifier.fillMaxSize()) {
         LazyRow(Modifier.padding(top = 8.dp), contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(TrackPage.entries.toList()) { p -> FilterChip(page == p, { onPage(p) }, { Text(p.label) }) }
+            items(TrackPage.entries.toList()) { p -> FilterChip(page == p, { onPage(p) }, { Text(s(p.label)) }) }
         }
         Box(Modifier.weight(1f)) {
             when (page) {
@@ -191,36 +271,36 @@ private fun MealsTab(store: HimmaStore, onTemplates: () -> Unit, onEdit: (Meal) 
     LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         item {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                IconButton(onClick = { store.shiftMealDay(-1) }) { Icon(Icons.Rounded.ChevronLeft, "Previous day") }
-                Text(if (store.mealDay == store.today) "Today" else prettyDate(store.mealDay), style = MaterialTheme.typography.titleMedium)
-                IconButton(onClick = { store.shiftMealDay(1) }) { Icon(Icons.Rounded.ChevronRight, "Next day") }
+                IconButton(onClick = { store.shiftMealDay(-1) }) { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowLeft, s(Res.string.previous_day)) }
+                Text(if (store.mealDay == store.today) s(Res.string.today) else prettyDate(store.mealDay), style = MaterialTheme.typography.titleMedium)
+                IconButton(onClick = { store.shiftMealDay(1) }) { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, s(Res.string.next_day)) }
             }
         }
         item {
             Panel {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Column { Text("Total", style = MaterialTheme.typography.labelMedium); Text("${totals.kcal} kcal", style = MaterialTheme.typography.titleLarge) }
+                    Column { Text(s(Res.string.total), style = MaterialTheme.typography.labelMedium); Text(s(Res.string.kcal, totals.kcal), style = MaterialTheme.typography.titleLarge) }
                     Column(horizontalAlignment = Alignment.End) {
-                        Text(if (left >= 0) "Left" else "Over", style = MaterialTheme.typography.labelMedium)
-                        Text("${kotlin.math.abs(left)} kcal", style = MaterialTheme.typography.titleLarge, color = if (left >= 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error)
+                        Text(if (left >= 0) s(Res.string.left_label) else s(Res.string.over), style = MaterialTheme.typography.labelMedium)
+                        Text(s(Res.string.kcal, kotlin.math.abs(left)), style = MaterialTheme.typography.titleLarge, color = if (left >= 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error)
                     }
                 }
-                Text("Protein ${totals.protein} g  ·  Carbs ${totals.carbs} g  ·  Fat ${totals.fat} g", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(s(Res.string.protein_g_carbs_g_fat, totals.protein, totals.carbs, totals.fat), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         if (store.templates.isNotEmpty() || store.recent.isNotEmpty()) item {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text("Log again", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(s(Res.string.log_again), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(store.templates, key = { "t" + it.id }) { t -> AssistChip(onClick = { store.logAgain(t.name, t.kcal, t.protein, t.carbs, t.fat) }, label = { Text("${t.name} · ${t.kcal}") }) }
                     items(store.recent.filter { r -> store.templates.none { it.name.equals(r.name, true) && it.kcal == r.kcal } }, key = { "r" + it.id }) { m ->
                         AssistChip(onClick = { store.logAgain(m.name, m.kcal, m.protein, m.carbs, m.fat) }, label = { Text("${m.name} · ${m.kcal}") })
                     }
                 }
-                if (store.templates.isNotEmpty()) TextButton(onClick = onTemplates) { Text("Edit saved meals") }
+                if (store.templates.isNotEmpty()) TextButton(onClick = onTemplates) { Text(s(Res.string.edit_saved_meals)) }
             }
         }
-        if (store.meals.isEmpty()) item { EmptyHint("No meals logged", "Tap + to add one. Each day is saved in meals/<year>/<date>.csv.") }
+        if (store.meals.isEmpty()) item { EmptyHint(s(Res.string.no_meals_logged), s(Res.string.tap_to_add_one_each)) }
         items(store.meals, key = { it.id }) { m ->
             Row(Modifier.fillMaxWidth().clickable { onEdit(m) }.padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
@@ -228,7 +308,7 @@ private fun MealsTab(store: HimmaStore, onTemplates: () -> Unit, onEdit: (Meal) 
                     val macros = listOfNotNull(m.protein?.let { "P $it" }, m.carbs?.let { "C $it" }, m.fat?.let { "F $it" }).joinToString("  ")
                     Text(m.time + if (macros.isNotEmpty()) "  ·  $macros g" else "", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
                 }
-                Text("${m.kcal} kcal", style = MaterialTheme.typography.titleSmall)
+                Text(s(Res.string.kcal, m.kcal), style = MaterialTheme.typography.titleSmall)
             }
         }
     }
@@ -241,13 +321,13 @@ private fun WaterTab(store: HimmaStore) {
     Column(Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Ring(waterProgress(store.waterMl, goal), Modifier.size(220.dp)) {
             Text(formatWater(store.waterMl), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
-            Text("of ${formatWater(goal)}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(s(Res.string.of_fcd7, formatWater(goal)), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Button(onClick = { store.addWater(250) }, Modifier.fillMaxWidth()) { Text("+ 250 ml glass") }
+        Button(onClick = { store.addWater(250) }, Modifier.fillMaxWidth()) { Text(s(Res.string.ml_glass)) }
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OutlinedButton(onClick = { custom = true }) { Text("Custom amount") }
+            OutlinedButton(onClick = { custom = true }) { Text(s(Res.string.custom_amount)) }
             OutlinedButton(onClick = { store.undoWater() }, enabled = store.canUndoWater) {
-                Icon(Icons.AutoMirrored.Rounded.Undo, null, Modifier.size(18.dp)); Text("  Undo")
+                Icon(Icons.AutoMirrored.Rounded.Undo, null, Modifier.size(18.dp)); Text(s(Res.string.undo))
             }
         }
     }
@@ -256,10 +336,10 @@ private fun WaterTab(store: HimmaStore) {
         val ml = text.trim().toIntOrNull()?.takeIf { it in 1..5000 }
         AlertDialog(
             onDismissRequest = { custom = false },
-            title = { Text("Add water") },
-            text = { OutlinedTextField(text, { text = it }, singleLine = true, label = { Text("Millilitres") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth()) },
-            confirmButton = { TextButton(enabled = ml != null, onClick = { store.addWater(ml!!); custom = false }) { Text("Add") } },
-            dismissButton = { TextButton(onClick = { custom = false }) { Text("Cancel") } },
+            title = { Text(s(Res.string.add_water)) },
+            text = { OutlinedTextField(text, { text = it }, singleLine = true, label = { Text(s(Res.string.millilitres)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth()) },
+            confirmButton = { TextButton(enabled = ml != null, onClick = { store.addWater(ml!!); custom = false }) { Text(s(Res.string.add)) } },
+            dismissButton = { TextButton(onClick = { custom = false }) { Text(s(Res.string.cancel)) } },
         )
     }
 }
@@ -276,19 +356,19 @@ private fun FastingTab(store: HimmaStore) {
     Column(Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         val total = if (fast.eating) (24 - s.fastHours) * 60 else s.fastHours * 60
         Ring(1f - fast.minutesLeft.toFloat() / total, Modifier.size(220.dp)) {
-            Text(if (fast.eating) "Eating" else "Fasting", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
-            Text("${formatDuration(fast.minutesLeft)} left", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(if (fast.eating) s(Res.string.eating) else s(Res.string.fasting_label), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
+            Text(s(Res.string.left, formatDuration(fast.minutesLeft)), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Text("Eating ${formatClock(s.eatStartMinutes)} to ${formatClock(eatEnd)}", style = MaterialTheme.typography.bodyLarge)
+        Text(s(Res.string.eating_to, formatClock(s.eatStartMinutes), formatClock(eatEnd)), style = MaterialTheme.typography.bodyLarge)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(presets) { h -> FilterChip(s.fastHours == h, { store.saveSettings(s.copy(fastHours = h)) }, { Text("$h:${24 - h}") }) }
-            item { FilterChip(s.fastHours !in presets, { customHours.toIntOrNull()?.takeIf { it in 1..23 }?.let { store.saveSettings(s.copy(fastHours = it)) } }, { Text("Custom") }) }
+            item { FilterChip(s.fastHours !in presets, { customHours.toIntOrNull()?.takeIf { it in 1..23 }?.let { store.saveSettings(s.copy(fastHours = it)) } }, { Text(s(Res.string.custom)) }) }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(customHours, { customHours = it; it.toIntOrNull()?.takeIf { h -> h in 1..23 }?.let { h -> store.saveSettings(s.copy(fastHours = h)) } }, singleLine = true, isError = customHours.toIntOrNull()?.let { it in 1..23 } != true,
-                label = { Text("Fast hours") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.weight(1f))
+                label = { Text(s(Res.string.fast_hours)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.weight(1f))
             OutlinedTextField(startText, { startText = it; parseClock(it)?.let { m -> store.saveSettings(s.copy(eatStartMinutes = m)) } }, singleLine = true, isError = start == null,
-                label = { Text("Eat from (HH:MM)") }, modifier = Modifier.weight(1f))
+                label = { Text(s(Res.string.eat_from_hh_mm)) }, modifier = Modifier.weight(1f))
         }
     }
 }
@@ -308,29 +388,29 @@ private fun MealDialog(existing: Meal?, nowTime: String, onDismiss: () -> Unit, 
     val number = KeyboardOptions(keyboardType = KeyboardType.Number)
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (existing == null) "Log a meal" else "Edit meal") },
+        title = { Text(if (existing == null) s(Res.string.log_a_meal) else s(Res.string.edit_meal)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedTextField(name, { name = it }, singleLine = true, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(kcal, { kcal = it }, singleLine = true, isError = kcalValue == null, label = { Text("Calories") }, keyboardOptions = number, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(name, { name = it }, singleLine = true, label = { Text(s(Res.string.name)) }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(kcal, { kcal = it }, singleLine = true, isError = kcalValue == null, label = { Text(s(Res.string.calories)) }, keyboardOptions = number, modifier = Modifier.fillMaxWidth())
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(protein, { protein = it }, singleLine = true, isError = !pOk, label = { Text("Protein g") }, keyboardOptions = number, modifier = Modifier.weight(1f))
-                    OutlinedTextField(carbs, { carbs = it }, singleLine = true, isError = !cOk, label = { Text("Carbs g") }, keyboardOptions = number, modifier = Modifier.weight(1f))
-                    OutlinedTextField(fat, { fat = it }, singleLine = true, isError = !fOk, label = { Text("Fat g") }, keyboardOptions = number, modifier = Modifier.weight(1f))
+                    OutlinedTextField(protein, { protein = it }, singleLine = true, isError = !pOk, label = { Text(s(Res.string.protein_g_29f5)) }, keyboardOptions = number, modifier = Modifier.weight(1f))
+                    OutlinedTextField(carbs, { carbs = it }, singleLine = true, isError = !cOk, label = { Text(s(Res.string.carbs_g_ce6a)) }, keyboardOptions = number, modifier = Modifier.weight(1f))
+                    OutlinedTextField(fat, { fat = it }, singleLine = true, isError = !fOk, label = { Text(s(Res.string.fat_g_e7c0)) }, keyboardOptions = number, modifier = Modifier.weight(1f))
                 }
-                OutlinedTextField(time, { time = it }, singleLine = true, isError = timeValue == null, label = { Text("Time (HH:MM)") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(time, { time = it }, singleLine = true, isError = timeValue == null, label = { Text(s(Res.string.time_hh_mm)) }, modifier = Modifier.fillMaxWidth())
             }
         },
         confirmButton = {
             TextButton(enabled = name.isNotBlank() && kcalValue != null && timeValue != null && pOk && cOk && fOk, onClick = {
                 onSave(Meal(existing?.id ?: "", formatClock(timeValue!!), name.trim(), kcalValue!!, p, c, f))
-            }) { Text("Save") }
+            }) { Text(s(Res.string.save)) }
         },
         dismissButton = {
             Row {
-                TextButton(enabled = name.isNotBlank() && kcalValue != null && pOk && cOk && fOk, onClick = { onTemplate(Meal("", "", name.trim(), kcalValue!!, p, c, f)); onDismiss() }) { Text("Save as meal") }
-                onDelete?.let { TextButton(onClick = it) { Text("Delete", color = MaterialTheme.colorScheme.error) } }
-                TextButton(onClick = onDismiss) { Text("Cancel") }
+                TextButton(enabled = name.isNotBlank() && kcalValue != null && pOk && cOk && fOk, onClick = { onTemplate(Meal("", "", name.trim(), kcalValue!!, p, c, f)); onDismiss() }) { Text(s(Res.string.save_as_meal)) }
+                onDelete?.let { TextButton(onClick = it) { Text(s(Res.string.delete), color = MaterialTheme.colorScheme.error) } }
+                TextButton(onClick = onDismiss) { Text(s(Res.string.cancel)) }
             }
         },
     )
@@ -349,32 +429,42 @@ private fun SettingsDialog(store: HimmaStore, onDismiss: () -> Unit, onTour: () 
     val waterValue = water.trim().toIntOrNull()?.takeIf { it in 1..20000 }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Settings") },
+        title = { Text(s(Res.string.settings)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedTextField(kcal, { kcal = it }, singleLine = true, isError = kcalValue == null, label = { Text("Daily calorie goal") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(water, { water = it }, singleLine = true, isError = waterValue == null, label = { Text("Daily water goal (ml)") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(steps, { steps = it }, singleLine = true, isError = stepsValue == null, label = { Text("Daily step goal") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
-                Text("Theme", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                OutlinedTextField(kcal, { kcal = it }, singleLine = true, isError = kcalValue == null, label = { Text(s(Res.string.daily_calorie_goal)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(water, { water = it }, singleLine = true, isError = waterValue == null, label = { Text(s(Res.string.daily_water_goal_ml)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(steps, { steps = it }, singleLine = true, isError = stepsValue == null, label = { Text(s(Res.string.daily_step_goal)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
+                Text(s(Res.string.theme), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf("system" to "System", "light" to "Light", "dark" to "Dark").forEach { (k, label) -> FilterChip(theme == k, { theme = k }, { Text(label) }) }
+                    listOf("system" to s(Res.string.system), "light" to s(Res.string.light), "dark" to s(Res.string.dark)).forEach { (k, label) -> FilterChip(theme == k, { theme = k }, { Text(label) }) }
                 }
-                Text("Data folder", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(s(Res.string.language), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf("system" to s(Res.string.system), "en" to "English", "ar" to "العربية").forEach { (code, label) ->
+                        FilterChip(store.platform.language == code, { if (store.platform.language != code) store.platform.setLanguage(code) }, { Text(label) })
+                    }
+                }
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text(s(Res.string.arabic_digits), Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                    androidx.compose.material3.Switch(UiText.arabicDigits, { store.platform.setArabicDigits(it) })
+                }
+                Text(s(Res.string.data_folder), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(store.folderPath, style = MaterialTheme.typography.bodyMedium)
-                if (store.platform.canAskAllFiles && !store.sharedFolder) OutlinedButton(onClick = { store.platform.allowAllFiles() }) { Text("Allow All files access") }
-                if (store.canRemoveOld) OutlinedButton(onClick = { confirmRemove = true }) { Text("Remove the old copy") }
-                TextButton(onClick = onTour) { Text("Show the tour again") }
+                if (store.platform.canAskAllFiles && !store.sharedFolder) OutlinedButton(onClick = { store.platform.allowAllFiles() }) { Text(s(Res.string.allow_all_files_access)) }
+                if (store.canRemoveOld) OutlinedButton(onClick = { confirmRemove = true }) { Text(s(Res.string.remove_the_old_copy)) }
+                TextButton(onClick = onTour) { Text(s(Res.string.show_the_tour_again)) }
             }
         },
-        confirmButton = { TextButton(enabled = kcalValue != null && waterValue != null && stepsValue != null, onClick = { onSave(current.copy(calorieGoal = kcalValue!!, waterGoalMl = waterValue!!, stepGoal = stepsValue!!, themeMode = theme)) }) { Text("Save") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        confirmButton = { TextButton(enabled = kcalValue != null && waterValue != null && stepsValue != null, onClick = { onSave(current.copy(calorieGoal = kcalValue!!, waterGoalMl = waterValue!!, stepGoal = stepsValue!!, themeMode = theme)) }) { Text(s(Res.string.save)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(s(Res.string.cancel)) } },
     )
     if (confirmRemove) AlertDialog(
         onDismissRequest = { confirmRemove = false },
-        title = { Text("Remove the old copy?") },
-        text = { Text("Your files are safe in ${store.folderPath}. Himma checked again that every file in the old private folder is there. The old copy will be deleted and cannot be brought back.") },
-        confirmButton = { TextButton(onClick = { store.removeOldCopy(); confirmRemove = false }) { Text("Remove", color = MaterialTheme.colorScheme.error) } },
-        dismissButton = { TextButton(onClick = { confirmRemove = false }) { Text("Keep it") } },
+        title = { Text(s(Res.string.remove_the_old_copy_495b)) },
+        text = { Text(s(Res.string.your_files_are_safe_in, store.folderPath)) },
+        confirmButton = { TextButton(onClick = { store.removeOldCopy(); confirmRemove = false }) { Text(s(Res.string.remove), color = MaterialTheme.colorScheme.error) } },
+        dismissButton = { TextButton(onClick = { confirmRemove = false }) { Text(s(Res.string.keep_it)) } },
     )
 }
 
@@ -382,18 +472,18 @@ private fun SettingsDialog(store: HimmaStore, onDismiss: () -> Unit, onTour: () 
 private fun TemplatesDialog(store: HimmaStore, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Saved meals") },
+        title = { Text(s(Res.string.saved_meals)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                if (store.templates.isEmpty()) Text("Nothing saved. Open a meal and choose Save as meal.")
+                if (store.templates.isEmpty()) Text(s(Res.string.nothing_saved_open_a_meal))
                 store.templates.forEach { t ->
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Text("${t.name}  ·  ${t.kcal} kcal", Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                        IconButton(onClick = { store.deleteTemplate(t.id) }) { Icon(Icons.Rounded.Close, "Remove ${t.name}") }
+                        Text(s(Res.string.kcal_06b1, t.name, t.kcal), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                        IconButton(onClick = { store.deleteTemplate(t.id) }) { Icon(Icons.Rounded.Close, s(Res.string.remove_x, t.name)) }
                     }
                 }
             }
         },
-        confirmButton = { TextButton(onClick = onDismiss) { Text("Done") } },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(s(Res.string.done)) } },
     )
 }

@@ -18,6 +18,6 @@ fun main() = application {
     val folder = "$home/Zimam/Himma".toPath()
     // The old ~/Himma is copied and checked, never deleted; if the copy fails it stays in use.
     val root = if (isMigrated(fs, old, folder) || migrateFolder(fs, old, folder) !is Migration.Failed) folder else old
-    val store = HimmaStore(Vault(fs, root), NoPlatform(root.toString()))
+    val store = HimmaStore(Vault(fs, root), DesktopPlatform(root.toString()))
     Window(onCloseRequest = ::exitApplication, title = "Himma", state = rememberWindowState(width = 460.dp, height = 820.dp)) { HimmaApp(store) }
 }
