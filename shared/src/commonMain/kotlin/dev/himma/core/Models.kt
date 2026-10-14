@@ -23,4 +23,7 @@ data class Settings(
     /** The version whose notes were last shown; null until the first run records it. */
     val lastSeenVersion: String? = null,
     val tourDone: Boolean = false,
+    /** "system", "light" or "dark". */
+    val themeMode: String = "system",
+    val stepGoal: Int = 8000,
 )
