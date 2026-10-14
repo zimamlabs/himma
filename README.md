@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/icon.svg" width="120" alt="Himma"></p>
+<p align="center"><img src="docs/icon.png" width="120" alt="Himma"></p>
 
 <h1 align="center">Himma</h1>
 

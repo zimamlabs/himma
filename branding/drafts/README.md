@@ -1,1 +1,1 @@
-Icon drafts for Himma, four rounds of suggestions. The one in use is a double ring with the Zimam dot (`docs/icon.svg`); the rest are kept for later.
+Icon drafts for Himma: the earlier suggestion rounds (the double ring with the Zimam dot was used until 0.2.0). The icon in use is the flowing runner shape with the diamond from the "Himma Minimal Flow Icon Set" board (`branding/boards/`, `docs/icon.png`).
