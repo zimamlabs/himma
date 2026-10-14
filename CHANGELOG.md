@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0
+
+- **Home.** The app opens on a Home page: greeting, calories, water, fasting, the next medicine dose, quick actions and what's new. Each card opens its section.
+- **Medicine reminders.** Add medicines with times and days; see today's doses on Home and in the Medicine section; mark each Taken or Skipped. A notification at each dose time has Taken and Skip buttons. Alarms return after a restart or a time-zone change.
+- **One Zimam folder.** With All files access, your files live in `Zimam/Himma` on the phone (`~/Zimam/Himma` on the desktop). The move is a verified copy: every file is checked by size and SHA-256, nothing is deleted or overwritten (a clash keeps both files), the old private folder stays as a backup until you remove it in Settings, and on any problem the old folder stays in use.
+- **Tour and updates.** A four-page tour on first install, reopenable from About and Settings, and a one-time What's new note after an update.
+- **New splash.** The rings draw in, the dot settles with a bounce, and the name sits clear of the logo.
+
 ## 0.1.0
 
 - First release: Today, Meals, Water and Fasting tabs.

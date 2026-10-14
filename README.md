@@ -8,12 +8,20 @@ Himma (همّة, drive and determination) keeps your meals, water and fasting in
 
 ## What is in it
 
-- **Today** at a glance: calories eaten and left, water, and whether you are eating or fasting now.
+- **Home** first: a greeting, calories eaten and left, water, the fasting state, the next medicine dose, quick actions (log a meal, add a glass of water) and what's new. Each card opens its section.
 - **Meals**: name, calories and optional protein, carbs and fat. A daily calorie goal, the day's total and what is left. Tap a meal to edit or delete it; step back through earlier days.
 - **Water**: a daily goal (2 L to start), a tap for a 250 ml glass or any amount, undo, and a progress ring.
 - **Fasting**: 16:8, 18:6, 20:4 or your own window. Shows eating or fasting now, the time left, and remembers when you start eating.
-- **Settings**: the calorie and water goals.
-- **Plain files**: `meals/<year>/<date>.csv`, `water/<year>.csv` and `.himma/settings.json`. Open them in any editor or spreadsheet.
+- **Medicine**: add a medicine with a dose note, times and days. Today's doses show on Home and in the Medicine section with Taken and Skip, and a notification at each dose time has Taken and Skip buttons. Alarms are set again after a restart or a change of time zone. Android asks once for notification permission; if exact alarms are not allowed a reminder can come a few minutes late.
+- **Tour and updates**: a short tour on first install (open it again from About or Settings), and a one-time What's new note after each update.
+- **Settings**: the calorie and water goals, the data folder and the tour.
+- **Plain files**: `meals/<year>/<date>.csv`, `water/<year>.csv`, `medicines/medicines.json`, `medicines/log.csv` and `.himma/settings.json`. Open them in any editor or spreadsheet.
+
+## Your data folder
+
+By default Himma keeps its files in the app's private folder. If you allow *All files access* (the tour and Settings offer it), they live in a visible `Zimam/Himma` folder on the phone, next to the other Zimam apps, and survive a reinstall. On the desktop it is `~/Zimam/Himma`.
+
+Moving there never risks your data: Himma copies the old folder, checks every file by size and SHA-256, writes a marker and only then starts using the new folder. Nothing is deleted or overwritten: a different file with the same name stays and the old one is kept beside it as `name (old copy)`. If anything goes wrong the old folder stays in use and Himma tries again later. The old copy is kept as a backup until you choose *Remove the old copy* in Settings, which asks first and checks again that everything is safe.
 
 ## Download
 
@@ -55,7 +63,7 @@ You need JDK 17 or newer and, for Android, the Android SDK (platform 36).
 
 ## Roadmap
 
-Not in 0.1.0, planned next: gym routines and sessions with streaks, steps and other sports, medicine and meal reminders, diet and gym plans, body measurements, backup and export, and a Linux edition.
+Planned next: gym routines and sessions with streaks, steps and other sports, meal reminders, diet and gym plans, body measurements, backup and export, and a Linux edition after version 1.
 
 ## Licence
 

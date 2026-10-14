@@ -42,6 +42,10 @@ class MainActivity : ComponentActivity() {
         storage = Storage(this)
         storage.refresh()
         store = HimmaStore(vault(), actions)
+        store.onMedicinesChanged = {
+            MedicineAlarms.medicinesChanged(this)
+            if (store.medicines.isNotEmpty()) actions.allowNotifications()
+        }
         setContent { HimmaApp(store) }
     }
 
@@ -50,5 +54,6 @@ class MainActivity : ComponentActivity() {
         if (!::store.isInitialized) return
         // All files access may have just been granted; otherwise the day may have rolled over or the files changed under us.
         if (storage.refresh()) store.replaceVault(vault()) else { store.reload(); store.refreshFolderInfo() }
+        MedicineAlarms.schedule(this)
     }
 }

@@ -3,7 +3,12 @@ package dev.himma.app
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import dev.himma.core.Dose
+import dev.himma.core.DoseMark
 import dev.himma.core.Meal
+import dev.himma.core.Medicine
+import dev.himma.core.dosesOn
+import dev.himma.core.newId
 import dev.himma.core.Settings
 import dev.himma.core.Startup
 import dev.himma.core.Vault
@@ -30,6 +35,12 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
         private set
     var waterMl by mutableStateOf(0)
         private set
+    var medicines by mutableStateOf(emptyList<Medicine>())
+        private set
+    var doseMarks by mutableStateOf(emptyMap<String, DoseMark>())
+        private set
+    /** Called after the medicine list changes, so the phone can set its alarms again. */
+    var onMedicinesChanged: () -> Unit = {}
     /** What the first screen shows: the tour on a fresh install, the notes after an update, or nothing. Decided once, before anything is saved. */
     var startup by mutableStateOf<Startup>(Startup.Nothing)
         private set
@@ -74,6 +85,8 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
         meals = vault.meals(mealDay)
         todayMeals = vault.meals(today)
         waterMl = vault.water(today)
+        medicines = vault.medicines()
+        doseMarks = vault.doseMarks()
     }
 
     fun tick() { if (vault.today() != lastToday) reload() else now = vault.now() }
@@ -101,6 +114,24 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
         waterMl = addWater(waterMl, -last)
         vault.saveWater(today, waterMl)
     }
+
+    val todayDoses: List<Dose> get() = dosesOn(medicines, today)
+
+    fun saveMedicine(m: Medicine) {
+        val saved = if (m.id.isEmpty()) m.copy(id = newId()) else m
+        vault.saveMedicines(medicines.filter { it.id != saved.id } + saved)
+        medicines = vault.medicines()
+        onMedicinesChanged()
+    }
+
+    fun deleteMedicine(id: String) {
+        vault.saveMedicines(medicines.filter { it.id != id })
+        medicines = vault.medicines()
+        onMedicinesChanged()
+    }
+
+    /** Marks a dose Taken or Skipped, or clears the mark with null. */
+    fun markDose(dose: Dose, mark: DoseMark?) { vault.setDoseMark(dose, mark); doseMarks = vault.doseMarks() }
 
     fun nowTime(): String = dev.himma.core.formatClock(nowMinutes)
 }

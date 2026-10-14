@@ -48,6 +48,10 @@ class Storage(private val context: Context) {
         return if (migrateFolder(fs, from, to) is Migration.Failed) privateRoot else sharedRoot
     }
 
+    /** The folder to read right now, without copying anything: for the reminder receivers, which must be quick. */
+    fun currentRoot(): File =
+        if (canUseShared() && sharedRoot.isDirectory && isMigrated(fs, privateRoot.toOkioPath(), sharedRoot.toOkioPath())) sharedRoot else privateRoot
+
     private fun privateHasFiles(): Boolean = privateRoot.walkTopDown().any { it.isFile }
 
     fun canRemoveOld(): Boolean = shared && privateHasFiles() && canRemoveOldCopy(fs, privateRoot.toOkioPath(), sharedRoot.toOkioPath())
