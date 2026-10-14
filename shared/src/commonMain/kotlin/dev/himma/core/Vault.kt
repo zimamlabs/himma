@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import okio.FileSystem
 import okio.Path
@@ -83,5 +84,29 @@ class Vault(
         val days = waterYear(date.year).toMutableMap()
         if (ml <= 0) days.remove(date) else days[date] = ml
         write(waterPath(date.year), Csv.format(listOf(listOf("date", "ml")) + days.toSortedMap().map { listOf(it.key.toString(), it.value.toString()) }))
+    }
+
+    /** True when the folder already holds any of Himma's files (an install from before notes were recorded). */
+    fun hasData(): Boolean = listOf("meals", "water", "medicines").any { fs.exists(root / it) } || fs.exists(settingsPath)
+
+    private val medicinesPath get() = root / "medicines" / "medicines.json"
+
+    fun medicines(): List<Medicine> = read(medicinesPath)?.let { runCatching { json.decodeFromString(ListSerializer(Medicine.serializer()), it) }.getOrNull() } ?: emptyList()
+
+    fun saveMedicines(list: List<Medicine>) = write(medicinesPath, json.encodeToString(ListSerializer(Medicine.serializer()), list))
+
+    private val doseLogPath get() = root / "medicines" / "log.csv"
+
+    /** Marks by [Dose.key]. */
+    fun doseMarks(): Map<String, DoseMark> = Csv.parse(read(doseLogPath) ?: "").drop(1).mapNotNull { r ->
+        runCatching { "${r[1]}|${r[0]}|${r[2]}" to DoseMark.valueOf(r[3]) }.getOrNull()
+    }.toMap()
+
+    /** Records [mark] for a dose, or clears it when null. */
+    fun setDoseMark(dose: Dose, mark: DoseMark?) {
+        val marks = doseMarks().toMutableMap()
+        if (mark == null) marks.remove(dose.key) else marks[dose.key] = mark
+        val rows = marks.entries.sortedBy { it.key }.map { (k, v) -> k.split('|').let { listOf(it[1], it[0], it[2], v.name) } }
+        write(doseLogPath, Csv.format(listOf(listOf("date", "medicine", "time", "mark")) + rows))
     }
 }

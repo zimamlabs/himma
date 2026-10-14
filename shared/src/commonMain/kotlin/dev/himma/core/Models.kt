@@ -20,4 +20,7 @@ data class Settings(
     val waterGoalMl: Int = 2000,
     val fastHours: Int = 16,
     val eatStartMinutes: Int = 12 * 60,
+    /** The version whose notes were last shown; null until the first run records it. */
+    val lastSeenVersion: String? = null,
+    val tourDone: Boolean = false,
 )
