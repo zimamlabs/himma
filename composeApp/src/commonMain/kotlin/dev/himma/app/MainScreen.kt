@@ -112,7 +112,7 @@ fun MainScreen(store: HimmaStore, onAbout: () -> Unit, onTour: () -> Unit) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(title = { Text("Himma") }, actions = {
+            TopAppBar(title = { Text("Himma", fontWeight = FontWeight.SemiBold) }, colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background), actions = {
                 IconButton(onClick = { menu = true }) { Icon(Icons.Rounded.MoreVert, "Menu") }
                 DropdownMenu(menu, { menu = false }) {
                     DropdownMenuItem(text = { Text("Settings") }, onClick = { menu = false; settings = true })
@@ -121,7 +121,7 @@ fun MainScreen(store: HimmaStore, onAbout: () -> Unit, onTour: () -> Unit) {
             })
         },
         bottomBar = {
-            NavigationBar {
+            NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer, tonalElevation = 0.dp) {
                 Tab.entries.forEach { t -> NavigationBarItem(tab == t, { tab = t }, { Icon(t.icon, t.label) }, label = { Text(t.label) }) }
             }
         },

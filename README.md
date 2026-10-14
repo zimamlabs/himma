@@ -2,9 +2,21 @@
 
 <h1 align="center">Himma</h1>
 
-<p align="center">Health and training in plain files, by <a href="https://github.com/zimamlabs">Zimam</a>.</p>
+<p align="center">Health and training in plain files, by <a href="https://github.com/zimamlabs">Zimam Labs</a>.</p>
 
-Himma (همّة, drive and determination) keeps your meals, water and fasting in a folder of plain files you own. It works offline, has no account and sends nothing anywhere.
+<p align="center">
+  <a href="../../releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/zimamlabs/himma?color=FF5A1F&labelColor=1A1613"></a>
+  <a href="../../releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/zimamlabs/himma/total?color=FF5A1F&labelColor=1A1613"></a>
+  <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/zimamlabs/himma?color=FF5A1F&labelColor=1A1613"></a>
+</p>
+
+<p align="center"><img src="branding/boards/Himma%20Minimal%20Flow%20Icon%20Set.png" alt="The Himma icon" width="720"></p>
+
+Himma (همّة, drive and determination) keeps your meals, water, fasting, medicine, workouts, steps and weight in a folder of plain files you own. It works offline, has no account and sends nothing anywhere.
+
+## Screenshots
+
+Screenshots will be added here once the app has been run and captured on a phone.
 
 ## What is in it
 

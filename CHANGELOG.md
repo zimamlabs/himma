@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1
+
+- **A new look.** Warm near-black and ivory surfaces, the Zimam orange as the one accent, a soft glow behind the hero, large rounded cards with a hairline border and the small diamond accent, on every screen.
+- **A new About page.** The mark on a glow, what Himma is, the tour, what's new, a privacy card and links to the repository, releases, issues and licence.
+- **A refreshed README** with badges, the icon board and a screenshots section.
+
 ## 0.3.0
 
 - **New icon.** The flowing runner shape with the Zimam diamond, on the launcher, the splash screen and the About page.

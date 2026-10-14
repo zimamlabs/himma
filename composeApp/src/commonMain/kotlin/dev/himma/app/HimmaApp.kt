@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import dev.himma.core.Startup
 import kotlinx.coroutines.delay
 
-const val APP_VERSION = "0.3.0"
+const val APP_VERSION = "0.3.1"
 
 @Composable
 fun HimmaApp(store: HimmaStore) {
