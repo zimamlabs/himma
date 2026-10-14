@@ -34,3 +34,6 @@ data class MealTemplate(val id: String, val name: String, val kcal: Int, val pro
 /** The distinct recent meals (same name and calories counted once), newest first, at most [limit]. [newestFirst] must already be newest first. */
 fun recentMeals(newestFirst: List<Meal>, limit: Int): List<Meal> =
     newestFirst.distinctBy { it.name.trim().lowercase() to it.kcal }.take(limit)
+
+/** The day at a glance: the average of the goal shares (each 0 to 1) that apply today; parts that do not apply are null. */
+fun dayScore(parts: List<Float?>): Float = parts.filterNotNull().let { if (it.isEmpty()) 0f else it.map { p -> p.coerceIn(0f, 1f) }.average().toFloat() }

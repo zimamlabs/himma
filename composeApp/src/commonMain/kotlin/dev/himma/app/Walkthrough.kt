@@ -37,20 +37,21 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
-private const val PAGES = 4
+private const val PAGES = 5
 
 /** The first-install tour: what Himma does, where the data lives, reminders, and your goals. Skip, Next, Done. */
 @Composable
 fun Walkthrough(store: HimmaStore, onDone: () -> Unit) {
     val pager = rememberPagerState { PAGES }
     val scope = rememberCoroutineScope()
+    var theme by remember { mutableStateOf(store.settings.themeMode) }
     var kcal by remember { mutableStateOf(store.settings.calorieGoal.toString()) }
     var water by remember { mutableStateOf(store.settings.waterGoalMl.toString()) }
     val kcalValue = kcal.trim().toIntOrNull()?.takeIf { it in 1..20000 }
     val waterValue = water.trim().toIntOrNull()?.takeIf { it in 1..20000 }
     val last = pager.currentPage == PAGES - 1
     fun finish() {
-        if (kcalValue != null && waterValue != null) store.saveSettings(store.settings.copy(calorieGoal = kcalValue, waterGoalMl = waterValue))
+        if (kcalValue != null && waterValue != null) store.saveSettings(store.settings.copy(calorieGoal = kcalValue, waterGoalMl = waterValue, themeMode = theme))
         onDone()
     }
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding().navigationBarsPadding()) {
@@ -60,7 +61,7 @@ fun Walkthrough(store: HimmaStore, onDone: () -> Unit) {
         HorizontalPager(pager, Modifier.weight(1f)) { page ->
             Column(Modifier.fillMaxSize().padding(horizontal = 28.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start) {
                 when (page) {
-                    0 -> Page("Welcome to Himma", "Meals and calories, water, a fasting window and medicine reminders, in one calm app.", "Everything stays on your phone. There is no account and nothing is sent anywhere.")
+                    0 -> Page("Welcome to Himma", "Meals and calories, water, fasting, medicine reminders, gym workouts, steps and your weight, in one calm app.", "Everything stays on your phone. There is no account and nothing is sent anywhere.")
                     1 -> {
                         Page("Where your data lives", "Himma keeps plain files you can open in any editor.",
                             if (store.sharedFolder) "They are in ${store.folderPath}, together with your other Zimam apps." else "They are in the app's private folder now. Allow All files access and Himma moves a verified copy to Zimam/Himma on your phone, so your files survive a reinstall and sit next to the other Zimam apps. The old copy is kept until you remove it.")
@@ -73,6 +74,15 @@ fun Walkthrough(store: HimmaStore, onDone: () -> Unit) {
                         Page("Reminders", "Add a medicine with its times and days and Himma tells you when a dose is due. Mark it Taken or Skip right from the notification.", "Android asks once to show notifications. If exact alarms are not allowed, a reminder can come a few minutes late.")
                         Spacer(Modifier.height(16.dp))
                         OutlinedButton(onClick = { store.platform.allowNotifications() }) { Text("Allow notifications") }
+                    }
+                    3 -> {
+                        Page("Pick your look", "Light, Dark, or follow the phone. You can change it later in Settings.", "")
+                        Spacer(Modifier.height(16.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            listOf("system" to "System", "light" to "Light", "dark" to "Dark").forEach { (k, label) ->
+                                if (theme == k) Button(onClick = { theme = k; store.saveSettings(store.settings.copy(themeMode = k)) }) { Text(label) } else OutlinedButton(onClick = { theme = k; store.saveSettings(store.settings.copy(themeMode = k)) }) { Text(label) }
+                            }
+                        }
                     }
                     else -> {
                         Page("Ready when you are", "Set your daily goals. You can change them later in Settings.", "")
