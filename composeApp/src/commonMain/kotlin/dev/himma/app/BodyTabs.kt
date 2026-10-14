@@ -1,5 +1,22 @@
 package dev.himma.app
 
+import dev.himma.app.res.remove
+
+import dev.himma.app.res.Res
+import dev.himma.app.res.allow_step_counting
+import dev.himma.app.res.counting_with_your_phone_s
+import dev.himma.app.res.himma_needs_permission_to_read
+import dev.himma.app.res.last_days
+import dev.himma.app.res.last_days_a369
+import dev.himma.app.res.no_weight_logged
+import dev.himma.app.res.of_steps
+import dev.himma.app.res.over_weeks
+import dev.himma.app.res.save
+import dev.himma.app.res.step_counting_is_only_available
+import dev.himma.app.res.this_phone_has_no_step
+import dev.himma.app.res.today_s_weight_kg
+import dev.himma.app.res.trend_kg_a_week
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,23 +59,23 @@ internal fun StepsTab(store: HimmaStore) {
         item {
             Ring(stepProgress(store.stepsToday, goal), Modifier.size(220.dp)) {
                 Text("${store.stepsToday}", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
-                Text("of $goal steps", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(s(Res.string.of_steps, goal), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         item {
             when (support) {
-                StepSupport.Ready -> Text("Counting with your phone's step sensor while Himma is open or recently used. Steps taken on a day you never open Himma cannot be split by day, so they are not counted.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                StepSupport.Ready -> Text(s(Res.string.counting_with_your_phone_s), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 StepSupport.NeedsPermission -> Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Himma needs permission to read the step sensor. It never leaves your phone.", style = MaterialTheme.typography.bodyMedium)
-                    Button(onClick = { store.platform.allowStepCounting() }) { Text("Allow step counting") }
+                    Text(s(Res.string.himma_needs_permission_to_read), style = MaterialTheme.typography.bodyMedium)
+                    Button(onClick = { store.platform.allowStepCounting() }) { Text(s(Res.string.allow_step_counting)) }
                 }
-                StepSupport.NoSensor -> Text("This phone has no step sensor, so steps cannot be counted.", style = MaterialTheme.typography.bodyMedium)
-                StepSupport.Unavailable -> Text("Step counting is only available on the phone.", style = MaterialTheme.typography.bodyMedium)
+                StepSupport.NoSensor -> Text(s(Res.string.this_phone_has_no_step), style = MaterialTheme.typography.bodyMedium)
+                StepSupport.Unavailable -> Text(s(Res.string.step_counting_is_only_available), style = MaterialTheme.typography.bodyMedium)
             }
         }
         item {
             Panel {
-                Text("Last 7 days", style = MaterialTheme.typography.titleSmall)
+                Text(s(Res.string.last_days), style = MaterialTheme.typography.titleSmall)
                 BarChart(store.week.map { it.steps.toFloat() }, store.week.map { it.date }, goal.toFloat())
             }
         }
@@ -74,20 +91,20 @@ internal fun WeightTab(store: HimmaStore) {
     LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             Panel {
-                Text(trend.latestKg?.let { formatKg(it) } ?: "No weight logged", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
-                trend.changeKg?.let { Text("${if (it > 0) "+" else ""}${formatKg(it)} over 4 weeks", style = MaterialTheme.typography.bodyMedium) }
-                trend.kgPerWeek?.let { Text("Trend ${if (it > 0) "+" else ""}${kotlin.math.round(it * 100) / 100} kg a week", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                Text(trend.latestKg?.let { formatKg(it) } ?: s(Res.string.no_weight_logged), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
+                trend.changeKg?.let { Text(s(Res.string.over_weeks, if (it > 0) "+" else "", formatKg(it)), style = MaterialTheme.typography.bodyMedium) }
+                trend.kgPerWeek?.let { Text(s(Res.string.trend_kg_a_week, if (it > 0) "+" else "", kotlin.math.round(it * 100) / 100), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
             }
         }
         item {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                OutlinedTextField(text, { text = it }, Modifier.weight(1f), singleLine = true, isError = text.isNotBlank() && kg == null, label = { Text("Today's weight (kg)") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
-                Button(enabled = kg != null, onClick = { store.saveWeight(kg!!); text = "" }) { Text("Save") }
+                OutlinedTextField(text, { text = it }, Modifier.weight(1f), singleLine = true, isError = text.isNotBlank() && kg == null, label = { Text(s(Res.string.today_s_weight_kg)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
+                Button(enabled = kg != null, onClick = { store.saveWeight(kg!!); text = "" }) { Text(s(Res.string.save)) }
             }
         }
         if (last30.size >= 2) item {
             Panel {
-                Text("Last 90 days", style = MaterialTheme.typography.titleSmall)
+                Text(s(Res.string.last_days_a369), style = MaterialTheme.typography.titleSmall)
                 LineChart(last30.map { it.kg.toFloat() }, smooth = movingAverage(last30, 7).map { it.kg.toFloat() })
             }
         }
@@ -95,7 +112,7 @@ internal fun WeightTab(store: HimmaStore) {
             Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(prettyDate(e.date), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
                 Text(formatKg(e.kg), style = MaterialTheme.typography.titleSmall)
-                IconButton(onClick = { store.saveWeight(0.0, e.date) }) { Icon(Icons.Rounded.Close, "Remove") }
+                IconButton(onClick = { store.saveWeight(0.0, e.date) }) { Icon(Icons.Rounded.Close, s(Res.string.remove)) }
             }
         }
     }

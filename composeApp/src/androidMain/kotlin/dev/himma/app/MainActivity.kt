@@ -57,6 +57,10 @@ class MainActivity : ComponentActivity() {
         override fun allowNotifications() {
             if (Build.VERSION.SDK_INT >= 33) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
+        override val language: String get() = AppLanguagePrefs.load(this@MainActivity).code
+        override fun setLanguage(code: String) { AppLanguagePrefs.save(this@MainActivity, code); recreate() }
+        override val arabicDigits: Boolean get() = UiText.arabicDigits
+        override fun setArabicDigits(on: Boolean) { AppLanguagePrefs.saveArabicDigits(this@MainActivity, on); UiText.arabicDigits = on; recreate() }
         override val stepSupport: StepSupport get() = stepSupportState
         override fun allowStepCounting() { if (Build.VERSION.SDK_INT >= 29) activityPermission.launch(Manifest.permission.ACTIVITY_RECOGNITION) }
         override fun canRemoveOldCopy(): Boolean = storage.canRemoveOld()
@@ -65,7 +69,12 @@ class MainActivity : ComponentActivity() {
 
     private fun vault() = Vault(FileSystem.SYSTEM, storage.root.also { it.mkdirs() }.toOkioPath())
 
+    override fun attachBaseContext(base: android.content.Context) {
+        super.attachBaseContext(AppLanguagePrefs.load(base).wrap(base))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        UiText.arabicDigits = AppLanguagePrefs.arabicDigits(this)
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         storage = Storage(this)

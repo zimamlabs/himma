@@ -13,13 +13,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import dev.himma.core.Startup
 import kotlinx.coroutines.delay
 
-const val APP_VERSION = "0.3.1"
+const val APP_VERSION = "0.4.0"
 
 @Composable
 fun HimmaApp(store: HimmaStore) {
+    val direction = when (UiText.rtl) { true -> LayoutDirection.Rtl; false -> LayoutDirection.Ltr; null -> LocalLayoutDirection.current }
+    androidx.compose.runtime.key(UiText.generation) {
+    androidx.compose.runtime.CompositionLocalProvider(LocalLayoutDirection provides direction) {
     HimmaTheme(store.settings.themeMode) {
         var splash by remember { mutableStateOf(true) }
         var about by remember { mutableStateOf(false) }
@@ -36,5 +41,7 @@ fun HimmaApp(store: HimmaStore) {
             if (s is Startup.Updated && !splash && !tour) WhatsNewDialog(s.notes) { store.markSeen() }
             AnimatedVisibility(splash, exit = fadeOut()) { Splash { splash = false } }
         }
+    }
+    }
     }
 }

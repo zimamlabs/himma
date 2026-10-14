@@ -1,5 +1,53 @@
 package dev.himma.app
 
+import dev.himma.app.res.left
+
+import dev.himma.app.res.steps_a_day
+
+import dev.himma.app.res.workouts_label
+
+import dev.himma.app.res.water_goals
+
+import dev.himma.app.res.kcal_a_day
+
+import dev.himma.app.res.n_of_m_taken
+
+import dev.himma.app.res.percent_of_goals
+
+import dev.himma.app.res.n_over
+
+import dev.himma.app.res.calories
+import dev.himma.app.res.medicine
+import dev.himma.app.res.steps
+import dev.himma.app.res.water
+
+import dev.himma.app.res.Res
+import dev.himma.app.res.all_of_today_s_goals
+import dev.himma.app.res.carbs_g
+import dev.himma.app.res.create_a_routine_to_start
+import dev.himma.app.res.done_today
+import dev.himma.app.res.eating_window_is_open
+import dev.himma.app.res.fasting
+import dev.himma.app.res.fasting_now
+import dev.himma.app.res.fat_g
+import dev.himma.app.res.kg_aae5
+import dev.himma.app.res.last_days
+import dev.himma.app.res.last_workout
+import dev.himma.app.res.meal
+import dev.himma.app.res.ml
+import dev.himma.app.res.next_at
+import dev.himma.app.res.no_doses_today
+import dev.himma.app.res.no_medicines_added_yet
+import dev.himma.app.res.no_more_doses_today
+import dev.himma.app.res.of
+import dev.himma.app.res.protein_g
+import dev.himma.app.res.this_week
+import dev.himma.app.res.up_next
+import dev.himma.app.res.weight
+import dev.himma.app.res.what_s_new_in
+import dev.himma.app.res.workout
+import dev.himma.app.res.workouts_kg_lifted
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -107,9 +155,9 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
             Glow(Modifier.clip(RoundedCornerShape(28.dp))) { Panel {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(dev.himma.core.greeting(store.now.hour), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
+                        Text(tr(dev.himma.core.greeting(store.now.hour)), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
                         Text(prettyDate(store.today), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text(if (score >= 1f) "All of today's goals are done." else "${(score * 100).toInt()}% of today's goals", style = MaterialTheme.typography.bodyMedium)
+                        Text(if (score >= 1f) s(Res.string.all_of_today_s_goals) else s(Res.string.percent_of_goals, "${(score * 100).toInt()}%"), style = MaterialTheme.typography.bodyMedium)
                     }
                     Ring(score, Modifier.size(96.dp)) { Text("${(score * 100).toInt()}%", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold) }
                 }
@@ -118,27 +166,27 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
         item {
             Panel {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                    MiniRing(waterP, formatWater(store.waterMl), "Water") { nav.go(Tab.Track, TrackPage.Water) }
-                    MiniRing(kcalP, "${totals.kcal}", "Calories") { nav.go(Tab.Meals, null) }
-                    MiniRing(stepP, if (stepsReady) "${store.stepsToday}" else "-", "Steps") { nav.go(Tab.Track, TrackPage.Steps) }
+                    MiniRing(waterP, formatWater(store.waterMl), s(Res.string.water)) { nav.go(Tab.Track, TrackPage.Water) }
+                    MiniRing(kcalP, "${totals.kcal}", s(Res.string.calories)) { nav.go(Tab.Meals, null) }
+                    MiniRing(stepP, if (stepsReady) "${store.stepsToday}" else "-", s(Res.string.steps)) { nav.go(Tab.Track, TrackPage.Steps) }
                 }
             }
         }
         item {
             Panel(Modifier.clickable { nav.go(Tab.Meals, null) }) {
-                SectionTitle(Icons.Rounded.Restaurant, "Calories", if (left >= 0) "$left left" else "${-left} over")
+                SectionTitle(Icons.Rounded.Restaurant, s(Res.string.calories), if (left >= 0) s(Res.string.left, left) else s(Res.string.n_over, -left))
                 MacroBar(totals.protein, totals.carbs, totals.fat)
                 Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                    Legend(MaterialTheme.colorScheme.primary, "Protein ${totals.protein} g")
-                    Legend(MaterialTheme.colorScheme.secondary, "Carbs ${totals.carbs} g")
-                    Legend(MaterialTheme.colorScheme.tertiary, "Fat ${totals.fat} g")
+                    Legend(MaterialTheme.colorScheme.primary, s(Res.string.protein_g, totals.protein))
+                    Legend(MaterialTheme.colorScheme.secondary, s(Res.string.carbs_g, totals.carbs))
+                    Legend(MaterialTheme.colorScheme.tertiary, s(Res.string.fat_g, totals.fat))
                 }
             }
         }
         item {
             Panel(Modifier.clickable { nav.go(Tab.Track, TrackPage.Fasting) }) {
-                SectionTitle(Icons.Rounded.Timer, "Fasting ${s.fastHours}:${24 - s.fastHours}", "${formatDuration(fast.minutesLeft)} left")
-                Text(if (fast.eating) "Eating window is open" else "Fasting now", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                SectionTitle(Icons.Rounded.Timer, s(Res.string.fasting, s.fastHours, 24 - s.fastHours), s(Res.string.left, formatDuration(fast.minutesLeft)))
+                Text(if (fast.eating) s(Res.string.eating_window_is_open) else s(Res.string.fasting_now), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                 val total = if (fast.eating) (24 - s.fastHours) * 60 else s.fastHours * 60
                 LinearProgressIndicator(progress = { 1f - fast.minutesLeft.toFloat() / total }, Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)), trackColor = MaterialTheme.colorScheme.surfaceContainerHigh)
             }
@@ -146,9 +194,9 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
         item {
             val dates = store.week.map { it.date }
             Panel {
-                SectionTitle(Icons.Rounded.LocalFireDepartment, "Last 7 days")
+                SectionTitle(Icons.Rounded.LocalFireDepartment, s(Res.string.last_days))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf("Water", "Calories", "Steps").forEachIndexed { i, label -> FilterChip(chart == i, { chart = i }, { Text(label) }) }
+                    listOf(s(Res.string.water), s(Res.string.calories), s(Res.string.steps)).forEachIndexed { i, label -> FilterChip(chart == i, { chart = i }, { Text(label) }) }
                 }
                 when (chart) {
                     0 -> BarChart(store.week.map { it.waterMl.toFloat() }, dates, s.waterGoalMl.toFloat())
@@ -159,13 +207,13 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
         }
         item {
             Panel(Modifier.clickable { nav.go(Tab.Medicine, null) }) {
-                SectionTitle(Icons.Rounded.Medication, "Medicine", if (doses.isEmpty()) "" else "$taken of ${doses.size} taken")
+                SectionTitle(Icons.Rounded.Medication, s(Res.string.medicine), if (doses.isEmpty()) "" else s(Res.string.n_of_m_taken, taken, doses.size))
                 Text(
                     when {
-                        store.medicines.isEmpty() -> "No medicines added yet"
-                        doses.isEmpty() -> "No doses today"
-                        next != null -> "Next: ${next.medicine.name} at ${next.time}"
-                        else -> "No more doses today"
+                        store.medicines.isEmpty() -> s(Res.string.no_medicines_added_yet)
+                        doses.isEmpty() -> s(Res.string.no_doses_today)
+                        next != null -> s(Res.string.next_at, next.medicine.name, next.time)
+                        else -> s(Res.string.no_more_doses_today)
                     }, style = MaterialTheme.typography.titleMedium)
             }
         }
@@ -173,43 +221,43 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
             val lastWorkout = store.workouts.lastOrNull()
             val suggestion = store.routines.firstOrNull()
             Panel(Modifier.clickable { nav.go(Tab.Gym, null) }) {
-                SectionTitle(Icons.Rounded.FitnessCenter, "Workout", if (todayWorkouts.isNotEmpty()) "Done today" else "")
+                SectionTitle(Icons.Rounded.FitnessCenter, s(Res.string.workout), if (todayWorkouts.isNotEmpty()) s(Res.string.done_today) else "")
                 when {
-                    todayWorkouts.isNotEmpty() -> Text("${todayWorkouts.size} workout${if (todayWorkouts.size > 1) "s" else ""}, ${volume(todayWorkouts.flatMap { it.sets }).toInt()} kg lifted", style = MaterialTheme.typography.titleMedium)
+                    todayWorkouts.isNotEmpty() -> Text(sp(Res.plurals.workouts_kg_lifted, todayWorkouts.size, volume(todayWorkouts.flatMap { it.sets }).toInt()), style = MaterialTheme.typography.titleMedium)
                     suggestion != null -> {
-                        Text("Up next: ${suggestion.name}", style = MaterialTheme.typography.titleMedium)
-                        if (lastWorkout != null) Text("Last workout ${lastWorkout.date}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(s(Res.string.up_next, suggestion.name), style = MaterialTheme.typography.titleMedium)
+                        if (lastWorkout != null) Text(s(Res.string.last_workout, lastWorkout.date), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
-                    else -> Text("Create a routine to start tracking workouts", style = MaterialTheme.typography.titleMedium)
+                    else -> Text(s(Res.string.create_a_routine_to_start), style = MaterialTheme.typography.titleMedium)
                 }
             }
         }
         item {
             Panel {
-                SectionTitle(Icons.Rounded.MonitorWeight, "This week")
+                SectionTitle(Icons.Rounded.MonitorWeight, s(Res.string.this_week))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Stat("${summary.avgKcal}", "kcal a day")
-                    Stat("${summary.waterGoalDays} of 7", "water goals")
-                    Stat("${summary.workouts}", "workouts")
+                    Stat("${summary.avgKcal}", s(Res.string.kcal_a_day))
+                    Stat(s(Res.string.of, summary.waterGoalDays), s(Res.string.water_goals))
+                    Stat("${summary.workouts}", s(Res.string.workouts_label))
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Stat(if (summary.avgSteps > 0) "${summary.avgSteps}" else "-", "steps a day")
-                    Stat("${summary.volumeKg} kg", "lifted")
+                    Stat(if (summary.avgSteps > 0) "${summary.avgSteps}" else "-", s(Res.string.steps_a_day))
+                    Stat(s(Res.string.kg_aae5, summary.volumeKg), "lifted")
                     Stat(summary.weightChangeKg?.let { (if (it > 0) "+" else "") + formatKg(it) } ?: "-", "weight")
                 }
             }
         }
         item {
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                AssistChip(onClick = nav.logMeal, label = { Text("Meal") }, leadingIcon = { Icon(Icons.Rounded.Restaurant, null, Modifier.size(18.dp)) })
-                AssistChip(onClick = { store.addWater(250) }, label = { Text("+250 ml") }, leadingIcon = { Icon(Icons.Rounded.WaterDrop, null, Modifier.size(18.dp)) })
-                AssistChip(onClick = { nav.go(Tab.Track, TrackPage.Weight) }, label = { Text("Weight") }, leadingIcon = { Icon(Icons.Rounded.MonitorWeight, null, Modifier.size(18.dp)) })
-                AssistChip(onClick = { nav.startWorkout(store.routines.firstOrNull()) }, label = { Text("Workout") }, leadingIcon = { Icon(Icons.Rounded.FitnessCenter, null, Modifier.size(18.dp)) })
+                AssistChip(onClick = nav.logMeal, label = { Text(s(Res.string.meal)) }, leadingIcon = { Icon(Icons.Rounded.Restaurant, null, Modifier.size(18.dp)) })
+                AssistChip(onClick = { store.addWater(250) }, label = { Text(s(Res.string.ml)) }, leadingIcon = { Icon(Icons.Rounded.WaterDrop, null, Modifier.size(18.dp)) })
+                AssistChip(onClick = { nav.go(Tab.Track, TrackPage.Weight) }, label = { Text(s(Res.string.weight)) }, leadingIcon = { Icon(Icons.Rounded.MonitorWeight, null, Modifier.size(18.dp)) })
+                AssistChip(onClick = { nav.startWorkout(store.routines.firstOrNull()) }, label = { Text(s(Res.string.workout)) }, leadingIcon = { Icon(Icons.Rounded.FitnessCenter, null, Modifier.size(18.dp)) })
             }
         }
         if (note != null) item {
             Panel {
-                Text("What's new in ${note.version}", style = MaterialTheme.typography.titleSmall)
+                Text(s(Res.string.what_s_new_in, note.version), style = MaterialTheme.typography.titleSmall)
                 note.bullets.forEach { Text("•  $it", style = MaterialTheme.typography.bodyMedium) }
             }
         }

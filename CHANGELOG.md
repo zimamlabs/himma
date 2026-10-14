@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+- **Arabic and right-to-left.** Himma speaks Arabic (همّة) with a full right-to-left layout: every screen, the tour, the release notes and the medicine notifications. Choose English, العربية or the phone's language in Settings, and optionally show numbers in Arabic-Indic digits. A check in CI fails when an English text has no Arabic one.
+
 ## 0.3.1
 
 - **A new look.** Warm near-black and ivory surfaces, the Zimam orange as the one accent, a soft glow behind the hero, large rounded cards with a hairline border and the small diamond accent, on every screen.
