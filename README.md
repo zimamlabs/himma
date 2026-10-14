@@ -10,7 +10,6 @@
   <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/zimamlabs/himma?color=FF5A1F&labelColor=1A1613"></a>
 </p>
 
-<p align="center"><img src="branding/boards/Himma%20Minimal%20Flow%20Icon%20Set.png" alt="The Himma icon" width="720"></p>
 
 Himma (همّة, drive and determination) keeps your meals, water, fasting, medicine, workouts, steps and weight in a folder of plain files you own. It works offline, has no account and sends nothing anywhere.
 
