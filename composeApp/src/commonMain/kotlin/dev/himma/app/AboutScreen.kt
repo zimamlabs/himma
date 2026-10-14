@@ -14,6 +14,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,7 +23,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AboutScreen(onBack: () -> Unit) {
+fun AboutScreen(store: HimmaStore, onBack: () -> Unit, onTour: () -> Unit) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -37,6 +38,8 @@ fun AboutScreen(onBack: () -> Unit) {
             Text("همّة", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
             Text("by Zimam", style = MaterialTheme.typography.titleMedium)
             Text("Version $APP_VERSION", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Data folder: ${store.folderPath}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            TextButton(onClick = onTour) { Text("Show the tour again") }
             Text("https://github.com/zimamlabs", style = MaterialTheme.typography.bodyLarge)
             Text("https://github.com/zimamlabs/himma", style = MaterialTheme.typography.bodyLarge)
             Text("(c) 2026 Zimam. Free software under the MIT licence.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)

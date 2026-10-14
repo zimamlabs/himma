@@ -84,6 +84,14 @@ class MigrateTest {
         assertTrue(base.exists(from / "water/2026.csv"))
     }
 
+    @Test fun theMarkerIsOnlyWrittenForAFinishedCopy() {
+        val fs = seeded()
+        assertFalse(isMigrated(fs, from, to))
+        migrateFolder(fs, from, to)
+        assertTrue(isMigrated(fs, from, to))
+        assertFalse(isMigrated(fs, "/elsewhere".toPath(), to))
+    }
+
     @Test fun verifyCatchesAMissingChangedOrShorterFile() {
         val fs = seeded()
         migrateFolder(fs, from, to)
@@ -100,16 +108,44 @@ class MigrateTest {
         assertEquals(Migration.Nothing, migrateFolder(seeded(), from, from))
     }
 
-    @Test fun theOldCopyIsRemovedOnlyAfterItVerifiesAgain() {
+    @Test fun theOldCopyIsRemovedOnlyWhenNothingWouldBeLost() {
         val fs = seeded()
         assertFalse(removeOldCopy(fs, from, to), "not copied yet")
         migrateFolder(fs, from, to)
-        fs.put(to / "water/2026.csv", "changed")
-        assertFalse(removeOldCopy(fs, from, to), "copy no longer matches, so nothing is deleted")
-        assertTrue(fs.exists(from))
-        fs.put(to / "water/2026.csv", "date,ml\n2026-10-14,750\n")
+        assertTrue(canRemoveOldCopy(fs, from, to))
         assertTrue(removeOldCopy(fs, from, to))
         assertFalse(fs.exists(from))
         assertTrue(fs.exists(to / "meals/2026/2026-10-14.csv"))
+    }
+
+    @Test fun newerDataInTheNewFolderDoesNotBlockRemovalButAMissingFileDoes() {
+        val fs = seeded()
+        migrateFolder(fs, from, to)
+        fs.put(to / "water/2026.csv", "date,ml\n2026-10-14,1500\n")
+        assertTrue(canRemoveOldCopy(fs, from, to), "edited since the copy is newer data, the old file is still covered")
+        fs.delete(to / "meals/2026/2026-10-14.csv")
+        assertFalse(canRemoveOldCopy(fs, from, to), "a file that is gone from the new folder must stop the removal")
+        assertTrue(fs.exists(from))
+    }
+
+    @Test fun anOldFolderThatChangedAfterTheCopyIsNeverRemoved() {
+        val fs = seeded()
+        migrateFolder(fs, from, to)
+        fs.put(from / "water/2026.csv", "date,ml\n2026-10-14,999\n")
+        assertFalse(canRemoveOldCopy(fs, from, to), "changed")
+        fs.put(from / "water/2026.csv", "date,ml\n2026-10-14,750\n")
+        assertTrue(canRemoveOldCopy(fs, from, to))
+        fs.put(from / "meals/extra.csv", "x")
+        assertFalse(canRemoveOldCopy(fs, from, to), "a new file in the old folder was never copied")
+        assertTrue(fs.exists(from / "meals/extra.csv"))
+    }
+
+    @Test fun clashCopiesAreCoveredWhenCheckingRemoval() {
+        val fs = seeded()
+        fs.put(to / "water/2026.csv", "other")
+        migrateFolder(fs, from, to)
+        assertTrue(canRemoveOldCopy(fs, from, to))
+        fs.delete(to / "water/2026 (old copy).csv")
+        assertFalse(canRemoveOldCopy(fs, from, to))
     }
 }
