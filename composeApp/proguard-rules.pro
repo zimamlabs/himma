@@ -1,0 +1,4 @@
+-keepattributes *Annotation*, InnerClasses
+-dontwarn org.slf4j.**
+-keep,includedescriptorclasses class dev.himma.core.**$$serializer { *; }
+-keepclassmembers class dev.himma.core.** { *** Companion; }
