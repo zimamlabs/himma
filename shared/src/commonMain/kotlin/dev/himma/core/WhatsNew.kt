@@ -12,6 +12,12 @@ val releaseNotes: List<ReleaseNote> = listOf(
         "Your data can live in one visible Zimam/Himma folder (allow All files access).",
         "A short tour on first install and this note after each update.",
     )),
+    ReleaseNote("0.3.0", listOf(
+        "A richer Home: rings, a macro bar, 7-day charts and a weekly summary.",
+        "Gym: routines, workouts with every set, personal bests and a rest timer.",
+        "Steps from the phone's step counter, a weight log with a trend, and meal templates.",
+        "Light, Dark or System theme.",
+    )),
 )
 
 /** What the first open should show. */

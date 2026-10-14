@@ -16,7 +16,13 @@ import okio.Path
  * ```
  * meals/<year>/<date>.csv    id, time, name, kcal, protein, carbs, fat (one file per day)
  * water/<year>.csv           date, ml
- * .himma/settings.json       goals and the fasting window
+ * .himma/settings.json       goals, theme and the fasting window
+ * .himma/steps.json          where the phone's step counter stood last
+ * meals/templates.json       meals saved to log again
+ * gym/routines.json          routines (exercises, sets, reps, weight)
+ * gym/<year>.json            logged workouts
+ * steps/<year>.csv           date, steps
+ * body/weight.csv            date, kg
  * ```
  */
 class Vault(
@@ -87,7 +93,7 @@ class Vault(
     }
 
     /** True when the folder already holds any of Himma's files (an install from before notes were recorded). */
-    fun hasData(): Boolean = listOf("meals", "water", "medicines").any { fs.exists(root / it) } || fs.exists(settingsPath)
+    fun hasData(): Boolean = listOf("meals", "water", "medicines", "gym", "steps", "body").any { fs.exists(root / it) } || fs.exists(settingsPath)
 
     private val medicinesPath get() = root / "medicines" / "medicines.json"
 
@@ -108,5 +114,70 @@ class Vault(
         if (mark == null) marks.remove(dose.key) else marks[dose.key] = mark
         val rows = marks.entries.sortedBy { it.key }.map { (k, v) -> k.split('|').let { listOf(it[1], it[0], it[2], v.name) } }
         write(doseLogPath, Csv.format(listOf(listOf("date", "medicine", "time", "mark")) + rows))
+    }
+
+    private val templatesPath get() = root / "meals" / "templates.json"
+
+    fun templates(): List<MealTemplate> = read(templatesPath)?.let { runCatching { json.decodeFromString(ListSerializer(MealTemplate.serializer()), it) }.getOrNull() } ?: emptyList()
+
+    fun saveTemplates(list: List<MealTemplate>) = write(templatesPath, json.encodeToString(ListSerializer(MealTemplate.serializer()), list))
+
+    private val routinesPath get() = root / "gym" / "routines.json"
+
+    fun routines(): List<Routine> = read(routinesPath)?.let { runCatching { json.decodeFromString(ListSerializer(Routine.serializer()), it) }.getOrNull() } ?: emptyList()
+
+    fun saveRoutines(list: List<Routine>) = write(routinesPath, json.encodeToString(ListSerializer(Routine.serializer()), list))
+
+    private fun workoutsPath(year: Int) = root / "gym" / "$year.json"
+
+    fun workouts(year: Int): List<Workout> = read(workoutsPath(year))?.let { runCatching { json.decodeFromString(ListSerializer(Workout.serializer()), it) }.getOrNull() } ?: emptyList()
+
+    /** Every logged workout, oldest first. */
+    fun allWorkouts(): List<Workout> = (fs.listOrNull(root / "gym").orEmpty().mapNotNull { it.name.removeSuffix(".json").toIntOrNull() }).sorted().flatMap { workouts(it) }.sortedBy { it.date }
+
+    /** Adds the workout, or replaces the one with the same id. */
+    fun saveWorkout(w: Workout): Workout {
+        val saved = if (w.id.isEmpty()) w.copy(id = newId()) else w
+        val year = saved.date.take(4).toInt()
+        write(workoutsPath(year), json.encodeToString(ListSerializer(Workout.serializer()), workouts(year).filter { it.id != saved.id } + saved))
+        return saved
+    }
+
+    fun deleteWorkout(w: Workout) {
+        val year = w.date.take(4).toInt()
+        write(workoutsPath(year), json.encodeToString(ListSerializer(Workout.serializer()), workouts(year).filter { it.id != w.id }))
+    }
+
+    private fun stepsPath(year: Int) = root / "steps" / "$year.csv"
+
+    private fun stepsYear(year: Int): Map<LocalDate, Int> = Csv.parse(read(stepsPath(year)) ?: "").drop(1).mapNotNull { r ->
+        runCatching { LocalDate.parse(r[0]) to r[1].toInt() }.getOrNull()
+    }.toMap()
+
+    fun steps(date: LocalDate): Int = stepsYear(date.year)[date] ?: 0
+
+    fun saveSteps(date: LocalDate, steps: Int) {
+        val days = stepsYear(date.year).toMutableMap()
+        if (steps <= 0) days.remove(date) else days[date] = steps
+        write(stepsPath(date.year), Csv.format(listOf(listOf("date", "steps")) + days.toSortedMap().map { listOf(it.key.toString(), it.value.toString()) }))
+    }
+
+    private val stepStatePath get() = root / ".himma" / "steps.json"
+
+    fun stepState(): StepState = read(stepStatePath)?.let { runCatching { json.decodeFromString(StepState.serializer(), it) }.getOrNull() } ?: StepState()
+
+    fun saveStepState(s: StepState) = write(stepStatePath, json.encodeToString(StepState.serializer(), s))
+
+    private val weightPath get() = root / "body" / "weight.csv"
+
+    fun weights(): List<WeightEntry> = Csv.parse(read(weightPath) ?: "").drop(1).mapNotNull { r ->
+        runCatching { WeightEntry(LocalDate.parse(r[0]), r[1].toDouble()) }.getOrNull()
+    }.sortedBy { it.date }
+
+    /** One weight per day: logging again on the same day replaces it. [kg] of zero or less removes the day. */
+    fun saveWeight(date: LocalDate, kg: Double) {
+        val rest = weights().filter { it.date != date }
+        val all = if (kg <= 0) rest else (rest + WeightEntry(date, kg)).sortedBy { it.date }
+        write(weightPath, Csv.format(listOf(listOf("date", "kg")) + all.map { listOf(it.date.toString(), it.kg.toString()) }))
     }
 }
