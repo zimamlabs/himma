@@ -73,25 +73,47 @@ fun migrateFolder(fs: FileSystem, from: Path, to: Path): Migration {
     } catch (e: Exception) {
         return Migration.Failed("copy stopped: ${e.message}")
     }
-    if (!verifyCopy(fs, from, to)) return Migration.Failed("the copy did not match the original")
+    val plan = destinations(fs, from, to)
+    if (plan.any { (src, dst) -> !fs.exists(dst) || !sameFile(fs, src, dst) }) return Migration.Failed("the copy did not match the original")
     return try {
         val marker = to / MARKER.toPath()
         marker.parent?.let { fs.createDirectories(it) }
-        fs.write(marker) { writeUtf8("$from\n") }
+        // The marker lists every file as it was at the time of the copy, so removal can later tell whether the old folder changed.
+        val rows = plan.joinToString("\n") { (src, dst) -> "${hash(fs, src)}\t${fs.metadataOrNull(src)?.size}\t${src.relativeTo(from)}\t${dst.relativeTo(to)}" }
+        fs.write(marker) { writeUtf8("from=$from\n$rows\n") }
         Migration.Done(copied, clashes)
     } catch (e: Exception) {
         Migration.Failed("could not write the marker: ${e.message}")
     }
 }
 
-/** True when [to] holds the marker of a finished, verified copy from [from]. */
+private fun hash(fs: FileSystem, p: Path): String = fs.read(p) { readByteString().sha256().hex() }
+
+/** True when [to] holds the marker of a finished, verified copy from [from]. Cheap: it does not read the files. */
 fun isMigrated(fs: FileSystem, from: Path, to: Path): Boolean {
     val marker = to / MARKER.toPath()
-    return fs.exists(marker) && fs.read(marker) { readUtf8() }.trim() == from.toString() && verifyCopy(fs, from, to)
+    return fs.exists(marker) && fs.read(marker) { readUtf8() }.lineSequence().firstOrNull() == "from=$from"
 }
 
-/** Deletes the old folder, but only when the copy in [to] checks out again right now. Returns whether it was removed. */
-fun removeOldCopy(fs: FileSystem, from: Path, to: Path): Boolean {
+/**
+ * True when the old folder can be removed without losing anything: the marker exists, the old folder is exactly as it was
+ * when copied (no file added, changed or gone), and every file has its place in [to] (changed there since is fine: that is
+ * newer data). Checked again on every call.
+ */
+fun canRemoveOldCopy(fs: FileSystem, from: Path, to: Path): Boolean {
     if (from == to || !fs.exists(from) || !isMigrated(fs, from, to)) return false
+    val rows = fs.read(to / MARKER.toPath()) { readUtf8() }.lines().drop(1).filter { it.isNotBlank() }.map { it.split('\t') }
+    if (rows.any { it.size != 4 }) return false
+    val now = filesIn(fs, from).associate { it.relativeTo(from).toString() to it }
+    if (now.keys != rows.map { it[2] }.toSet()) return false
+    return rows.all { (sha, size, src, dst) ->
+        val file = now[src]!!
+        fs.metadataOrNull(file)?.size.toString() == size && hash(fs, file) == sha && fs.exists(to / dst.toPath())
+    }
+}
+
+/** Deletes the old folder, but only when [canRemoveOldCopy] holds right now. Returns whether it was removed. */
+fun removeOldCopy(fs: FileSystem, from: Path, to: Path): Boolean {
+    if (!canRemoveOldCopy(fs, from, to)) return false
     return try { fs.deleteRecursively(from); true } catch (e: Exception) { false }
 }

@@ -26,7 +26,7 @@ import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Restaurant
 import androidx.compose.material.icons.rounded.Timer
-import androidx.compose.material.icons.rounded.Today
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.WaterDrop
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
@@ -75,7 +75,7 @@ import dev.himma.core.parseClock
 import dev.himma.core.waterProgress
 
 private enum class Tab(val label: String, val icon: ImageVector) {
-    Today("Today", Icons.Rounded.Today),
+    Home("Home", Icons.Rounded.Home),
     Meals("Meals", Icons.Rounded.Restaurant),
     Water("Water", Icons.Rounded.WaterDrop),
     Fasting("Fasting", Icons.Rounded.Timer),
@@ -83,8 +83,8 @@ private enum class Tab(val label: String, val icon: ImageVector) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(store: HimmaStore, onAbout: () -> Unit) {
-    var tab by remember { mutableStateOf(Tab.Today) }
+fun MainScreen(store: HimmaStore, onAbout: () -> Unit, onTour: () -> Unit) {
+    var tab by remember { mutableStateOf(Tab.Home) }
     var menu by remember { mutableStateOf(false) }
     var settings by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<Meal?>(null) }
@@ -109,14 +109,14 @@ fun MainScreen(store: HimmaStore, onAbout: () -> Unit) {
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             when (tab) {
-                Tab.Today -> TodayTab(store)
+                Tab.Home -> HomeTab(store, onGo = { tab = it }, onLogMeal = { tab = Tab.Meals; adding = true })
                 Tab.Meals -> MealsTab(store) { editing = it }
                 Tab.Water -> WaterTab(store)
                 Tab.Fasting -> FastingTab(store)
             }
         }
     }
-    if (settings) SettingsDialog(store.settings, { settings = false }) { store.saveSettings(it); settings = false }
+    if (settings) SettingsDialog(store, { settings = false }, onTour = { settings = false; onTour() }) { store.saveSettings(it); settings = false }
     if (adding || editing != null) MealDialog(editing, store.nowTime(), onDismiss = { adding = false; editing = null },
         onDelete = editing?.let { m -> { store.deleteMeal(m.id); editing = null } }) { store.saveMeal(it); adding = false; editing = null }
 }
@@ -141,40 +141,56 @@ private fun Ring(progress: Float, modifier: Modifier = Modifier.size(180.dp), co
 }
 
 @Composable
-private fun TodayTab(store: HimmaStore) {
+private fun HomeTab(store: HimmaStore, onGo: (Tab) -> Unit, onLogMeal: () -> Unit) {
     val s = store.settings
     val totals = dayTotals(store.todayMeals)
     val left = caloriesLeft(s.calorieGoal, totals)
     val fast = fastState(s.eatStartMinutes, s.fastHours, store.nowMinutes)
+    val note = dev.himma.core.releaseNotes.lastOrNull()
     LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { Text(prettyDate(store.today), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         item {
-            Panel {
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(dev.himma.core.greeting(store.now.hour), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
+                Text(prettyDate(store.today), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+        item {
+            Panel(Modifier.clickable { onGo(Tab.Meals) }) {
                 Text("Calories", style = MaterialTheme.typography.titleSmall)
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Column { Text("Eaten", style = MaterialTheme.typography.labelMedium); Text("${totals.kcal}", style = MaterialTheme.typography.titleLarge) }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) { Text("Goal", style = MaterialTheme.typography.labelMedium); Text("${s.calorieGoal}", style = MaterialTheme.typography.titleLarge) }
                     Column(horizontalAlignment = Alignment.End) {
                         Text(if (left >= 0) "Left" else "Over", style = MaterialTheme.typography.labelMedium)
                         Text("${kotlin.math.abs(left)}", style = MaterialTheme.typography.titleLarge, color = if (left >= 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error)
                     }
                 }
                 LinearProgressIndicator(progress = { (totals.kcal.toFloat() / s.calorieGoal.coerceAtLeast(1)).coerceIn(0f, 1f) }, Modifier.fillMaxWidth().height(6.dp), trackColor = MaterialTheme.colorScheme.surfaceContainerHigh)
-                Text("Protein ${totals.protein} g  ·  Carbs ${totals.carbs} g  ·  Fat ${totals.fat} g", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
         item {
-            Panel {
+            Panel(Modifier.clickable { onGo(Tab.Water) }) {
                 Text("Water", style = MaterialTheme.typography.titleSmall)
                 Text("${formatWater(store.waterMl)} of ${formatWater(s.waterGoalMl)}", style = MaterialTheme.typography.titleLarge)
                 LinearProgressIndicator(progress = { waterProgress(store.waterMl, s.waterGoalMl) }, Modifier.fillMaxWidth().height(6.dp), trackColor = MaterialTheme.colorScheme.surfaceContainerHigh)
             }
         }
         item {
-            Panel {
+            Panel(Modifier.clickable { onGo(Tab.Fasting) }) {
                 Text("Fasting ${s.fastHours}:${24 - s.fastHours}", style = MaterialTheme.typography.titleSmall)
                 Text(if (fast.eating) "Eating now" else "Fasting now", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
                 Text("${formatDuration(fast.minutesLeft)} left", style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+        item {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = onLogMeal, Modifier.weight(1f)) { Text("Log a meal") }
+                OutlinedButton(onClick = { store.addWater(250) }, Modifier.weight(1f)) { Text("+ 250 ml") }
+            }
+        }
+        if (note != null) item {
+            Panel {
+                Text("What's new in ${note.version}", style = MaterialTheme.typography.titleSmall)
+                note.bullets.forEach { Text("•  $it", style = MaterialTheme.typography.bodyMedium) }
             }
         }
     }
@@ -320,9 +336,11 @@ private fun MealDialog(existing: Meal?, nowTime: String, onDismiss: () -> Unit, 
 }
 
 @Composable
-private fun SettingsDialog(current: Settings, onDismiss: () -> Unit, onSave: (Settings) -> Unit) {
+private fun SettingsDialog(store: HimmaStore, onDismiss: () -> Unit, onTour: () -> Unit, onSave: (Settings) -> Unit) {
+    val current = store.settings
     var kcal by remember { mutableStateOf(current.calorieGoal.toString()) }
     var water by remember { mutableStateOf(current.waterGoalMl.toString()) }
+    var confirmRemove by remember { mutableStateOf(false) }
     val kcalValue = kcal.trim().toIntOrNull()?.takeIf { it in 1..20000 }
     val waterValue = water.trim().toIntOrNull()?.takeIf { it in 1..20000 }
     AlertDialog(
@@ -332,9 +350,21 @@ private fun SettingsDialog(current: Settings, onDismiss: () -> Unit, onSave: (Se
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedTextField(kcal, { kcal = it }, singleLine = true, isError = kcalValue == null, label = { Text("Daily calorie goal") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(water, { water = it }, singleLine = true, isError = waterValue == null, label = { Text("Daily water goal (ml)") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
+                Text("Data folder", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(store.folderPath, style = MaterialTheme.typography.bodyMedium)
+                if (store.platform.canAskAllFiles && !store.sharedFolder) OutlinedButton(onClick = { store.platform.allowAllFiles() }) { Text("Allow All files access") }
+                if (store.canRemoveOld) OutlinedButton(onClick = { confirmRemove = true }) { Text("Remove the old copy") }
+                TextButton(onClick = onTour) { Text("Show the tour again") }
             }
         },
         confirmButton = { TextButton(enabled = kcalValue != null && waterValue != null, onClick = { onSave(current.copy(calorieGoal = kcalValue!!, waterGoalMl = waterValue!!)) }) { Text("Save") } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+    )
+    if (confirmRemove) AlertDialog(
+        onDismissRequest = { confirmRemove = false },
+        title = { Text("Remove the old copy?") },
+        text = { Text("Your files are safe in ${store.folderPath}. Himma checked again that every file in the old private folder is there. The old copy will be deleted and cannot be brought back.") },
+        confirmButton = { TextButton(onClick = { store.removeOldCopy(); confirmRemove = false }) { Text("Remove", color = MaterialTheme.colorScheme.error) } },
+        dismissButton = { TextButton(onClick = { confirmRemove = false }) { Text("Keep it") } },
     )
 }

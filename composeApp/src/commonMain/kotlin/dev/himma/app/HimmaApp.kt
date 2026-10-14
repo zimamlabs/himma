@@ -13,19 +13,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import dev.himma.core.Startup
 import kotlinx.coroutines.delay
 
-const val APP_VERSION = "0.1.0"
+const val APP_VERSION = "0.2.0"
 
 @Composable
 fun HimmaApp(store: HimmaStore) {
     HimmaTheme {
         var splash by remember { mutableStateOf(true) }
         var about by remember { mutableStateOf(false) }
+        var tour by remember { mutableStateOf(store.startup is Startup.Fresh) }
         LaunchedEffect(Unit) { while (true) { delay(30_000); store.tick() } }
         Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
             PlatformBackHandler(about) { about = false }
-            if (about) AboutScreen { about = false } else MainScreen(store) { about = true }
+            when {
+                about -> AboutScreen(store, onBack = { about = false }, onTour = { about = false; tour = true })
+                tour -> Walkthrough(store) { store.markSeen(); tour = false }
+                else -> MainScreen(store, onAbout = { about = true }, onTour = { tour = true })
+            }
+            val s = store.startup
+            if (s is Startup.Updated && !splash && !tour) WhatsNewDialog(s.notes) { store.markSeen() }
             AnimatedVisibility(splash, exit = fadeOut()) { Splash { splash = false } }
         }
     }
