@@ -97,4 +97,20 @@ class MedicineTest {
         v.saveSettings(Settings())
         assertEquals(true, v.hasData())
     }
+
+    @Test fun remindersCoverTheTimeSinceTheLastCheckButNotMoreThanThreeHours() {
+        val doses = dosesOn(listOf(daily), mon)
+        assertEquals(listOf("08:00"), dosesToRemind(listOf(daily), emptyMap(), at(mon, 7, 55), at(mon, 8, 2)).map { it.time })
+        assertTrue(dosesToRemind(listOf(daily), emptyMap(), at(mon, 8), at(mon, 8, 5)).isEmpty(), "the last check already covered 08:00")
+        assertEquals(listOf("20:00"), dosesToRemind(listOf(daily), emptyMap(), at(mon, 8, 5), at(mon, 20, 1)).map { it.time }, "08:00 is more than 3 h back, 20:00 is in the window")
+        assertTrue(dosesToRemind(listOf(daily), emptyMap(), null, at(mon, 9)).isEmpty(), "first run: nothing is old enough to remind about")
+        assertTrue(dosesToRemind(listOf(daily), mapOf(doses[0].key to DoseMark.Taken), at(mon, 7, 55), at(mon, 8, 2)).isEmpty(), "already marked")
+    }
+
+    @Test fun remindersWorkAcrossMidnight() {
+        val night = Medicine("n", "Night", times = listOf("23:50", "00:10"))
+        val tue = LocalDate(2026, 10, 13)
+        assertEquals(listOf("00:10"), dosesToRemind(listOf(night), emptyMap(), at(mon, 23, 55), at(tue, 0, 12)).map { it.time })
+        assertEquals(listOf("23:50", "00:10"), dosesToRemind(listOf(night), emptyMap(), at(mon, 23, 40), at(tue, 0, 12)).map { it.time })
+    }
 }

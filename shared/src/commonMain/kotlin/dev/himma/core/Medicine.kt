@@ -1,6 +1,10 @@
 package dev.himma.core
 
 import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration.Companion.hours
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -102,4 +106,14 @@ fun parseTimes(text: String): List<String>? {
     if (parts.isEmpty()) return null
     val minutes = parts.map { parseClock(it) ?: return null }
     return minutes.distinct().sorted().map { formatClock(it) }
+}
+
+/**
+ * The unmarked doses to remind about now: those after [lastChecked] up to [now], but never reaching back more than
+ * [maxHours] (a phone that was off does not wake up to a pile of old reminders). With no [lastChecked] nothing is old enough.
+ */
+fun dosesToRemind(medicines: List<Medicine>, marks: Map<String, DoseMark>, lastChecked: LocalDateTime?, now: LocalDateTime, maxHours: Int = 3): List<Dose> {
+    val earliest = (now.toInstant(TimeZone.UTC) - maxHours.hours).toLocalDateTime(TimeZone.UTC)
+    val from = if (lastChecked == null || lastChecked < earliest) (lastChecked?.let { earliest } ?: now) else lastChecked
+    return dosesBetween(medicines, from, now).filter { it.key !in marks }
 }

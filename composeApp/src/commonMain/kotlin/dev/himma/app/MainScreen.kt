@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.rounded.Undo
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ChevronLeft
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.Medication
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Restaurant
 import androidx.compose.material.icons.rounded.Timer
@@ -79,6 +80,7 @@ private enum class Tab(val label: String, val icon: ImageVector) {
     Meals("Meals", Icons.Rounded.Restaurant),
     Water("Water", Icons.Rounded.WaterDrop),
     Fasting("Fasting", Icons.Rounded.Timer),
+    Medicine("Medicine", Icons.Rounded.Medication),
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -89,6 +91,8 @@ fun MainScreen(store: HimmaStore, onAbout: () -> Unit, onTour: () -> Unit) {
     var settings by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<Meal?>(null) }
     var adding by remember { mutableStateOf(false) }
+    var editingMedicine by remember { mutableStateOf<dev.himma.core.Medicine?>(null) }
+    var addingMedicine by remember { mutableStateOf(false) }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -105,7 +109,10 @@ fun MainScreen(store: HimmaStore, onAbout: () -> Unit, onTour: () -> Unit) {
                 Tab.entries.forEach { t -> NavigationBarItem(tab == t, { tab = t }, { Icon(t.icon, t.label) }, label = { Text(t.label) }) }
             }
         },
-        floatingActionButton = { if (tab == Tab.Meals) FloatingActionButton(onClick = { adding = true }) { Icon(Icons.Rounded.Add, "Log a meal") } },
+        floatingActionButton = {
+            if (tab == Tab.Meals) FloatingActionButton(onClick = { adding = true }) { Icon(Icons.Rounded.Add, "Log a meal") }
+            if (tab == Tab.Medicine) FloatingActionButton(onClick = { addingMedicine = true }) { Icon(Icons.Rounded.Add, "Add a medicine") }
+        },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             when (tab) {
@@ -113,9 +120,12 @@ fun MainScreen(store: HimmaStore, onAbout: () -> Unit, onTour: () -> Unit) {
                 Tab.Meals -> MealsTab(store) { editing = it }
                 Tab.Water -> WaterTab(store)
                 Tab.Fasting -> FastingTab(store)
+                Tab.Medicine -> MedicineTab(store) { editingMedicine = it }
             }
         }
     }
+    if (addingMedicine || editingMedicine != null) MedicineDialog(editingMedicine, onDismiss = { addingMedicine = false; editingMedicine = null },
+        onDelete = editingMedicine?.let { m -> { store.deleteMedicine(m.id); editingMedicine = null } }) { store.saveMedicine(it); addingMedicine = false; editingMedicine = null }
     if (settings) SettingsDialog(store, { settings = false }, onTour = { settings = false; onTour() }) { store.saveSettings(it); settings = false }
     if (adding || editing != null) MealDialog(editing, store.nowTime(), onDismiss = { adding = false; editing = null },
         onDelete = editing?.let { m -> { store.deleteMeal(m.id); editing = null } }) { store.saveMeal(it); adding = false; editing = null }
@@ -179,6 +189,21 @@ private fun HomeTab(store: HimmaStore, onGo: (Tab) -> Unit, onLogMeal: () -> Uni
                 Text("Fasting ${s.fastHours}:${24 - s.fastHours}", style = MaterialTheme.typography.titleSmall)
                 Text(if (fast.eating) "Eating now" else "Fasting now", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
                 Text("${formatDuration(fast.minutesLeft)} left", style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+        item {
+            val doses = store.todayDoses
+            val next = doses.firstOrNull { it.at > store.now }
+            Panel(Modifier.clickable { onGo(Tab.Medicine) }) {
+                Text("Medicine", style = MaterialTheme.typography.titleSmall)
+                when {
+                    store.medicines.isEmpty() -> Text("No medicines added", style = MaterialTheme.typography.titleLarge)
+                    doses.isEmpty() -> Text("No doses today", style = MaterialTheme.typography.titleLarge)
+                    else -> {
+                        Text("${doses.count { store.doseMarks[it.key] == dev.himma.core.DoseMark.Taken }} of ${doses.size} taken", style = MaterialTheme.typography.titleLarge)
+                        Text(if (next != null) "Next: ${next.medicine.name} at ${next.time}" else "No more doses today", style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
             }
         }
         item {
