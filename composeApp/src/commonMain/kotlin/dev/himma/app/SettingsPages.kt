@@ -88,7 +88,14 @@ import dev.himma.app.res.weight_unit
 import dev.himma.app.res.kg_label
 import dev.himma.app.res.lb_label
 import dev.himma.app.res.your_files_are_safe_in
+import dev.himma.core.HomeCards
 import dev.himma.core.Sections
+import dev.himma.app.res.home_cards
+import dev.himma.app.res.home_cards_hint
+import dev.himma.app.res.card_water
+import dev.himma.app.res.card_medicine
+import dev.himma.app.res.card_meals
+import dev.himma.app.res.card_steps
 import dev.himma.core.Settings
 
 @Composable
@@ -160,6 +167,17 @@ internal fun SectionsPage(store: HimmaStore) {
             IconButton(enabled = i > 0, onClick = { store.change { s -> s.copy(sectionOrder = order.toMutableList().also { it.add(i - 1, it.removeAt(i)) }) } }) { Icon(Icons.Rounded.ArrowUpward, s(Res.string.move_up)) }
             IconButton(enabled = i < order.lastIndex, onClick = { store.change { s -> s.copy(sectionOrder = order.toMutableList().also { it.add(i + 1, it.removeAt(i)) }) } }) { Icon(Icons.Rounded.ArrowDownward, s(Res.string.move_down)) }
             Switch(id == Sections.HOME || id !in st.hiddenSections, { on -> store.change { s -> s.copy(hiddenSections = if (on) s.hiddenSections - id else s.hiddenSections + id) } }, enabled = id != Sections.HOME)
+        }
+    }
+    Label(s(Res.string.home_cards))
+    Text(s(Res.string.home_cards_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    val cards = st.homeCardOrder.filter { it in HomeCards.all }.let { it + (HomeCards.all - it.toSet()) }
+    cards.forEachIndexed { i, id ->
+        Row(Modifier.fillMaxWidth().heightIn(min = 56.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(s(when (id) { "water" -> Res.string.card_water; "medicine" -> Res.string.card_medicine; "meals" -> Res.string.card_meals; else -> Res.string.card_steps }), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+            IconButton(enabled = i > 0, onClick = { store.change { s -> s.copy(homeCardOrder = cards.toMutableList().also { it.add(i - 1, it.removeAt(i)) }) } }) { Icon(Icons.Rounded.ArrowUpward, s(Res.string.move_up)) }
+            IconButton(enabled = i < cards.lastIndex, onClick = { store.change { s -> s.copy(homeCardOrder = cards.toMutableList().also { it.add(i + 1, it.removeAt(i)) }) } }) { Icon(Icons.Rounded.ArrowDownward, s(Res.string.move_down)) }
+            Switch(id !in st.hiddenHomeCards, { on -> store.change { s -> s.copy(hiddenHomeCards = if (on) s.hiddenHomeCards - id else s.hiddenHomeCards + id) } })
         }
     }
     Label(s(Res.string.start_on))

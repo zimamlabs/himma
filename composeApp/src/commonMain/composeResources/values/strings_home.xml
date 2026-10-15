@@ -1,0 +1,12 @@
+<resources>
+    <string name="menu_open">Open</string>
+    <string name="hide_this_card">Hide this card</string>
+    <string name="plus_glass">+ 250 ml</string>
+    <string name="steps_not_counting">Not counting yet. Open Steps to allow it.</string>
+    <string name="home_cards">Home cards</string>
+    <string name="home_cards_hint">Shown on Home, at most four. Use the arrows to change the order.</string>
+    <string name="card_water">Water</string>
+    <string name="card_medicine">Medicine</string>
+    <string name="card_meals">Calories</string>
+    <string name="card_steps">Steps</string>
+</resources>

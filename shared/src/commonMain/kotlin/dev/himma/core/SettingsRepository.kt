@@ -18,6 +18,14 @@ object Sections {
     }
 }
 
+/** The cards Home can show, in their default order; Home shows at most these four. */
+object HomeCards {
+    val all = listOf("water", "medicine", "meals", "steps")
+
+    fun visible(order: List<String>, hidden: Set<String>): List<String> =
+        order.filter { it in all }.distinct().let { it + (all - it.toSet()) }.filter { it !in hidden }
+}
+
 /** The values a settings file is allowed to hold; anything else (a hand edit, an older or newer version) is brought back into range. */
 fun Settings.normalized(): Settings = copy(
     calorieGoal = calorieGoal.coerceIn(1, 20000),
@@ -31,6 +39,8 @@ fun Settings.normalized(): Settings = copy(
     palette = palette.takeIf { it in Palettes.ids } ?: Palettes.DEFAULT,
     textSize = textSize.coerceIn(0, 3),
     startSection = startSection.takeIf { it in Sections.all && (it == Sections.HOME || it !in hiddenSections) } ?: Sections.HOME,
+    homeCardOrder = homeCardOrder.filter { it in HomeCards.all }.distinct(),
+    hiddenHomeCards = hiddenHomeCards.filter { it in HomeCards.all }.toSet(),
     sectionOrder = sectionOrder.filter { it in Sections.all }.distinct(),
     hiddenSections = hiddenSections.filter { it in Sections.all && it != Sections.HOME }.toSet(),
 )

@@ -65,7 +65,6 @@ import dev.himma.app.res.over
 import dev.himma.app.res.previous_day
 import dev.himma.app.res.protein_g
 import dev.himma.app.res.protein_g_29f5
-import dev.himma.app.res.protein_g_carbs_g_fat
 import dev.himma.app.res.remove_x
 import dev.himma.app.res.save
 import dev.himma.app.res.save_as_meal
@@ -103,7 +102,12 @@ internal fun MealsTab(store: HimmaStore, onTemplates: () -> Unit, onEdit: (Meal)
                         Text(s(Res.string.kcal, kotlin.math.abs(left)), style = MaterialTheme.typography.titleLarge, color = if (left >= 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error)
                     }
                 }
-                Text(s(Res.string.protein_g_carbs_g_fat, totals.protein, totals.carbs, totals.fat), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                MacroBar(totals.protein, totals.carbs, totals.fat)
+                Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Legend(MaterialTheme.colorScheme.primary, s(Res.string.protein_g, totals.protein))
+                    Legend(MaterialTheme.colorScheme.secondary, s(Res.string.carbs_g, totals.carbs))
+                    Legend(MaterialTheme.colorScheme.tertiary, s(Res.string.fat_g, totals.fat))
+                }
             }
         }
         if (store.templates.isNotEmpty() || store.recent.isNotEmpty()) item {
