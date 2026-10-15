@@ -7,4 +7,10 @@
     <string name="notify_public_title">تذكير بالدواء</string>
     <string name="notify_taken">تم تناوله</string>
     <string name="notify_skip">تخطّي</string>
+    <string name="widget_water_title">الماء</string>
+    <string name="widget_water_description">ماء اليوم وزر لإضافة كوب.</string>
+    <string name="widget_add_glass">+ 250 مل</string>
+    <string name="widget_ml">%1$s مل</string>
+    <string name="widget_litres">%1$s لتر</string>
+    <string name="widget_of_goal">من %1$s</string>
 </resources>

@@ -37,6 +37,9 @@ val releaseNotes: List<ReleaseNote> = listOf(
         "Safer data: a damaged file is kept as a copy, export and delete all, and a confirmation before deleting.",
         "Kg or lb, units and numbers in your own language, and correct Arabic plurals.",
     )),
+    ReleaseNote("0.6.0", listOf(
+        "A water widget for the home screen: today's water and a button that adds a glass.",
+    )),
 )
 
 /** What the first open should show. */

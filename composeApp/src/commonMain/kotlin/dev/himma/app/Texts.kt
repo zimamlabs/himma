@@ -22,6 +22,7 @@ import dev.himma.app.res.note_17
 import dev.himma.app.res.note_18
 import dev.himma.app.res.note_19
 import dev.himma.app.res.note_20
+import dev.himma.app.res.note_21
 import dev.himma.app.res.greet_morning
 import dev.himma.app.res.greet_afternoon
 import dev.himma.app.res.greet_evening
@@ -49,6 +50,7 @@ internal val knownTexts: Map<String, StringResource> = mapOf(
     "Hold a meal, medicine, routine, workout or weight for a menu: edit, history, duplicate, delete." to Res.string.note_18,
     "Safer data: a damaged file is kept as a copy, export and delete all, and a confirmation before deleting." to Res.string.note_19,
     "Kg or lb, units and numbers in your own language, and correct Arabic plurals." to Res.string.note_20,
+    "A water widget for the home screen: today's water and a button that adds a glass." to Res.string.note_21,
     "Good morning" to Res.string.greet_morning,
     "Good afternoon" to Res.string.greet_afternoon,
     "Good evening" to Res.string.greet_evening,

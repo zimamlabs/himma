@@ -25,6 +25,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
             implementation("androidx.core:core-ktx:1.15.0")
+            implementation("androidx.glance:glance-appwidget:1.1.1")
         }
         val desktopMain by getting {
             dependencies {
@@ -48,8 +49,8 @@ android {
         applicationId = "dev.himma.health"
         minSdk = 26
         targetSdk = 35
-        versionCode = 7
-        versionName = "0.5.0"
+        versionCode = 8
+        versionName = "0.6.0"
     }
     signingConfigs {
         create("release") {
