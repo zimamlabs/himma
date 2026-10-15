@@ -18,7 +18,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import dev.himma.core.Vault
+import kotlinx.coroutines.launch
 import okio.FileSystem
 import okio.Path.Companion.toOkioPath
 
@@ -71,6 +73,7 @@ class MainActivity : ComponentActivity() {
         override fun openExactAlarmSettings() {
             if (Build.VERSION.SDK_INT >= 31) runCatching { startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:$packageName"))) }
         }
+        override fun dataChanged() { lifecycleScope.launch { runCatching { refreshWidgets(this@MainActivity) } } }
         override val canExport: Boolean get() = true
         override fun exportData(fileName: String, bytes: () -> ByteArray) { pendingExport = bytes; exportTarget.launch(fileName) }
         override val language: String get() = AppLanguagePrefs.load(this@MainActivity).code

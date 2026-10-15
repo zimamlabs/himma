@@ -7,4 +7,10 @@
     <string name="notify_public_title">Medicine reminder</string>
     <string name="notify_taken">Taken</string>
     <string name="notify_skip">Skip</string>
+    <string name="widget_water_title">Water</string>
+    <string name="widget_water_description">Today\'s water and a button to add a glass.</string>
+    <string name="widget_add_glass">+ 250 ml</string>
+    <string name="widget_ml">%1$s ml</string>
+    <string name="widget_litres">%1$s L</string>
+    <string name="widget_of_goal">of %1$s</string>
 </resources>

@@ -180,6 +180,7 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
         vault.saveWater(today, waterMl)
         added += ml
         rebuildWeek()
+        platform.dataChanged()
     }
 
     fun undoWater() {
@@ -187,6 +188,7 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
         waterMl = addWater(waterMl, -last)
         vault.saveWater(today, waterMl)
         rebuildWeek()
+        platform.dataChanged()
     }
 
     val todayDoses: List<Dose> get() = dosesOn(medicines, today)

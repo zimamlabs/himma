@@ -13,6 +13,8 @@ interface PlatformActions {
     val canAskAllFiles: Boolean get() = false
     fun allowAllFiles() {}
     fun allowNotifications() {}
+    /** The app saved something a widget shows (water): redraw the widgets. */
+    fun dataChanged() {}
     /** The phone can hand the user a file (export). */
     val canExport: Boolean get() = false
     /** Asks where to save, then writes [bytes] there as [fileName]. */

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+
+- **Water widget.** A 2x2 home screen widget with today's water against the goal and a "+ 250 ml" button that adds a glass without opening the app (same atomic file write as the app, refused if the water file is unreadable). It follows the colour theme and the language. A progress bar stands in for the ring because Glance cannot draw one. The next-dose and steps widgets are planned in `docs/widgets.md`.
+
 ## 0.5.0
 
 Himma is the reference for the Zimam app standard. Android only.

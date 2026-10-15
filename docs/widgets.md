@@ -1,6 +1,6 @@
 # Himma widgets (plan, no code yet)
 
-Status: plan. Written 2026-10-15 from section 1.7 of the Zimam master plan. Nothing here is built.
+Status: the water widget is built in 0.6.0 (a progress bar replaces the ring, no configuration screen yet, glass fixed at 250 ml, refreshed every 30 minutes and after the app changes water). The other two are still plans.
 
 ## Technology
 
