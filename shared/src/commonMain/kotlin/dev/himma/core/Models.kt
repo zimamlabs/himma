@@ -34,6 +34,10 @@ data class Settings(
     val density: String = "comfortable",
     /** Skip the splash and the page animations. */
     val reduceMotion: Boolean = false,
+    /** Home cards in the order the user wants; empty means the default order. Unknown names are ignored. */
+    val homeCardOrder: List<String> = emptyList(),
+    /** Home cards the user turned off. */
+    val hiddenHomeCards: Set<String> = emptySet(),
     /** Colour theme id, one of [Palettes.ids]. */
     val palette: String = Palettes.DEFAULT,
     /** Text size step, 0 (small) to 3 (largest); 1 is normal. */

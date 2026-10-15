@@ -56,6 +56,16 @@ class SettingsRepositoryTest {
         assertTrue("home" in Sections.visible(emptyList(), setOf("home")))
     }
 
+    @Test fun homeCardsFollowOrderAndHiddenAndIgnoreUnknownNames() {
+        assertEquals(listOf("water", "medicine", "meals", "steps"), HomeCards.visible(emptyList(), emptySet()))
+        assertEquals(listOf("steps", "water", "medicine", "meals"), HomeCards.visible(listOf("steps"), emptySet()))
+        assertEquals(listOf("water", "meals"), HomeCards.visible(emptyList(), setOf("medicine", "steps")))
+        assertEquals(emptyList(), HomeCards.visible(emptyList(), HomeCards.all.toSet()))
+        put("""{ "homeCardOrder": ["steps", "ghost", "steps"], "hiddenHomeCards": ["meals", "ghost"] }""")
+        val s = SettingsRepository(vault).current
+        assertEquals(listOf("steps"), s.homeCardOrder); assertEquals(setOf("meals"), s.hiddenHomeCards)
+    }
+
     @Test fun aBrokenFileGivesDefaultsAndKeepsACopy() {
         put("{ nope")
         val repo = SettingsRepository(vault)

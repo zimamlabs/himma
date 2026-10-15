@@ -1,5 +1,21 @@
 package dev.himma.app
 
+import dev.himma.core.WeightUnit
+import dev.himma.core.weekSummary
+import dev.himma.core.weightTrend
+import dev.himma.app.res.this_week
+import dev.himma.app.res.last_days
+import dev.himma.app.res.kcal_a_day
+import dev.himma.app.res.of
+import dev.himma.app.res.water_goals
+import dev.himma.app.res.workouts_label
+import dev.himma.app.res.steps_a_day
+import dev.himma.app.res.kg_aae5
+import dev.himma.app.res.lifted
+import dev.himma.app.res.calories
+import dev.himma.app.res.water
+import dev.himma.app.res.steps
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Arrangement
@@ -69,6 +85,7 @@ internal fun TrackTab(store: HimmaStore, page: TrackPage, onPage: (TrackPage) ->
                 TrackPage.Fasting -> FastingTab(store)
                 TrackPage.Steps -> StepsTab(store)
                 TrackPage.Weight -> WeightTab(store)
+                TrackPage.Week -> WeekTab(store)
             }
         }
     }
@@ -130,5 +147,53 @@ internal fun FastingTab(store: HimmaStore) {
             OutlinedTextField(startText, { startText = it; parseClock(it)?.let { m -> store.saveSettings(s.copy(eatStartMinutes = m)) } }, singleLine = true, isError = start == null,
                 label = { Text(s(Res.string.eat_from_hh_mm)) }, modifier = Modifier.weight(1f))
         }
+    }
+}
+
+/** The seven-day charts and the weekly summary (they used to crowd Home). */
+@Composable
+internal fun WeekTab(store: HimmaStore) {
+    val s = store.settings
+    var chart by remember { mutableStateOf(0) }
+    val dates = store.week.map { it.date }
+    val summary = weekSummary(store.week, s.waterGoalMl, weightTrend(store.weights, store.today, 7).changeKg)
+    val unit = WeightUnit.fromCode(s.weightUnit)
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding(), verticalArrangement = Arrangement.spacedBy(rowGap)) {
+        item {
+            Panel {
+                Text(s(Res.string.last_days), style = MaterialTheme.typography.titleSmall)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(vertical = 8.dp)) {
+                    listOf(s(Res.string.water), s(Res.string.calories), s(Res.string.steps)).forEachIndexed { i, label -> FilterChip(chart == i, { chart = i }, { Text(label) }) }
+                }
+                when (chart) {
+                    0 -> BarChart(store.week.map { it.waterMl.toFloat() }, dates, s.waterGoalMl.toFloat())
+                    1 -> BarChart(store.week.map { it.kcal.toFloat() }, dates, s.calorieGoal.toFloat())
+                    else -> BarChart(store.week.map { it.steps.toFloat() }, dates, s.stepGoal.toFloat())
+                }
+            }
+        }
+        item {
+            Panel {
+                Text(s(Res.string.this_week), style = MaterialTheme.typography.titleSmall)
+                Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Stat(num(summary.avgKcal), s(Res.string.kcal_a_day))
+                    Stat(s(Res.string.of, summary.waterGoalDays), s(Res.string.water_goals))
+                    Stat(num(summary.workouts), s(Res.string.workouts_label))
+                }
+                Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Stat(if (summary.avgSteps > 0) num(summary.avgSteps) else "-", s(Res.string.steps_a_day))
+                    Stat(s(Res.string.kg_aae5, summary.volumeKg), s(Res.string.lifted))
+                    Stat(summary.weightChangeKg?.let { (if (it > 0) "+" else "") + weightText(it, unit) } ?: "-", s(Res.string.weight))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun Stat(value: String, label: String) {
+    Column(horizontalAlignment = Alignment.Start) {
+        Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

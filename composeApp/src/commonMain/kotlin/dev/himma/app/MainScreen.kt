@@ -1,5 +1,6 @@
 package dev.himma.app
 
+import dev.himma.app.res.this_week
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.pager.HorizontalPager
@@ -93,7 +94,7 @@ internal enum class Tab(val id: String, val label: StringResource, val icon: Ima
 internal fun visibleTabs(settings: Settings): List<Tab> = Sections.visible(settings.sectionOrder, settings.hiddenSections).map(Tab::byId)
 
 /** The pages inside the Track tab. */
-internal enum class TrackPage(val label: StringResource) { Water(Res.string.water), Fasting(Res.string.fasting_label), Steps(Res.string.steps), Weight(Res.string.weight) }
+internal enum class TrackPage(val label: StringResource) { Water(Res.string.water), Fasting(Res.string.fasting_label), Steps(Res.string.steps), Weight(Res.string.weight), Week(Res.string.this_week) }
 
 /** A workout about to start: from a routine, or empty. */
 class WorkoutStart(val routine: dev.himma.core.Routine?)

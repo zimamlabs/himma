@@ -1,0 +1,12 @@
+<resources>
+    <string name="menu_open">فتح</string>
+    <string name="hide_this_card">إخفاء هذه البطاقة</string>
+    <string name="plus_glass">+ 250 مل</string>
+    <string name="steps_not_counting">لا يُحتسب بعد. افتح الخطوات للسماح.</string>
+    <string name="home_cards">بطاقات الرئيسية</string>
+    <string name="home_cards_hint">تظهر في الرئيسية، أربع على الأكثر. استخدم الأسهم لتغيير الترتيب.</string>
+    <string name="card_water">الماء</string>
+    <string name="card_medicine">الدواء</string>
+    <string name="card_meals">السعرات</string>
+    <string name="card_steps">الخطوات</string>
+</resources>
