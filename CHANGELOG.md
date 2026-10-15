@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.5.0
+
+Himma is the reference for the Zimam app standard. Android only.
+
+- **Side menu and swipe.** A side menu (the mark, the sections, Quick add, Settings, What's new, the tour, About) and a pager that swipes between the sections, mirrored in Arabic. The bottom bar stays.
+- **Settings as sections.** Appearance (mode, six colour themes, text size with a preview, density, reduce animations), Sections and layout (order, hide, start section), Language, Notifications and reminders, Units and goals, Data and storage, Privacy and security, About. All values live in one typed Settings object that is checked on every read and write.
+- **Reminders you can trust.** Doses missed while the phone was off or after a time change are announced when it comes back; a card on the Medicine tab says when notifications or exact alarms are off and opens the right settings page; the lock screen shows only Medicine reminder unless you allow names.
+- **Long-press menu.** Hold a meal, medicine, dose, routine, workout or weight: edit, history or details, duplicate, take or skip, delete with a question first. Medicine has a 30 day history, workouts a details view, weights can be edited.
+- **Safer data.** A damaged data file is kept as a `.corrupt` copy and reported instead of being read as empty; Export all data as a zip and Delete all data (type a word); Android cloud backup is off; every delete asks first. A short not-medical-advice note in the README, About and the medicine form.
+- **Units and Arabic.** Water, durations and weights in the chosen language, kg or lb for body weight, Arabic digits everywhere, real plural forms for sets and doses, a backslash that showed in English texts is gone.
+- **Steps.** A restart of the phone is recognised from Android's boot count; the README says exactly when steps are counted.
+- **Housekeeping.** Android only: the Debian package target and desktop packaging are gone; CI checks the version numbers agree. Arabic wording is unreviewed by a native reader.
+
 ## 0.4.1
 
 - **A new app icon.** A rising peak with a small diamond, on the launcher, the splash, the About page and the desktop window. The old icon is kept in `branding/drafts`.

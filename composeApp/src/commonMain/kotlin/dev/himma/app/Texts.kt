@@ -16,6 +16,12 @@ import dev.himma.app.res.note_11
 import dev.himma.app.res.note_12
 import dev.himma.app.res.note_13
 import dev.himma.app.res.note_14
+import dev.himma.app.res.note_15
+import dev.himma.app.res.note_16
+import dev.himma.app.res.note_17
+import dev.himma.app.res.note_18
+import dev.himma.app.res.note_19
+import dev.himma.app.res.note_20
 import dev.himma.app.res.greet_morning
 import dev.himma.app.res.greet_afternoon
 import dev.himma.app.res.greet_evening
@@ -37,6 +43,12 @@ internal val knownTexts: Map<String, StringResource> = mapOf(
     "Numbers can be shown in Arabic-Indic digits." to Res.string.note_12,
     "Today, Meals, Water and Fasting." to Res.string.note_13,
     "A new app icon: a rising peak with a diamond." to Res.string.note_14,
+    "A side menu, and a swipe between sections." to Res.string.note_15,
+    "Settings as sections: six colour themes, text size, density and section order." to Res.string.note_16,
+    "Reminders that tell you when they cannot work, and missed doses are announced after a restart." to Res.string.note_17,
+    "Hold a meal, medicine, routine, workout or weight for a menu: edit, history, duplicate, delete." to Res.string.note_18,
+    "Safer data: a damaged file is kept as a copy, export and delete all, and a confirmation before deleting." to Res.string.note_19,
+    "Kg or lb, units and numbers in your own language, and correct Arabic plurals." to Res.string.note_20,
     "Good morning" to Res.string.greet_morning,
     "Good afternoon" to Res.string.greet_afternoon,
     "Good evening" to Res.string.greet_evening,
