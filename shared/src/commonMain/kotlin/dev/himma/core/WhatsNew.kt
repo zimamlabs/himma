@@ -29,6 +29,14 @@ val releaseNotes: List<ReleaseNote> = listOf(
     ReleaseNote("0.4.1", listOf(
         "A new app icon: a rising peak with a diamond.",
     )),
+    ReleaseNote("0.5.0", listOf(
+        "A side menu, and a swipe between sections.",
+        "Settings as sections: six colour themes, text size, density and section order.",
+        "Reminders that tell you when they cannot work, and missed doses are announced after a restart.",
+        "Hold a meal, medicine, routine, workout or weight for a menu: edit, history, duplicate, delete.",
+        "Safer data: a damaged file is kept as a copy, export and delete all, and a confirmation before deleting.",
+        "Kg or lb, units and numbers in your own language, and correct Arabic plurals.",
+    )),
 )
 
 /** What the first open should show. */
