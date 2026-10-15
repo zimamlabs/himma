@@ -2,6 +2,22 @@ package dev.himma.app
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
+import dev.himma.app.res.added_n
+import dev.himma.core.Sections
+import dev.himma.core.Settings
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,10 +35,7 @@ import androidx.compose.material.icons.rounded.FitnessCenter
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Medication
 import androidx.compose.material.icons.rounded.MonitorHeart
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Restaurant
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -66,13 +79,18 @@ import dev.himma.app.res.weight
 import dev.himma.core.Meal
 import org.jetbrains.compose.resources.StringResource
 
-internal enum class Tab(val label: StringResource, val icon: ImageVector) {
-    Home(Res.string.home, Icons.Rounded.Home),
-    Meals(Res.string.meals, Icons.Rounded.Restaurant),
-    Gym(Res.string.gym, Icons.Rounded.FitnessCenter),
-    Track(Res.string.track, Icons.Rounded.MonitorHeart),
-    Medicine(Res.string.medicine, Icons.Rounded.Medication),
+internal enum class Tab(val id: String, val label: StringResource, val icon: ImageVector) {
+    Home("home", Res.string.home, Icons.Rounded.Home),
+    Meals("meals", Res.string.meals, Icons.Rounded.Restaurant),
+    Gym("gym", Res.string.gym, Icons.Rounded.FitnessCenter),
+    Track("track", Res.string.track, Icons.Rounded.MonitorHeart),
+    Medicine("medicine", Res.string.medicine, Icons.Rounded.Medication);
+
+    companion object { fun byId(id: String): Tab = entries.firstOrNull { it.id == id } ?: Home }
 }
+
+/** The sections the user chose to show, in their order. */
+internal fun visibleTabs(settings: Settings): List<Tab> = Sections.visible(settings.sectionOrder, settings.hiddenSections).map(Tab::byId)
 
 /** The pages inside the Track tab. */
 internal enum class TrackPage(val label: StringResource) { Water(Res.string.water), Fasting(Res.string.fasting_label), Steps(Res.string.steps), Weight(Res.string.weight) }
@@ -80,51 +98,103 @@ internal enum class TrackPage(val label: StringResource) { Water(Res.string.wate
 /** A workout about to start: from a routine, or empty. */
 class WorkoutStart(val routine: dev.himma.core.Routine?)
 
+/**
+ * The app shell: a side menu, a pager that swipes between the sections (and follows the reading direction, so it
+ * mirrors in Arabic), and the bottom bar. A section that was hidden in Settings is still opened as an extra last
+ * page when something on Home leads to it.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun MainScreen(store: HimmaStore, onAbout: () -> Unit, onTour: () -> Unit, initialTab: Tab = Tab.Home, initialTrack: TrackPage = TrackPage.Water) {
-    var tab by remember { mutableStateOf(initialTab) }
+internal fun MainScreen(
+    store: HimmaStore, onAbout: () -> Unit, onTour: () -> Unit,
+    initialTab: Tab? = null, initialTrack: TrackPage = TrackPage.Water,
+    drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
+    onPageChanged: (Tab) -> Unit = {},
+) {
+    val shown = visibleTabs(store.settings)
+    var extra by remember { mutableStateOf<Tab?>(null) }
+    val tabs = shown + listOfNotNull(extra?.takeIf { it !in shown })
+    val scope = rememberCoroutineScope()
+    val pager = rememberPagerState(initialPage = tabs.indexOf(initialTab ?: Tab.byId(store.settings.startSection)).coerceAtLeast(0)) { tabs.size }
+    val current = tabs[pager.currentPage.coerceIn(0, tabs.lastIndex)]
     var track by remember { mutableStateOf(initialTrack) }
     var workout by remember { mutableStateOf<WorkoutStart?>(null) }
-    var menu by remember { mutableStateOf(false) }
     var settings by remember { mutableStateOf(false) }
+    var showNew by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<Meal?>(null) }
     var adding by remember { mutableStateOf(false) }
     var editingMedicine by remember { mutableStateOf<dev.himma.core.Medicine?>(null) }
     var addingMedicine by remember { mutableStateOf(false) }
     var templatesDialog by remember { mutableStateOf(false) }
+    val snackbar = remember { SnackbarHostState() }
+    val glass = waterText(250)
+    val addedText = s(Res.string.added_n, glass)
+
+    fun goTo(tab: Tab, page: TrackPage? = null) {
+        if (page != null) track = page
+        if (tab !in tabs) extra = tab
+        scope.launch { pager.animateScrollToPage((visibleTabs(store.settings) + listOfNotNull(extra)).indexOf(tab).coerceAtLeast(0)) }
+    }
+    LaunchedEffect(pager) { snapshotFlow { pager.currentPage }.collect { onPageChanged(tabs[it.coerceIn(0, tabs.lastIndex)]) } }
+    // An extra page goes away once the user leaves it.
+    LaunchedEffect(pager.currentPage, extra) { if (extra != null && current != extra && !pager.isScrollInProgress) extra = null }
+    PlatformBackHandler(drawerState.isOpen) { scope.launch { drawerState.close() } }
+    PlatformBackHandler(!drawerState.isOpen && current != Tab.Home && workout == null) { goTo(Tab.Home) }
+
     workout?.let { w -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding().navigationBarsPadding()) { WorkoutScreen(store, w.routine) { workout = null } }; return }
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(title = { Text(s(Res.string.himma), fontWeight = FontWeight.SemiBold) }, colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background), actions = {
-                IconButton(onClick = { menu = true }) { Icon(Icons.Rounded.MoreVert, s(Res.string.menu)) }
-                DropdownMenu(menu, { menu = false }) {
-                    DropdownMenuItem(text = { Text(s(Res.string.settings)) }, onClick = { menu = false; settings = true })
-                    DropdownMenuItem(text = { Text(s(Res.string.about)) }, onClick = { menu = false; onAbout() })
+    fun closeDrawerThen(action: () -> Unit) { scope.launch { drawerState.close() }; action() }
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            AppDrawer(
+                tabs = shown, current = current,
+                onSection = { t -> closeDrawerThen { goTo(t) } },
+                onLogMeal = { closeDrawerThen { goTo(Tab.Meals); adding = true } },
+                onAddWater = { closeDrawerThen { store.addWater(250); scope.launch { snackbar.showSnackbar(addedText) } } },
+                onAddMedicine = { closeDrawerThen { goTo(Tab.Medicine); addingMedicine = true } },
+                onLogWeight = { closeDrawerThen { goTo(Tab.Track, TrackPage.Weight) } },
+                onSettings = { closeDrawerThen { settings = true } },
+                onAbout = { closeDrawerThen(onAbout) },
+                onWhatsNew = { closeDrawerThen { showNew = true } },
+                onTour = { closeDrawerThen(onTour) },
+            )
+        },
+    ) {
+        Scaffold(
+            containerColor = MaterialTheme.colorScheme.background,
+            snackbarHost = { SnackbarHost(snackbar) },
+            topBar = {
+                TopAppBar(
+                    title = { Text(s(Res.string.himma), fontWeight = FontWeight.SemiBold) },
+                    navigationIcon = { IconButton(onClick = { scope.launch { drawerState.open() } }) { Icon(Icons.Rounded.Menu, s(Res.string.menu)) } },
+                    colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+                )
+            },
+            bottomBar = {
+                NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer, tonalElevation = 0.dp) {
+                    shown.forEach { t -> NavigationBarItem(current == t, { goTo(t) }, { Icon(t.icon, s(t.label)) }, label = { Text(s(t.label)) }) }
                 }
-            })
-        },
-        bottomBar = {
-            NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer, tonalElevation = 0.dp) {
-                Tab.entries.forEach { t -> NavigationBarItem(tab == t, { tab = t }, { Icon(t.icon, s(t.label)) }, label = { Text(s(t.label)) }) }
+            },
+            floatingActionButton = {
+                if (current == Tab.Meals) FloatingActionButton(onClick = { adding = true }) { Icon(Icons.Rounded.Add, s(Res.string.log_a_meal)) }
+                if (current == Tab.Medicine) FloatingActionButton(onClick = { addingMedicine = true }) { Icon(Icons.Rounded.Add, s(Res.string.add_a_medicine)) }
+            },
+        ) { padding ->
+            Box(Modifier.fillMaxSize().padding(padding)) {
+            HorizontalPager(pager, Modifier.fillMaxSize(), beyondViewportPageCount = 1, key = { tabs[it.coerceIn(0, tabs.lastIndex)].id }) { index ->
+                when (tabs[index.coerceIn(0, tabs.lastIndex)]) {
+                    Tab.Home -> HomeTab(store, Nav(go = { t, p -> goTo(t, p) }, logMeal = { goTo(Tab.Meals); adding = true }, startWorkout = { workout = WorkoutStart(it) }))
+                    Tab.Meals -> MealsTab(store, onTemplates = { templatesDialog = true }) { editing = it }
+                    Tab.Gym -> GymTab(store) { workout = WorkoutStart(it) }
+                    Tab.Track -> TrackTab(store, track) { track = it }
+                    Tab.Medicine -> MedicineTab(store) { editingMedicine = it }
+                }
             }
-        },
-        floatingActionButton = {
-            if (tab == Tab.Meals) FloatingActionButton(onClick = { adding = true }) { Icon(Icons.Rounded.Add, s(Res.string.log_a_meal)) }
-            if (tab == Tab.Medicine) FloatingActionButton(onClick = { addingMedicine = true }) { Icon(Icons.Rounded.Add, s(Res.string.add_a_medicine)) }
-        },
-    ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
-            when (tab) {
-                Tab.Home -> HomeTab(store, Nav(go = { t, p -> tab = t; if (p != null) track = p }, logMeal = { tab = Tab.Meals; adding = true }, startWorkout = { workout = WorkoutStart(it) }))
-                Tab.Meals -> MealsTab(store, onTemplates = { templatesDialog = true }) { editing = it }
-                Tab.Gym -> GymTab(store) { workout = WorkoutStart(it) }
-                Tab.Track -> TrackTab(store, track) { track = it }
-                Tab.Medicine -> MedicineTab(store) { editingMedicine = it }
+            if (pager.currentPage == 0) DrawerEdge { scope.launch { drawerState.open() } }
             }
         }
     }
+    if (showNew) dev.himma.core.releaseNotes.lastOrNull()?.let { WhatsNewDialog(listOf(it)) { showNew = false } }
     if (addingMedicine || editingMedicine != null) MedicineDialog(editingMedicine, onDismiss = { addingMedicine = false; editingMedicine = null },
         onDelete = editingMedicine?.let { m -> { store.deleteMedicine(m.id); editingMedicine = null } }) { store.saveMedicine(it); addingMedicine = false; editingMedicine = null }
     if (templatesDialog) TemplatesDialog(store) { templatesDialog = false }

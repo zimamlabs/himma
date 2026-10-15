@@ -108,6 +108,7 @@ class ScreenshotTest {
         for (lang in listOf("en", "ar")) {
             val s = store()
             for (tab in Tab.entries) shot("main-${tab.name.lowercase()}-$lang", lang) { MainScreen(s, {}, {}, initialTab = tab) }
+            shot("drawer-$lang", lang) { MainScreen(s, {}, {}, drawerState = androidx.compose.material3.DrawerState(androidx.compose.material3.DrawerValue.Open)) }
             for (page in TrackPage.entries) shot("main-track-${page.name.lowercase()}-$lang", lang) { MainScreen(s, {}, {}, initialTab = Tab.Track, initialTrack = page) }
         }
     }

@@ -263,4 +263,8 @@
     </plurals>
     <string name="seconds_n">%1$s ث</string>
     <string name="personal_best">رقم شخصي قياسي</string>
+    <string name="quick_actions">إجراءات سريعة</string>
+    <string name="add_a_glass">إضافة كوب ماء</string>
+    <string name="log_weight">تسجيل وزنك</string>
+    <string name="added_n">تمت إضافة %1$s</string>
 </resources>
