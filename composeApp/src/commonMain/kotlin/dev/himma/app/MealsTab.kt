@@ -145,7 +145,7 @@ internal fun MealDialog(existing: Meal?, nowTime: String, onDismiss: () -> Unit,
     var carbs by remember { mutableStateOf(existing?.carbs?.toString() ?: "") }
     var fat by remember { mutableStateOf(existing?.fat?.toString() ?: "") }
     var time by remember { mutableStateOf(existing?.time ?: nowTime) }
-    val kcalValue = kcal.trim().toIntOrNull()?.takeIf { it >= 0 }
+    val kcalValue = dev.himma.core.mealKcal(kcal)
     val timeValue = parseClock(time)
     fun optional(t: String): Pair<Boolean, Int?> = if (t.isBlank()) true to null else (t.trim().toIntOrNull()?.takeIf { it >= 0 }).let { (it != null) to it }
     val (pOk, p) = optional(protein); val (cOk, c) = optional(carbs); val (fOk, f) = optional(fat)

@@ -21,6 +21,11 @@ class HealthTest {
         assertEquals(DayTotals(0, 0, 0, 0), dayTotals(emptyList()))
     }
 
+    @Test fun aMealKcalMustBeAWholeNumberUpToTenThousand() {
+        assertEquals(450, mealKcal(" 450 ")); assertEquals(0, mealKcal("0")); assertEquals(10000, mealKcal("10000"))
+        assertNull(mealKcal("10001")); assertNull(mealKcal("-5")); assertNull(mealKcal("4.5")); assertNull(mealKcal(""))
+    }
+
     @Test fun waterProgressStopsAtFullAndUndoNeverGoesBelowZero() {
         assertEquals(0.5f, waterProgress(1000, 2000))
         assertEquals(1f, waterProgress(2750, 2000))
