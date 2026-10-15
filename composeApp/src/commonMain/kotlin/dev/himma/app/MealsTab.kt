@@ -1,8 +1,13 @@
 package dev.himma.app
 
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.foundation.layout.heightIn
+import dev.himma.app.res.menu_duplicate
+import dev.himma.app.res.menu_edit
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,7 +24,6 @@ import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -116,14 +120,19 @@ internal fun MealsTab(store: HimmaStore, onTemplates: () -> Unit, onEdit: (Meal)
         }
         if (store.meals.isEmpty()) item { EmptyHint(s(Res.string.no_meals_logged), s(Res.string.tap_to_add_one_each)) }
         items(store.meals, key = { it.id }) { m ->
-            Row(Modifier.fillMaxWidth().clickable(role = androidx.compose.ui.semantics.Role.Button) { onEdit(m) }.padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+            val actions = listOf(
+                MenuAction(s(Res.string.menu_edit), Icons.Rounded.Edit) { onEdit(m) },
+                MenuAction(s(Res.string.menu_duplicate), Icons.Rounded.ContentCopy) { store.logAgain(m.name, m.kcal, m.protein, m.carbs, m.fat) },
+                MenuAction(s(Res.string.delete), Icons.Rounded.Delete, destructive = true, confirm = s(Res.string.delete_this_meal) to s(Res.string.meal_will_be_removed, m.name, m.kcal)) { store.deleteMeal(m.id) },
+            )
+            ContextMenuBox(actions, { onEdit(m) }, Modifier.fillMaxWidth()) { Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(m.name, style = MaterialTheme.typography.bodyLarge)
                     val macros = listOfNotNull(m.protein?.let { s(Res.string.protein_g, it) }, m.carbs?.let { s(Res.string.carbs_g, it) }, m.fat?.let { s(Res.string.fat_g, it) }).joinToString("  ")
                     Text(num(m.time) + if (macros.isNotEmpty()) "  ·  $macros" else "", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
                 }
                 Text(s(Res.string.kcal, m.kcal), style = MaterialTheme.typography.titleSmall)
-            }
+            } }
         }
     }
 }

@@ -1,0 +1,18 @@
+<resources>
+    <string name="menu_edit">Edit</string>
+    <string name="menu_details">Details</string>
+    <string name="menu_duplicate">Duplicate</string>
+    <string name="menu_history">History</string>
+    <string name="menu_take_now">Take now</string>
+    <string name="menu_undo_mark">Clear the mark</string>
+    <string name="menu_start">Start</string>
+    <string name="history_title">History of %1$s</string>
+    <string name="history_summary">Last 30 days: %1$s taken, %2$s skipped, %3$s missed</string>
+    <string name="history_empty">No doses were due in the last 30 days.</string>
+    <string name="workout_details_title">%1$s on %2$s</string>
+    <string name="workout_details_summary">%1$s sets, %2$s kg lifted, %3$s min</string>
+    <string name="edit_weight">Edit weight</string>
+    <string name="delete_this_weight">Delete this weight?</string>
+    <string name="weight_will_be_removed">The weight of %1$s will be removed. This cannot be undone.</string>
+    <string name="copy_suffix">%1$s (copy)</string>
+</resources>

@@ -31,10 +31,27 @@ import dev.himma.app.res.today
 import dev.himma.app.res.undo_1cdc
 import dev.himma.app.res.your_medicines
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.SkipNext
+import androidx.compose.material.icons.automirrored.rounded.Undo
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.heightIn
+import dev.himma.app.res.close
+import dev.himma.app.res.history_empty
+import dev.himma.app.res.history_summary
+import dev.himma.app.res.history_title
+import dev.himma.app.res.menu_edit
+import dev.himma.app.res.menu_history
+import dev.himma.app.res.menu_take_now
+import dev.himma.app.res.menu_undo_mark
+import dev.himma.core.doseHistory
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,7 +74,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.himma.core.Dose
 import dev.himma.core.DoseMark
@@ -65,7 +81,6 @@ import dev.himma.core.DoseStatus
 import dev.himma.core.Medicine
 import dev.himma.core.adherence
 import dev.himma.core.doseStatus
-import dev.himma.core.formatDays
 import dev.himma.core.parseTimes
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.minus
@@ -73,6 +88,7 @@ import kotlinx.datetime.minus
 
 @Composable
 fun MedicineTab(store: HimmaStore, onEdit: (Medicine) -> Unit) {
+    var history by remember { mutableStateOf<Medicine?>(null) }
     val doses = store.todayDoses
     val week = adherence(store.medicines, store.doseMarks, store.today.minus(DatePeriod(days = 6)), store.today, store.now)
     LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding(), verticalArrangement = Arrangement.spacedBy(rowGap)) {
@@ -85,22 +101,59 @@ fun MedicineTab(store: HimmaStore, onEdit: (Medicine) -> Unit) {
                 week.rate?.let { Text(spq(Res.plurals.last_days_doses_taken, week.due, week.taken, week.due), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
             }
         }
-        items(doses, key = { it.key }) { d -> DoseRow(store, d) }
+        items(doses, key = { it.key }) { d -> DoseRow(store, d, onEdit) }
         item { Text(s(Res.string.your_medicines), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp)) }
         if (store.medicines.isEmpty()) item { EmptyHint(s(Res.string.no_medicines_yet), s(Res.string.tap_to_add_one_with)) }
         items(store.medicines, key = { "m" + it.id }) { m ->
-            Column(Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(role = androidx.compose.ui.semantics.Role.Button) { onEdit(m) }.padding(vertical = 6.dp), verticalArrangement = Arrangement.Center) {
+            val actions = listOf(
+                MenuAction(s(Res.string.menu_edit), Icons.Rounded.Edit) { onEdit(m) },
+                MenuAction(s(Res.string.menu_history), Icons.Rounded.History) { history = m },
+                MenuAction(s(Res.string.delete), Icons.Rounded.Delete, destructive = true, confirm = s(Res.string.delete_this_medicine) to s(Res.string.medicine_will_be_removed, m.name)) { store.deleteMedicine(m.id) },
+            )
+            ContextMenuBox(actions, { onEdit(m) }, Modifier.fillMaxWidth()) { Column(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(vertical = 8.dp), verticalArrangement = Arrangement.Center) {
                 Text(m.name + if (m.dose.isNotBlank()) "  ·  ${m.dose}" else "", style = MaterialTheme.typography.bodyLarge)
                 Text(num("${m.times.joinToString(", ")}") + "  ·  ${daysLabel(m.days)}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
+            } }
         }
     }
+    history?.let { MedicineHistoryDialog(store, it) { history = null } }
 }
 
 @Composable
-private fun DoseRow(store: HimmaStore, d: Dose) {
+private fun MedicineHistoryDialog(store: HimmaStore, medicine: Medicine, onClose: () -> Unit) {
+    val entries = doseHistory(medicine, store.doseMarks, store.today.minus(DatePeriod(days = 29)), store.today, store.now)
+    AlertDialog(
+        onDismissRequest = onClose,
+        title = { Text(s(Res.string.history_title, medicine.name)) },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                if (entries.isEmpty()) Text(s(Res.string.history_empty))
+                else {
+                    Text(s(Res.string.history_summary, entries.count { it.status == DoseStatus.Taken }, entries.count { it.status == DoseStatus.Skipped }, entries.count { it.status == DoseStatus.Missed }), style = MaterialTheme.typography.titleSmall)
+                    entries.forEach { e ->
+                        Row(Modifier.fillMaxWidth().heightIn(min = 32.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                            Text(prettyDate(e.date) + "  " + num(e.time), style = MaterialTheme.typography.bodyMedium)
+                            Text(when (e.status) { DoseStatus.Taken -> s(Res.string.taken); DoseStatus.Skipped -> s(Res.string.skipped); else -> s(Res.string.missed) }, style = MaterialTheme.typography.labelLarge,
+                                color = if (e.status == DoseStatus.Missed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = onClose) { Text(s(Res.string.close)) } },
+    )
+}
+
+@Composable
+private fun DoseRow(store: HimmaStore, d: Dose, onEdit: (Medicine) -> Unit) {
     val status = doseStatus(d, store.doseMarks, store.now)
-    Panel {
+    val marked = status == DoseStatus.Taken || status == DoseStatus.Skipped
+    val actions = buildList {
+        if (!marked) { add(MenuAction(s(Res.string.menu_take_now), Icons.Rounded.Check) { store.markDose(d, DoseMark.Taken) }); add(MenuAction(s(Res.string.skip), Icons.Rounded.SkipNext) { store.markDose(d, DoseMark.Skipped) }) }
+        else add(MenuAction(s(Res.string.menu_undo_mark), Icons.AutoMirrored.Rounded.Undo) { store.markDose(d, null) })
+        add(MenuAction(s(Res.string.menu_edit), Icons.Rounded.Edit) { onEdit(d.medicine) })
+    }
+    ContextMenuBox(actions, { onEdit(d.medicine) }, Modifier.fillMaxWidth()) { Panel {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text("${num(d.time)}  ${d.medicine.name}", style = MaterialTheme.typography.titleMedium)
@@ -116,7 +169,7 @@ private fun DoseRow(store: HimmaStore, d: Dose) {
                 OutlinedButton(onClick = { store.markDose(d, DoseMark.Skipped) }) { Text(s(Res.string.skip)) }
             }
         }
-    }
+    } }
 }
 
 @Composable

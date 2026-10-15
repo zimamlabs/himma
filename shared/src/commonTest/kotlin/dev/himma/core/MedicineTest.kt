@@ -1,6 +1,8 @@
 package dev.himma.core
 
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 import kotlinx.datetime.LocalDateTime
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
@@ -112,6 +114,14 @@ class MedicineTest {
         val tue = LocalDate(2026, 10, 13)
         assertEquals(listOf("00:10"), dosesToRemind(listOf(night), emptyMap(), at(mon, 23, 55), at(tue, 0, 12)).map { it.time })
         assertEquals(listOf("23:50", "00:10"), dosesToRemind(listOf(night), emptyMap(), at(mon, 23, 40), at(tue, 0, 12)).map { it.time })
+    }
+
+    @Test fun historyListsPastDosesNewestFirstWithTheirOutcome() {
+        val marks = mapOf(Dose(daily, mon, "08:00").key to DoseMark.Taken, Dose(daily, mon, "20:00").key to DoseMark.Skipped)
+        val h = doseHistory(daily, marks, mon, mon.plus(DatePeriod(days = 1)), at(mon.plus(DatePeriod(days = 1)), 12))
+        assertEquals(listOf("2026-10-13 08:00", "2026-10-12 20:00", "2026-10-12 08:00"), h.map { "${it.date} ${it.time}" })
+        assertEquals(listOf(DoseStatus.Missed, DoseStatus.Skipped, DoseStatus.Taken), h.map { it.status })
+        assertTrue(doseHistory(daily, emptyMap(), mon, mon, at(mon, 7)).isEmpty(), "nothing was due yet")
     }
 
     // H-02: after a restart or a clock change the receiver asks dosesToRemind with the time of the last check.
