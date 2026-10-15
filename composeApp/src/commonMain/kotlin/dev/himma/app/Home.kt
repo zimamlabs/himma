@@ -159,7 +159,7 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
                         Text(prettyDate(store.today), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(if (score >= 1f) s(Res.string.all_of_today_s_goals) else s(Res.string.percent_of_goals, "${(score * 100).toInt()}%"), style = MaterialTheme.typography.bodyMedium)
                     }
-                    Ring(score, Modifier.size(96.dp)) { Text("${(score * 100).toInt()}%", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold) }
+                    Ring(score, Modifier.size(96.dp)) { Text(num("${(score * 100).toInt()}%"), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold) }
                 }
             } }
         }
@@ -167,8 +167,8 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
             Panel {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                     MiniRing(waterP, waterText(store.waterMl), s(Res.string.water)) { nav.go(Tab.Track, TrackPage.Water) }
-                    MiniRing(kcalP, "${totals.kcal}", s(Res.string.calories)) { nav.go(Tab.Meals, null) }
-                    MiniRing(stepP, if (stepsReady) "${store.stepsToday}" else "-", s(Res.string.steps)) { nav.go(Tab.Track, TrackPage.Steps) }
+                    MiniRing(kcalP, num(totals.kcal), s(Res.string.calories)) { nav.go(Tab.Meals, null) }
+                    MiniRing(stepP, if (stepsReady) num(store.stepsToday) else "-", s(Res.string.steps)) { nav.go(Tab.Track, TrackPage.Steps) }
                 }
             }
         }
@@ -236,12 +236,12 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
             Panel {
                 SectionTitle(Icons.Rounded.MonitorWeight, s(Res.string.this_week))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Stat("${summary.avgKcal}", s(Res.string.kcal_a_day))
+                    Stat(num(summary.avgKcal), s(Res.string.kcal_a_day))
                     Stat(s(Res.string.of, summary.waterGoalDays), s(Res.string.water_goals))
-                    Stat("${summary.workouts}", s(Res.string.workouts_label))
+                    Stat(num(summary.workouts), s(Res.string.workouts_label))
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Stat(if (summary.avgSteps > 0) "${summary.avgSteps}" else "-", s(Res.string.steps_a_day))
+                    Stat(if (summary.avgSteps > 0) num(summary.avgSteps) else "-", s(Res.string.steps_a_day))
                     Stat(s(Res.string.kg_aae5, summary.volumeKg), s(Res.string.lifted))
                     Stat(summary.weightChangeKg?.let { (if (it > 0) "+" else "") + weightText(it, WeightUnit.fromCode(store.settings.weightUnit)) } ?: "-", s(Res.string.weight))
                 }

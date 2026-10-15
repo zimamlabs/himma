@@ -71,6 +71,9 @@ import dev.himma.app.res.save
 import dev.himma.app.res.save_as_meal
 import dev.himma.app.res.saved_meals
 import dev.himma.app.res.settings
+import dev.himma.app.res.protein_g
+import dev.himma.app.res.carbs_g
+import dev.himma.app.res.fat_g
 import dev.himma.app.res.weight_unit
 import dev.himma.app.res.kg_label
 import dev.himma.app.res.lb_label
@@ -302,9 +305,9 @@ private fun MealsTab(store: HimmaStore, onTemplates: () -> Unit, onEdit: (Meal) 
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(s(Res.string.log_again), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(store.templates, key = { "t" + it.id }) { t -> AssistChip(onClick = { store.logAgain(t.name, t.kcal, t.protein, t.carbs, t.fat) }, label = { Text("${t.name} · ${t.kcal}") }) }
+                    items(store.templates, key = { "t" + it.id }) { t -> AssistChip(onClick = { store.logAgain(t.name, t.kcal, t.protein, t.carbs, t.fat) }, label = { Text("${t.name} · ${num(t.kcal)}") }) }
                     items(store.recent.filter { r -> store.templates.none { it.name.equals(r.name, true) && it.kcal == r.kcal } }, key = { "r" + it.id }) { m ->
-                        AssistChip(onClick = { store.logAgain(m.name, m.kcal, m.protein, m.carbs, m.fat) }, label = { Text("${m.name} · ${m.kcal}") })
+                        AssistChip(onClick = { store.logAgain(m.name, m.kcal, m.protein, m.carbs, m.fat) }, label = { Text("${m.name} · ${num(m.kcal)}") })
                     }
                 }
                 if (store.templates.isNotEmpty()) TextButton(onClick = onTemplates) { Text(s(Res.string.edit_saved_meals)) }
@@ -315,8 +318,8 @@ private fun MealsTab(store: HimmaStore, onTemplates: () -> Unit, onEdit: (Meal) 
             Row(Modifier.fillMaxWidth().clickable { onEdit(m) }.padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(m.name, style = MaterialTheme.typography.bodyLarge)
-                    val macros = listOfNotNull(m.protein?.let { "P $it" }, m.carbs?.let { "C $it" }, m.fat?.let { "F $it" }).joinToString("  ")
-                    Text(m.time + if (macros.isNotEmpty()) "  ·  $macros g" else "", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+                    val macros = listOfNotNull(m.protein?.let { s(Res.string.protein_g, it) }, m.carbs?.let { s(Res.string.carbs_g, it) }, m.fat?.let { s(Res.string.fat_g, it) }).joinToString("  ")
+                    Text(num(m.time) + if (macros.isNotEmpty()) "  ·  $macros" else "", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
                 }
                 Text(s(Res.string.kcal, m.kcal), style = MaterialTheme.typography.titleSmall)
             }
@@ -371,7 +374,7 @@ private fun FastingTab(store: HimmaStore) {
         }
         Text(s(Res.string.eating_to, formatClock(s.eatStartMinutes), formatClock(eatEnd)), style = MaterialTheme.typography.bodyLarge)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(presets) { h -> FilterChip(s.fastHours == h, { store.saveSettings(s.copy(fastHours = h)) }, { Text("$h:${24 - h}") }) }
+            items(presets) { h -> FilterChip(s.fastHours == h, { store.saveSettings(s.copy(fastHours = h)) }, { Text(num("$h:${24 - h}")) }) }
             item { FilterChip(s.fastHours !in presets, { customHours.toIntOrNull()?.takeIf { it in 1..23 }?.let { store.saveSettings(s.copy(fastHours = it)) } }, { Text(s(Res.string.custom)) }) }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {

@@ -34,4 +34,16 @@ class TranslationsTest {
     }
 
     @Test fun arabicDigitsConvertOnlyDigits() = assertEquals("٠١٢٣ abc ٤٥", toArabicDigits("0123 abc 45"))
+
+    // Arabic has six plural forms; a missing one falls back to "other" and reads wrongly for that count.
+    @Test fun everyArabicPluralHasAllSixForms() {
+        val plurals = entries("src/commonMain/composeResources/values-ar/strings.xml").filterKeys { it.startsWith("plurals:") }
+        assertTrue(plurals.isNotEmpty())
+        for ((key, body) in plurals) for (q in listOf("zero", "one", "two", "few", "many", "other")) assertTrue("quantity=\"$q\"" in body, "$key lacks $q")
+    }
+
+    @Test fun englishPluralsHaveOneAndOther() {
+        val plurals = entries("src/commonMain/composeResources/values/strings.xml").filterKeys { it.startsWith("plurals:") }
+        for ((key, body) in plurals) for (q in listOf("one", "other")) assertTrue("quantity=\"$q\"" in body, "$key lacks $q")
+    }
 }

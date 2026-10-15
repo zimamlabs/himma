@@ -63,7 +63,7 @@ internal fun StepsTab(store: HimmaStore) {
     LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
             Ring(stepProgress(store.stepsToday, goal), Modifier.size(220.dp)) {
-                Text("${store.stepsToday}", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
+                Text(num(store.stepsToday), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
                 Text(s(Res.string.of_steps, goal), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }

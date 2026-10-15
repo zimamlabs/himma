@@ -84,7 +84,7 @@ fun EmptyHint(title: String, hint: String) {
 }
 
 @Composable
-fun prettyDate(d: LocalDate): String = "${dayName(d.dayOfWeek)} ${d.dayOfMonth} ${monthName(d.monthNumber)}"
+fun prettyDate(d: LocalDate): String = "${dayName(d.dayOfWeek)} ${num(d.dayOfMonth)} ${monthName(d.monthNumber)}"
 
 @Composable
 fun dayName(d: DayOfWeek): String = stringArrayResource(Res.array.weekdays_short)[d.ordinal]
