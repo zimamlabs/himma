@@ -113,4 +113,16 @@ class MedicineTest {
         assertEquals(listOf("00:10"), dosesToRemind(listOf(night), emptyMap(), at(mon, 23, 55), at(tue, 0, 12)).map { it.time })
         assertEquals(listOf("23:50", "00:10"), dosesToRemind(listOf(night), emptyMap(), at(mon, 23, 40), at(tue, 0, 12)).map { it.time })
     }
+
+    // H-02: after a restart or a clock change the receiver asks dosesToRemind with the time of the last check.
+    @Test fun aDoseDuringAnOutageIsRemindedWhenThePhoneComesBack() {
+        val before = at(mon, 7, 30)
+        assertEquals(listOf("08:00"), dosesToRemind(listOf(daily), emptyMap(), before, at(mon, 8, 30)).map { it.time }, "phone off 07:30 to 08:30")
+        assertEquals(listOf("08:00"), dosesToRemind(listOf(daily), emptyMap(), before, at(mon, 10, 59)).map { it.time }, "just inside three hours")
+        assertTrue(dosesToRemind(listOf(daily), emptyMap(), before, at(mon, 11, 30)).isEmpty(), "08:00 is now more than three hours old")
+    }
+
+    @Test fun aClockSetBackwardsRemindsNothingAndDoesNotCrash() {
+        assertTrue(dosesToRemind(listOf(daily), emptyMap(), at(mon, 10, 0), at(mon, 8, 30)).isEmpty())
+    }
 }
