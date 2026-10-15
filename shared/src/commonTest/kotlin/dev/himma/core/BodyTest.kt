@@ -1,6 +1,8 @@
 package dev.himma.core
 
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import kotlin.test.Test
@@ -95,6 +97,31 @@ class StepsTest {
 
     @Test fun progressStopsAtFull() {
         assertEquals(0.5f, stepProgress(4000, 8000)); assertEquals(1f, stepProgress(20000, 8000)); assertEquals(0f, stepProgress(100, 0))
+    }
+
+    // H-08: a reboot is told by the boot count, not by the counter going down.
+    @Test fun aRestartIsDetectedEvenWhenTheNewCounterIsHigherThanTheOldOne() {
+        var s = stepUpdate(StepState(), d1, 5000, boot = 7)
+        s = stepUpdate(s, d1, 6000, boot = 7)
+        assertEquals(1000, s.steps)
+        // Restarted, then walked 9000 steps before Himma was opened: the counter now reads higher than before.
+        s = stepUpdate(s, d1, 9000, boot = 8)
+        assertEquals(1000 + 9000, s.steps)
+    }
+
+    @Test fun anOldStateWithoutABootCountAdoptsItWithoutResetting() {
+        var s = stepUpdate(StepState(), d1, 5000)
+        s = stepUpdate(s, d1, 5400, boot = 3)
+        assertEquals(400, s.steps)
+        assertEquals(3, s.boot)
+        s = stepUpdate(s, d1, 5500, boot = 3)
+        assertEquals(500, s.steps)
+    }
+
+    @Test fun theBootCountSurvivesANewDay() {
+        val s = stepUpdate(stepUpdate(StepState(), d1, 5000, boot = 4), d1.plus(DatePeriod(days = 1)), 5200, boot = 4)
+        assertEquals(4, s.boot)
+        assertEquals(0, s.steps)
     }
 }
 

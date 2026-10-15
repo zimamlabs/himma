@@ -231,10 +231,10 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
     fun saveWeight(kg: Double, date: LocalDate = today) { vault.saveWeight(date, kg); weights = vault.weights() }
 
     // Steps: the phone sends the counter; it is saved at most every 15 seconds and when the app goes to the background.
-    fun onStepCounter(counter: Long) {
+    fun onStepCounter(counter: Long, boot: Int = 0) {
         val todayDate = vault.today()
         if (stepState.date.isNotEmpty() && stepState.date != todayDate.toString()) vault.saveSteps(LocalDate.parse(stepState.date), stepState.steps)
-        stepState = stepUpdate(stepState, todayDate, counter)
+        stepState = stepUpdate(stepState, todayDate, counter, boot)
         stepsToday = stepState.steps
         val nowMs = kotlinx.datetime.Clock.System.now().toEpochMilliseconds()
         if (nowMs - stepSavedAt > 15_000) flushSteps(nowMs)
