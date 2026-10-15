@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
     private val sensors by lazy { getSystemService(SENSOR_SERVICE) as SensorManager }
     private val stepSensor by lazy { sensors.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) }
     private val stepListener = object : SensorEventListener {
-        override fun onSensorChanged(event: SensorEvent) { if (::store.isInitialized) store.onStepCounter(event.values[0].toLong()) }
+        override fun onSensorChanged(event: SensorEvent) { if (::store.isInitialized) store.onStepCounter(event.values[0].toLong(), Settings.Global.getInt(contentResolver, Settings.Global.BOOT_COUNT, 0)) }
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
     }
 
