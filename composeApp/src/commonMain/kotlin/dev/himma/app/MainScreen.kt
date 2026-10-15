@@ -71,6 +71,8 @@ import dev.himma.app.res.save
 import dev.himma.app.res.save_as_meal
 import dev.himma.app.res.saved_meals
 import dev.himma.app.res.settings
+import dev.himma.app.res.delete_this_meal
+import dev.himma.app.res.meal_will_be_removed
 import dev.himma.app.res.show_medicine_names_on_the_lock_screen
 import dev.himma.app.res.show_the_tour_again
 import dev.himma.app.res.tap_to_add_one_each
@@ -387,6 +389,7 @@ private fun MealDialog(existing: Meal?, nowTime: String, onDismiss: () -> Unit, 
     fun optional(t: String): Pair<Boolean, Int?> = if (t.isBlank()) true to null else (t.trim().toIntOrNull()?.takeIf { it >= 0 }).let { (it != null) to it }
     val (pOk, p) = optional(protein); val (cOk, c) = optional(carbs); val (fOk, f) = optional(fat)
     val number = KeyboardOptions(keyboardType = KeyboardType.Number)
+    var confirmDelete by remember { mutableStateOf(false) }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(if (existing == null) s(Res.string.log_a_meal) else s(Res.string.edit_meal)) },
@@ -410,11 +413,12 @@ private fun MealDialog(existing: Meal?, nowTime: String, onDismiss: () -> Unit, 
         dismissButton = {
             Row {
                 TextButton(enabled = name.isNotBlank() && kcalValue != null && pOk && cOk && fOk, onClick = { onTemplate(Meal("", "", name.trim(), kcalValue!!, p, c, f)); onDismiss() }) { Text(s(Res.string.save_as_meal)) }
-                onDelete?.let { TextButton(onClick = it) { Text(s(Res.string.delete), color = MaterialTheme.colorScheme.error) } }
+                onDelete?.let { TextButton(onClick = { confirmDelete = true }) { Text(s(Res.string.delete), color = MaterialTheme.colorScheme.error) } }
                 TextButton(onClick = onDismiss) { Text(s(Res.string.cancel)) }
             }
         },
     )
+    if (confirmDelete && existing != null) ConfirmDelete(s(Res.string.delete_this_meal), s(Res.string.meal_will_be_removed, existing.name, existing.kcal), { confirmDelete = false; onDelete?.invoke() }, { confirmDelete = false })
 }
 
 @Composable

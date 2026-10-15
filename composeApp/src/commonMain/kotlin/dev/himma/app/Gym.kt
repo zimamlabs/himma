@@ -6,6 +6,8 @@ import dev.himma.app.res.done
 import dev.himma.app.res.workout
 
 import dev.himma.app.res.Res
+import dev.himma.app.res.delete_this_routine
+import dev.himma.app.res.routine_will_be_removed
 import dev.himma.app.res.a_routine_lists_your_exercises
 import dev.himma.app.res.add
 import dev.himma.app.res.add_a_set
@@ -169,6 +171,7 @@ private fun kgText(v: Double) = if (v == 0.0) "" else v.toString().removeSuffix(
 @Composable
 private fun RoutineDialog(existing: Routine?, onDismiss: () -> Unit, onDelete: (() -> Unit)?, onSave: (Routine) -> Unit) {
     var name by remember { mutableStateOf(existing?.name ?: "") }
+    var confirmDelete by remember { mutableStateOf(false) }
     val rows = remember { mutableStateListOf<ExerciseRow>().apply { (existing?.exercises ?: listOf(Exercise(""))).forEach { add(ExerciseRow(it.name, it.sets.toString(), it.reps.toString(), kgText(it.weightKg))) } } }
     fun parsed() = rows.filter { it.name.isNotBlank() }.map { Exercise(it.name.trim(), it.sets.toIntOrNull()?.coerceIn(1, 20) ?: 3, it.reps.toIntOrNull()?.coerceIn(1, 100) ?: 10, it.kg.replace(',', '.').toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0) }
     AlertDialog(
@@ -194,8 +197,9 @@ private fun RoutineDialog(existing: Routine?, onDismiss: () -> Unit, onDelete: (
             }
         },
         confirmButton = { TextButton(enabled = name.isNotBlank() && parsed().isNotEmpty(), onClick = { onSave(Routine(existing?.id ?: "", name.trim(), parsed())) }) { Text(s(Res.string.save)) } },
-        dismissButton = { Row { onDelete?.let { TextButton(onClick = it) { Text(s(Res.string.delete), color = MaterialTheme.colorScheme.error) } }; TextButton(onClick = onDismiss) { Text(s(Res.string.cancel)) } } },
+        dismissButton = { Row { onDelete?.let { TextButton(onClick = { confirmDelete = true }) { Text(s(Res.string.delete), color = MaterialTheme.colorScheme.error) } }; TextButton(onClick = onDismiss) { Text(s(Res.string.cancel)) } } },
     )
+    if (confirmDelete && existing != null) ConfirmDelete(s(Res.string.delete_this_routine), s(Res.string.routine_will_be_removed, existing.name), { confirmDelete = false; onDelete?.invoke() }, { confirmDelete = false })
 }
 
 private class SetUi(val exercise: String, reps: String, kg: String) {

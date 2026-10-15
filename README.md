@@ -21,7 +21,7 @@ Himma (همّة, drive and determination) keeps your meals, water, fasting, medi
 - **Meals**: name, calories and optional protein, carbs and fat. A daily calorie goal, the day's total and what is left. Tap a meal to edit or delete it; step back through earlier days. Save a meal to log it again in one tap, and recent meals are offered too.
 - **Water**: a daily goal (2 L to start), a tap for a 250 ml glass or any amount, undo, and a progress ring.
 - **Fasting**: 16:8, 18:6, 20:4 or your own window. Shows eating or fasting now, the time left, and remembers when you start eating.
-- **Medicine**: add a medicine with a dose note, times and days. Today's doses show on Home and in the Medicine section with Taken and Skip, and a notification at each dose time has Taken and Skip buttons. Alarms are set again after a restart or a change of time zone. Android asks once for notification permission; if exact alarms are not allowed a reminder can come a few minutes late.
+- **Medicine**: add a medicine with a dose note, times and days. Today's doses show on Home and in the Medicine section with Taken and Skip, and a notification at each dose time has Taken and Skip buttons. Alarms are set again after a restart or a change of time zone. Android asks once for notification permission; if exact alarms are not allowed a reminder can come a few minutes late (the Medicine tab says so and links to the setting). Not medical advice: see below.
 - **Gym**: routines with exercises, sets, reps and weight; a workout screen where you tick sets off, with a rest timer; history, volume and personal bests (a trophy marks a new one).
 - **Steps**: the phone's step counter with a daily goal and a seven-day chart. Android asks once for the activity permission. Steps taken on days you never open Himma cannot be split by day, so they are not counted.
 - **Weight**: log your weight, see the latest, the change over four weeks and a trend line.
@@ -69,6 +69,10 @@ apksigner verify --print-certs Himma_<version>_Android_arm64-v8a.apk
 By default Himma keeps its files in the app's private folder. If you allow *All files access* (the tour and Settings offer it), they live in a visible `Zimam/Himma` folder on the phone, next to the other Zimam apps, and survive a reinstall. When run from source on a computer it is `~/Zimam/Himma`.
 
 Moving there never risks your data: Himma copies the old folder, checks every file by size and SHA-256, writes a marker and only then starts using the new folder. Nothing is deleted or overwritten: a different file with the same name stays and the old one is kept beside it as `name (old copy)`. If anything goes wrong the old folder stays in use and Himma tries again later. The old copy is kept as a backup until you choose *Remove the old copy* in Settings, which asks first and checks again that everything is safe.
+
+## Not medical advice
+
+Himma helps you remember and keep a record. It is not medical advice and does not replace what your doctor or pharmacist tells you. Reminders can fail (a phone switched off, a setting, a bug), so do not rely on them alone for a medicine that matters.
 
 ## Privacy
 

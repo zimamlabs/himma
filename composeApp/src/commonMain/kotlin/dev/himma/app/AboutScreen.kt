@@ -3,6 +3,8 @@ package dev.himma.app
 import dev.himma.app.res.back
 
 import dev.himma.app.res.Res
+import dev.himma.app.res.not_medical_advice
+import dev.himma.app.res.not_medical_advice_title
 import dev.himma.app.res.a_quick_walk_through_what
 import dev.himma.app.res.about
 import dev.himma.app.res.by_zimam_labs_mit_licence
@@ -87,6 +89,10 @@ fun AboutScreen(store: HimmaStore, onBack: () -> Unit, onTour: () -> Unit) {
             if (note != null) Panel {
                 Text(s(Res.string.what_s_new_in, note.version), style = MaterialTheme.typography.titleSmall)
                 note.bullets.forEach { Text("•  $it", style = MaterialTheme.typography.bodyMedium) }
+            }
+            Panel {
+                Text(s(Res.string.not_medical_advice_title), style = MaterialTheme.typography.titleSmall)
+                Text(s(Res.string.not_medical_advice), style = MaterialTheme.typography.bodyMedium)
             }
             Panel {
                 Text(s(Res.string.private_by_design), style = MaterialTheme.typography.titleSmall)
