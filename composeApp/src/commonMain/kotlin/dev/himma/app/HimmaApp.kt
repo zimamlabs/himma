@@ -25,7 +25,7 @@ fun HimmaApp(store: HimmaStore) {
     val direction = when (UiText.rtl) { true -> LayoutDirection.Rtl; false -> LayoutDirection.Ltr; null -> LocalLayoutDirection.current }
     androidx.compose.runtime.key(UiText.generation) {
     androidx.compose.runtime.CompositionLocalProvider(LocalLayoutDirection provides direction) {
-    HimmaTheme(store.settings.themeMode) {
+    HimmaTheme(store.settings.themeMode, store.settings.palette, store.settings.textSize) {
         var splash by remember { mutableStateOf(true) }
         var about by remember { mutableStateOf(false) }
         var tour by remember { mutableStateOf(store.startup is Startup.Fresh) }

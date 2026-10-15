@@ -45,13 +45,13 @@ class ScreenshotTest {
         return HimmaStore(vault, platform)
     }
 
-    private fun shot(name: String, lang: String = "en", dark: Boolean = true, content: @Composable () -> Unit) {
+    private fun shot(name: String, lang: String = "en", dark: Boolean = true, palette: String = "zimam", textSize: Int = 1, content: @Composable () -> Unit) {
         val old = Locale.getDefault()
         Locale.setDefault(Locale.forLanguageTag(lang))
         UiText.rtl = lang == "ar"
         val scene = ImageComposeScene(412 * 2, 860 * 2, Density(2f)) {
             CompositionLocalProvider(LocalLayoutDirection provides if (lang == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr) {
-                HimmaTheme(if (dark) "dark" else "light") { androidx.compose.material3.Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) { content() } }
+                HimmaTheme(if (dark) "dark" else "light", palette, textSize) { androidx.compose.material3.Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) { content() } }
             }
         }
         try {
@@ -110,5 +110,11 @@ class ScreenshotTest {
             for (tab in Tab.entries) shot("main-${tab.name.lowercase()}-$lang", lang) { MainScreen(s, {}, {}, initialTab = tab) }
             for (page in TrackPage.entries) shot("main-track-${page.name.lowercase()}-$lang", lang) { MainScreen(s, {}, {}, initialTab = Tab.Track, initialTrack = page) }
         }
+    }
+
+    @Test fun everyPaletteAndTextSize() {
+        val s = store()
+        for (p in dev.himma.core.Palettes.ids) for (dark in listOf(true, false)) shot("palette-$p-${if (dark) "dark" else "light"}", dark = dark, palette = p) { MedicineTab(s) {} }
+        for (size in 0..3) shot("textsize-$size", textSize = size) { HomeTab(s, Nav(go = { _, _ -> }, logMeal = {}, startWorkout = {})) }
     }
 }
