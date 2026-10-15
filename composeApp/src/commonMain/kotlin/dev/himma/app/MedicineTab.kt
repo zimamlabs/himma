@@ -18,7 +18,7 @@ import dev.himma.app.res.days_none_selected_means_every
 import dev.himma.app.res.delete
 import dev.himma.app.res.dose_optional_for_example_tablet
 import dev.himma.app.res.edit_medicine
-import dev.himma.app.res.last_days_of_doses_taken
+import dev.himma.app.res.last_days_doses_taken
 import dev.himma.app.res.name
 import dev.himma.app.res.no_doses_today
 import dev.himma.app.res.no_medicines_yet
@@ -81,7 +81,7 @@ fun MedicineTab(store: HimmaStore, onEdit: (Medicine) -> Unit) {
             Panel {
                 Text(s(Res.string.today), style = MaterialTheme.typography.titleSmall)
                 Text(if (doses.isEmpty()) s(Res.string.no_doses_today) else s(Res.string.n_of_m_taken, doses.count { doseStatus(it, store.doseMarks, store.now) == DoseStatus.Taken }, doses.size), style = MaterialTheme.typography.titleLarge)
-                week.rate?.let { Text(s(Res.string.last_days_of_doses_taken, week.taken, week.due), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                week.rate?.let { Text(spq(Res.plurals.last_days_doses_taken, week.due, week.taken, week.due), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
             }
         }
         items(doses, key = { it.key }) { d -> DoseRow(store, d) }
@@ -90,7 +90,7 @@ fun MedicineTab(store: HimmaStore, onEdit: (Medicine) -> Unit) {
         items(store.medicines, key = { "m" + it.id }) { m ->
             Column(Modifier.fillMaxWidth().clickable { onEdit(m) }.padding(vertical = 6.dp)) {
                 Text(m.name + if (m.dose.isNotBlank()) "  ·  ${m.dose}" else "", style = MaterialTheme.typography.bodyLarge)
-                Text("${m.times.joinToString(", ")}  ·  ${daysLabel(m.days)}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(num("${m.times.joinToString(", ")}") + "  ·  ${daysLabel(m.days)}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }
@@ -102,7 +102,7 @@ private fun DoseRow(store: HimmaStore, d: Dose) {
     Panel {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("${d.time}  ${d.medicine.name}", style = MaterialTheme.typography.titleMedium)
+                Text("${num(d.time)}  ${d.medicine.name}", style = MaterialTheme.typography.titleMedium)
                 if (d.medicine.dose.isNotBlank()) Text(d.medicine.dose, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Text(when (status) { DoseStatus.Taken -> s(Res.string.taken); DoseStatus.Skipped -> s(Res.string.skipped); DoseStatus.Missed -> s(Res.string.missed); DoseStatus.Upcoming -> s(Res.string.upcoming) },

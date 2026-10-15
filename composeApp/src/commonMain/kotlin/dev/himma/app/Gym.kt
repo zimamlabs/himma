@@ -42,9 +42,10 @@ import dev.himma.app.res.routine_name
 import dev.himma.app.res.routines
 import dev.himma.app.res.save
 import dev.himma.app.res.sets
-import dev.himma.app.res.sets_kg_lifted
+import dev.himma.app.res.n_sets_kg_lifted
+import dev.himma.app.res.seconds_n
 import dev.himma.app.res.start
-import dev.himma.app.res.the_sets_you_ticked_off
+import dev.himma.app.res.n_ticked_sets_not_saved
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -129,9 +130,9 @@ internal fun GymTab(store: HimmaStore, onStart: (Routine?) -> Unit) {
             Panel(Modifier.clickable { deleting = w }) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(w.name, style = MaterialTheme.typography.titleSmall)
-                    Text(w.date, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(num(w.date), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                Text(s(Res.string.sets_kg_lifted, w.sets.size, volume(w.sets).toInt()) + if (w.minutes > 0) s(Res.string.n_min_after, w.minutes) else "", style = MaterialTheme.typography.bodyMedium)
+                Text(sp(Res.plurals.n_sets_kg_lifted, w.sets.size, volume(w.sets).toInt()) + if (w.minutes > 0) s(Res.string.n_min_after, w.minutes) else "", style = MaterialTheme.typography.bodyMedium)
             }
         }
         if (bests.isNotEmpty()) {
@@ -239,7 +240,7 @@ internal fun WorkoutScreen(store: HimmaStore, routine: Routine?, onClose: () -> 
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(if (restLeft > 0) s(Res.string.rest, restLeft / 60, (restLeft % 60).toString().padStart(2, '0')) else s(Res.string.rest_timer), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    items(listOf(60, 90, 120, 180)) { s -> FilterChip(restLen == s, { restLen = s; if (restLeft > 0) restLeft = s }, { Text("${s}s") }) }
+                    items(listOf(60, 90, 120, 180)) { secs -> FilterChip(restLen == secs, { restLen = secs; if (restLeft > 0) restLeft = secs }, { Text(s(Res.string.seconds_n, secs)) }) }
                 }
             }
         }
@@ -249,7 +250,7 @@ internal fun WorkoutScreen(store: HimmaStore, routine: Routine?, onClose: () -> 
                 val mine = sets.filter { it.exercise == ex }
                 mine.forEachIndexed { i, s ->
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text("${i + 1}", Modifier.size(20.dp), style = MaterialTheme.typography.labelLarge)
+                        Text(num(i + 1), Modifier.size(20.dp), style = MaterialTheme.typography.labelLarge)
                         OutlinedTextField(s.reps, { s.reps = it }, singleLine = true, label = { Text(s(Res.string.reps)) }, keyboardOptions = number, modifier = Modifier.weight(1f))
                         OutlinedTextField(s.kg, { s.kg = it }, singleLine = true, label = { Text(s(Res.string.kg)) }, keyboardOptions = decimal, modifier = Modifier.weight(1f))
                         if (s.done && beatsBest(bests, s.entry())) Icon(Icons.Rounded.EmojiEvents, s(Res.string.new_personal_best), tint = MaterialTheme.colorScheme.primary)
@@ -262,7 +263,7 @@ internal fun WorkoutScreen(store: HimmaStore, routine: Routine?, onClose: () -> 
             }
             TextButton(onClick = { addExercise = true }) { Text(s(Res.string.add_an_exercise)) }
         }
-        if (doneSets.isNotEmpty()) Text(s(Res.string.sets_kg_lifted, doneSets.size, volume(doneSets.map { it.entry() }).toInt()), style = MaterialTheme.typography.titleSmall)
+        if (doneSets.isNotEmpty()) Text(sp(Res.plurals.n_sets_kg_lifted, doneSets.size, volume(doneSets.map { it.entry() }).toInt()), style = MaterialTheme.typography.titleSmall)
     }
     if (addExercise) {
         var name by remember { mutableStateOf("") }
@@ -271,7 +272,7 @@ internal fun WorkoutScreen(store: HimmaStore, routine: Routine?, onClose: () -> 
             confirmButton = { TextButton(enabled = name.isNotBlank(), onClick = { sets.add(SetUi(name.trim(), "10", "")); addExercise = false }) { Text(s(Res.string.add)) } },
             dismissButton = { TextButton(onClick = { addExercise = false }) { Text(s(Res.string.cancel)) } })
     }
-    if (leave) AlertDialog(onDismissRequest = { leave = false }, title = { Text(s(Res.string.leave_this_workout)) }, text = { Text(s(Res.string.the_sets_you_ticked_off, doneSets.size)) },
+    if (leave) AlertDialog(onDismissRequest = { leave = false }, title = { Text(s(Res.string.leave_this_workout)) }, text = { Text(sp(Res.plurals.n_ticked_sets_not_saved, doneSets.size)) },
         confirmButton = { TextButton(onClick = { leave = false; onClose() }) { Text(s(Res.string.discard), color = MaterialTheme.colorScheme.error) } },
         dismissButton = { TextButton(onClick = { leave = false }) { Text(s(Res.string.keep_going)) } })
 }

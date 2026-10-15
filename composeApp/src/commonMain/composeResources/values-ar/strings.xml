@@ -37,7 +37,6 @@
     <string name="no_exercises">لا تمارين</string>
     <string name="start">" ابدأ"</string>
     <string name="history">السجل</string>
-    <string name="sets_kg_lifted">%1$s مجموعات  ·  %2$s كغ مرفوعة</string>
     <string name="personal_bests">أفضل الأرقام الشخصية</string>
     <string name="rm">%1$s  ·  1RM %2$s</string>
     <string name="delete_this_workout">حذف هذا التمرين؟</string>
@@ -62,7 +61,6 @@
     <string name="name">الاسم</string>
     <string name="add">إضافة</string>
     <string name="leave_this_workout">مغادرة هذا التمرين؟</string>
-    <string name="the_sets_you_ticked_off">لن تُحفظ المجموعات التي أنجزتها (%1$s).</string>
     <string name="discard">تجاهل</string>
     <string name="keep_going">واصل</string>
     <string name="all_of_today_s_goals">أُنجزت كل أهداف اليوم.</string>
@@ -132,7 +130,6 @@
     <string name="kcal_06b1">%1$s  ·  %2$s سعرة</string>
     <string name="done">تم</string>
     <string name="today">اليوم</string>
-    <string name="last_days_of_doses_taken">آخر 7 أيام: %1$s من %2$s جرعة مُتناولة</string>
     <string name="your_medicines">أدويتك</string>
     <string name="no_medicines_yet">لا أدوية بعد</string>
     <string name="tap_to_add_one_with">المس + لإضافة دواء بمواعيده وأيامه. تذكّرك همّة عند حلول موعد الجرعة.</string>
@@ -252,4 +249,17 @@
     <string name="trend_unit_a_week">الاتجاه %1$s%2$s %3$s في الأسبوع</string>
     <string name="today_s_weight_unit">وزن اليوم (%1$s)</string>
     <string name="lifted">مرفوع</string>
+    <plurals name="n_sets_kg_lifted">
+        <item quantity="zero">%1$s مجموعة  ·  %2$s كغ مرفوعة</item><item quantity="one">مجموعة واحدة  ·  %2$s كغ مرفوعة</item><item quantity="two">مجموعتان  ·  %2$s كغ مرفوعة</item>
+        <item quantity="few">%1$s مجموعات  ·  %2$s كغ مرفوعة</item><item quantity="many">%1$s مجموعة  ·  %2$s كغ مرفوعة</item><item quantity="other">%1$s مجموعة  ·  %2$s كغ مرفوعة</item>
+    </plurals>
+    <plurals name="n_ticked_sets_not_saved">
+        <item quantity="zero">لن تُحفظ المجموعات التي أنجزتها (%1$s).</item><item quantity="one">لن تُحفظ المجموعة الواحدة التي أنجزتها.</item><item quantity="two">لن تُحفظ المجموعتان اللتان أنجزتهما.</item>
+        <item quantity="few">لن تُحفظ المجموعات الـ%1$s التي أنجزتها.</item><item quantity="many">لن تُحفظ المجموعات الـ%1$s التي أنجزتها.</item><item quantity="other">لن تُحفظ المجموعات التي أنجزتها (%1$s).</item>
+    </plurals>
+    <plurals name="last_days_doses_taken">
+        <item quantity="zero">آخر 7 أيام: %1$s من %2$s جرعة</item><item quantity="one">آخر 7 أيام: %1$s من جرعة واحدة</item><item quantity="two">آخر 7 أيام: %1$s من جرعتين</item>
+        <item quantity="few">آخر 7 أيام: %1$s من %2$s جرعات</item><item quantity="many">آخر 7 أيام: %1$s من %2$s جرعة</item><item quantity="other">آخر 7 أيام: %1$s من %2$s جرعة</item>
+    </plurals>
+    <string name="seconds_n">%1$s ث</string>
 </resources>

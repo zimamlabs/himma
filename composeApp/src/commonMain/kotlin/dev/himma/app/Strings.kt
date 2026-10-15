@@ -34,6 +34,17 @@ fun s(id: StringResource, vararg args: Any?): String {
     return if (UiText.arabicDigits) toArabicDigits(text) else text
 }
 
+/** A plural string chosen by [quantity], which is not itself a format argument (for "%1$s of %2$s doses", where the noun follows the second number). */
+@Composable
+fun spq(id: PluralStringResource, quantity: Int, vararg args: Any?): String {
+    val text = pluralStringResource(id, quantity, *args.map { it.toString() }.toTypedArray())
+    return if (UiText.arabicDigits) toArabicDigits(text) else text
+}
+
+/** Digits of a plain number or clock in the digit set the user chose. */
+@Composable
+fun num(text: Any): String = text.toString().let { if (UiText.arabicDigits) toArabicDigits(it) else it }
+
 /** A plural string; the count is the first format argument. */
 @Composable
 fun sp(id: PluralStringResource, count: Int, vararg args: Any?): String {

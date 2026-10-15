@@ -37,7 +37,6 @@
     <string name="no_exercises">No exercises</string>
     <string name="start">" Start"</string>
     <string name="history">History</string>
-    <string name="sets_kg_lifted">%1$s sets  ·  %2$s kg lifted</string>
     <string name="personal_bests">Personal bests</string>
     <string name="rm">%1$s  ·  1RM %2$s</string>
     <string name="delete_this_workout">Delete this workout?</string>
@@ -62,7 +61,6 @@
     <string name="name">Name</string>
     <string name="add">Add</string>
     <string name="leave_this_workout">Leave this workout?</string>
-    <string name="the_sets_you_ticked_off">The %1$s sets you ticked off will not be saved.</string>
     <string name="discard">Discard</string>
     <string name="keep_going">Keep going</string>
     <string name="all_of_today_s_goals">All of today\'s goals are done.</string>
@@ -132,7 +130,6 @@
     <string name="kcal_06b1">%1$s  ·  %2$s kcal</string>
     <string name="done">Done</string>
     <string name="today">Today</string>
-    <string name="last_days_of_doses_taken">Last 7 days: %1$s of %2$s doses taken</string>
     <string name="your_medicines">Your medicines</string>
     <string name="no_medicines_yet">No medicines yet</string>
     <string name="tap_to_add_one_with">Tap + to add one with its times and days. Himma reminds you when a dose is due.</string>
@@ -249,4 +246,8 @@
     <string name="trend_unit_a_week">Trend %1$s%2$s %3$s a week</string>
     <string name="today_s_weight_unit">Today\'s weight (%1$s)</string>
     <string name="lifted">lifted</string>
+    <plurals name="n_sets_kg_lifted"><item quantity="one">%1$s set  ·  %2$s kg lifted</item><item quantity="other">%1$s sets  ·  %2$s kg lifted</item></plurals>
+    <plurals name="n_ticked_sets_not_saved"><item quantity="one">The %1$s set you ticked off will not be saved.</item><item quantity="other">The %1$s sets you ticked off will not be saved.</item></plurals>
+    <plurals name="last_days_doses_taken"><item quantity="one">Last 7 days: %1$s of %2$s dose taken</item><item quantity="other">Last 7 days: %1$s of %2$s doses taken</item></plurals>
+    <string name="seconds_n">%1$s s</string>
 </resources>
