@@ -24,6 +24,7 @@ import dev.himma.core.Settings
 import dev.himma.core.Startup
 import dev.himma.core.DataProblem
 import dev.himma.core.ReminderProblem
+import dev.himma.core.SettingsRepository
 import dev.himma.core.Vault
 import dev.himma.core.reminderProblems
 import dev.himma.core.startupFor
@@ -38,7 +39,8 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
 
     var now by mutableStateOf(vault.now())
         private set
-    var settings by mutableStateOf(vault.settings())
+    private var settingsRepo = SettingsRepository(vault)
+    var settings by mutableStateOf(settingsRepo.current)
         private set
     /** The day shown in the Meals tab; Today and Water always use [today]. */
     var mealDay by mutableStateOf(vault.today())
@@ -102,7 +104,7 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
     }
 
     /** Points the app at another data folder (after the phone allowed All files access). */
-    fun replaceVault(next: Vault) { vault = next; lastToday = next.today(); added.clear(); reload(); refreshFolderInfo() }
+    fun replaceVault(next: Vault) { vault = next; settingsRepo = SettingsRepository(next); lastToday = next.today(); added.clear(); reload(); refreshFolderInfo() }
 
     fun refreshFolderInfo() {
         folderPath = platform.folderPath; sharedFolder = platform.sharedFolder; canRemoveOld = platform.canRemoveOldCopy()
@@ -120,7 +122,7 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
         if (mealDay == lastToday) mealDay = today
         if (today != lastToday) added.clear()
         lastToday = today
-        settings = vault.settings()
+        settings = settingsRepo.reload()
         meals = vault.meals(mealDay)
         todayMeals = vault.meals(today)
         waterMl = vault.water(today)
@@ -161,7 +163,7 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
 
     fun tick() { if (vault.today() != lastToday) reload() else now = vault.now() }
 
-    fun saveSettings(s: Settings) { vault.saveSettings(s); settings = s }
+    fun saveSettings(s: Settings) { settings = settingsRepo.update { s } }
 
     fun shiftMealDay(days: Int) { mealDay = mealDay.plus(DatePeriod(days = days)); meals = vault.meals(mealDay) }
 

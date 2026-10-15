@@ -26,8 +26,18 @@ data class Settings(
     /** "system", "light" or "dark". */
     val themeMode: String = "system",
     val stepGoal: Int = 8000,
-    /** Whether a dose notification shows the medicine name on a locked screen. Off unless the user turns it on. */
     /** "kg" or "lb": how body weight is shown and typed (stored in kg either way). */
     val weightUnit: String = "kg",
+    /** Whether a dose notification shows the medicine name on a locked screen. Off unless the user turns it on. */
     val lockScreenNames: Boolean = false,
+    /** Colour theme id, one of [Palettes.ids]. */
+    val palette: String = Palettes.DEFAULT,
+    /** Text size step, 0 (small) to 3 (largest); 1 is normal. */
+    val textSize: Int = 1,
+    /** The section shown on opening: one of [Sections.all]. */
+    val startSection: String = Sections.HOME,
+    /** Sections in the order the user wants; empty means the default order. Unknown names are ignored. */
+    val sectionOrder: List<String> = emptyList(),
+    /** Sections hidden from the bottom bar and the side menu. Home cannot be hidden. */
+    val hiddenSections: Set<String> = emptySet(),
 )
