@@ -1,0 +1,18 @@
+<resources>
+    <string name="menu_edit">تعديل</string>
+    <string name="menu_details">التفاصيل</string>
+    <string name="menu_duplicate">تكرار</string>
+    <string name="menu_history">السجل</string>
+    <string name="menu_take_now">تناولته الآن</string>
+    <string name="menu_undo_mark">مسح العلامة</string>
+    <string name="menu_start">ابدأ</string>
+    <string name="history_title">سجل %1$s</string>
+    <string name="history_summary">آخر 30 يومًا: %1$s مُتناولة، %2$s متخطّاة، %3$s فائتة</string>
+    <string name="history_empty">لم تكن هناك جرعات مستحقة في آخر 30 يومًا.</string>
+    <string name="workout_details_title">%1$s في %2$s</string>
+    <string name="workout_details_summary">%1$s مجموعات، %2$s كغ مرفوعة، %3$s د</string>
+    <string name="edit_weight">تعديل الوزن</string>
+    <string name="delete_this_weight">حذف هذا الوزن؟</string>
+    <string name="weight_will_be_removed">سيُحذف وزن %1$s. لا يمكن التراجع عن ذلك.</string>
+    <string name="copy_suffix">%1$s (نسخة)</string>
+</resources>

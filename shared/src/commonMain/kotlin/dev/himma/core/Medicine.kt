@@ -117,3 +117,20 @@ fun dosesToRemind(medicines: List<Medicine>, marks: Map<String, DoseMark>, lastC
     val from = if (lastChecked == null || lastChecked < earliest) (lastChecked?.let { earliest } ?: now) else lastChecked
     return dosesBetween(medicines, from, now).filter { it.key !in marks }
 }
+
+/** One dose of a medicine and how it ended, for the history view. */
+data class DoseEntry(val date: LocalDate, val time: String, val status: DoseStatus)
+
+/** Every dose of [medicine] due from [from] to [to] inclusive, newest first; doses still to come are left out. */
+fun doseHistory(medicine: Medicine, marks: Map<String, DoseMark>, from: LocalDate, to: LocalDate, now: LocalDateTime): List<DoseEntry> {
+    val out = ArrayList<DoseEntry>()
+    var date = from
+    while (date <= to) {
+        for (d in dosesOn(listOf(medicine), date)) {
+            val status = doseStatus(d, marks, now)
+            if (status != DoseStatus.Upcoming) out += DoseEntry(date, d.time, status)
+        }
+        date = date.plus(DatePeriod(days = 1))
+    }
+    return out.sortedWith(compareByDescending<DoseEntry> { it.date }.thenByDescending { it.time })
+}

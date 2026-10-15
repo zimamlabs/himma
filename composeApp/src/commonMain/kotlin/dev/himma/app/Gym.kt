@@ -5,7 +5,19 @@ import dev.himma.app.res.n_min_after
 import dev.himma.app.res.done
 import dev.himma.app.res.workout
 
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Info
 import dev.himma.app.res.Res
+import dev.himma.app.res.close
+import dev.himma.app.res.copy_suffix
+import dev.himma.app.res.menu_details
+import dev.himma.app.res.menu_duplicate
+import dev.himma.app.res.menu_edit
+import dev.himma.app.res.menu_start
+import dev.himma.app.res.workout_details_summary
+import dev.himma.app.res.workout_details_title
 import dev.himma.app.res.delete_this_routine
 import dev.himma.app.res.routine_will_be_removed
 import dev.himma.app.res.a_routine_lists_your_exercises
@@ -48,7 +60,6 @@ import dev.himma.app.res.seconds_n
 import dev.himma.app.res.start
 import dev.himma.app.res.n_ticked_sets_not_saved
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -105,6 +116,7 @@ internal fun GymTab(store: HimmaStore, onStart: (Routine?) -> Unit) {
     var editing by remember { mutableStateOf<Routine?>(null) }
     var creating by remember { mutableStateOf(false) }
     var deleting by remember { mutableStateOf<Workout?>(null) }
+    var details by remember { mutableStateOf<Workout?>(null) }
     val bests = remember(store.workouts) { personalBests(store.workouts) }
     LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding(), verticalArrangement = Arrangement.spacedBy(rowGap)) {
         item {
@@ -116,7 +128,14 @@ internal fun GymTab(store: HimmaStore, onStart: (Routine?) -> Unit) {
         item { Text(s(Res.string.routines), style = MaterialTheme.typography.titleMedium) }
         if (store.routines.isEmpty()) item { EmptyHint(s(Res.string.no_routines_yet), s(Res.string.a_routine_lists_your_exercises)) }
         items(store.routines, key = { it.id }) { r ->
-            Panel(Modifier.clickable(role = androidx.compose.ui.semantics.Role.Button) { editing = r }) {
+            val copyName = s(Res.string.copy_suffix, r.name)
+            val actions = listOf(
+                MenuAction(s(Res.string.menu_start), Icons.Rounded.PlayArrow) { onStart(r) },
+                MenuAction(s(Res.string.menu_edit), Icons.Rounded.Edit) { editing = r },
+                MenuAction(s(Res.string.menu_duplicate), Icons.Rounded.ContentCopy) { store.saveRoutine(r.copy(id = "", name = copyName)) },
+                MenuAction(s(Res.string.delete), Icons.Rounded.Delete, destructive = true, confirm = s(Res.string.delete_this_routine) to s(Res.string.routine_will_be_removed, r.name)) { store.deleteRoutine(r.id) },
+            )
+            ContextMenuBox(actions, { editing = r }, Modifier.fillMaxWidth()) { Panel {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text(r.name, style = MaterialTheme.typography.titleMedium)
@@ -124,17 +143,21 @@ internal fun GymTab(store: HimmaStore, onStart: (Routine?) -> Unit) {
                     }
                     Button(onClick = { onStart(r) }) { Icon(Icons.Rounded.PlayArrow, null, Modifier.size(18.dp)); Text(s(Res.string.start)) }
                 }
-            }
+            } }
         }
         if (store.workouts.isNotEmpty()) item { Text(s(Res.string.history), style = MaterialTheme.typography.titleMedium) }
         items(store.workouts.takeLast(12).reversed(), key = { it.id }) { w ->
-            Panel(Modifier.clickable(role = androidx.compose.ui.semantics.Role.Button) { deleting = w }) {
+            val actions = listOf(
+                MenuAction(s(Res.string.menu_details), Icons.Rounded.Info) { details = w },
+                MenuAction(s(Res.string.delete), Icons.Rounded.Delete, destructive = true) { deleting = w },
+            )
+            ContextMenuBox(actions, { details = w }, Modifier.fillMaxWidth()) { Panel {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(w.name, style = MaterialTheme.typography.titleSmall)
                     Text(num(w.date), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Text(sp(Res.plurals.n_sets_kg_lifted, w.sets.size, volume(w.sets).toInt()) + if (w.minutes > 0) s(Res.string.n_min_after, w.minutes) else "", style = MaterialTheme.typography.bodyMedium)
-            }
+            } }
         }
         if (bests.isNotEmpty()) {
             item { Text(s(Res.string.personal_bests), style = MaterialTheme.typography.titleMedium) }
@@ -153,6 +176,7 @@ internal fun GymTab(store: HimmaStore, onStart: (Routine?) -> Unit) {
     }
     if (creating || editing != null) RoutineDialog(editing, onDismiss = { creating = false; editing = null },
         onDelete = editing?.let { r -> { store.deleteRoutine(r.id); editing = null } }) { store.saveRoutine(it); creating = false; editing = null }
+    details?.let { w -> WorkoutDetailsDialog(w) { details = null } }
     deleting?.let { w ->
         AlertDialog(onDismissRequest = { deleting = null }, title = { Text(s(Res.string.delete_this_workout)) }, text = { Text(s(Res.string.on_will_be_removed_from, w.name, w.date)) },
             confirmButton = { TextButton(onClick = { store.deleteWorkout(w); deleting = null }) { Text(s(Res.string.delete), color = MaterialTheme.colorScheme.error) } },
@@ -276,4 +300,23 @@ internal fun WorkoutScreen(store: HimmaStore, routine: Routine?, onClose: () -> 
     if (leave) AlertDialog(onDismissRequest = { leave = false }, title = { Text(s(Res.string.leave_this_workout)) }, text = { Text(sp(Res.plurals.n_ticked_sets_not_saved, doneSets.size)) },
         confirmButton = { TextButton(onClick = { leave = false; onClose() }) { Text(s(Res.string.discard), color = MaterialTheme.colorScheme.error) } },
         dismissButton = { TextButton(onClick = { leave = false }) { Text(s(Res.string.keep_going)) } })
+}
+
+/** Every set of a logged workout, grouped by exercise, with the total. */
+@Composable
+private fun WorkoutDetailsDialog(w: Workout, onClose: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onClose,
+        title = { Text(s(Res.string.workout_details_title, w.name, num(w.date))) },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(s(Res.string.workout_details_summary, w.sets.size, volume(w.sets).toInt(), w.minutes), style = MaterialTheme.typography.titleSmall)
+                w.sets.groupBy { it.exercise }.forEach { (exercise, sets) ->
+                    Text(exercise, style = MaterialTheme.typography.titleSmall)
+                    sets.forEachIndexed { i, set -> Text(num("${i + 1}.  ${set.reps} x ") + weightText(set.weightKg), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = onClose) { Text(s(Res.string.close)) } },
+    )
 }

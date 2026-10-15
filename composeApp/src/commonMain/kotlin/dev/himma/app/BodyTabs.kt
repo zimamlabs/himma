@@ -1,6 +1,5 @@
 package dev.himma.app
 
-import dev.himma.app.res.remove
 
 import dev.himma.app.res.Res
 import dev.himma.app.res.allow_step_counting
@@ -14,8 +13,6 @@ import dev.himma.app.res.over_weeks
 import dev.himma.app.res.save
 import dev.himma.app.res.step_counting_is_only_available
 import dev.himma.app.res.this_phone_has_no_step
-import dev.himma.app.res.today_s_weight_kg
-import dev.himma.app.res.trend_kg_a_week
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,12 +25,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,6 +39,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.foundation.layout.heightIn
+import dev.himma.app.res.cancel
+import dev.himma.app.res.delete
+import dev.himma.app.res.delete_this_weight
+import dev.himma.app.res.edit_weight
+import dev.himma.app.res.menu_edit
+import dev.himma.app.res.weight_will_be_removed
 import dev.himma.app.res.kg_label
 import dev.himma.app.res.lb_label
 import dev.himma.app.res.today_s_weight_unit
@@ -91,6 +93,7 @@ internal fun StepsTab(store: HimmaStore) {
 internal fun WeightTab(store: HimmaStore) {
     var text by remember { mutableStateOf("") }
     val unit = WeightUnit.fromCode(store.settings.weightUnit)
+    var editingWeight by remember { mutableStateOf<dev.himma.core.WeightEntry?>(null) }
     val kg = text.trim().replace(',', '.').toDoubleOrNull()?.let { unit.toKg(it) }?.takeIf { it in 20.0..500.0 }
     val trend = weightTrend(store.weights, store.today, 28)
     val last30 = store.weights.filter { it.date >= kotlinx.datetime.LocalDate.fromEpochDays(store.today.toEpochDays() - 90) }
@@ -115,11 +118,29 @@ internal fun WeightTab(store: HimmaStore) {
             }
         }
         items(store.weights.reversed().take(20), key = { it.date.toString() }) { e ->
-            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            val actions = listOf(
+                MenuAction(s(Res.string.menu_edit), Icons.Rounded.Edit) { editingWeight = e },
+                MenuAction(s(Res.string.delete), Icons.Rounded.Delete, destructive = true, confirm = s(Res.string.delete_this_weight) to s(Res.string.weight_will_be_removed, weightText(e.kg, unit))) { store.saveWeight(0.0, e.date) },
+            )
+            ContextMenuBox(actions, { editingWeight = e }, Modifier.fillMaxWidth()) { Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(prettyDate(e.date), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
                 Text(weightText(e.kg, unit), style = MaterialTheme.typography.titleSmall)
-                IconButton(onClick = { store.saveWeight(0.0, e.date) }) { Icon(Icons.Rounded.Close, s(Res.string.remove)) }
-            }
+            } }
         }
     }
+    editingWeight?.let { e -> EditWeightDialog(e, unit, onDismiss = { editingWeight = null }) { kg -> store.saveWeight(kg, e.date); editingWeight = null } }
+}
+
+/** Change the weight of a day already logged; typed in the chosen unit, kept in kg. */
+@Composable
+private fun EditWeightDialog(entry: dev.himma.core.WeightEntry, unit: WeightUnit, onDismiss: () -> Unit, onSave: (Double) -> Unit) {
+    var text by remember { mutableStateOf(numberText(unit.fromKg(entry.kg))) }
+    val kg = text.trim().replace(',', '.').toDoubleOrNull()?.let { unit.toKg(it) }?.takeIf { it in 20.0..500.0 }
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(s(Res.string.edit_weight) + "  " + prettyDate(entry.date)) },
+        text = { OutlinedTextField(text, { text = it }, singleLine = true, isError = kg == null, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)) },
+        confirmButton = { androidx.compose.material3.TextButton(enabled = kg != null, onClick = { onSave(kg!!) }) { Text(s(Res.string.save)) } },
+        dismissButton = { androidx.compose.material3.TextButton(onClick = onDismiss) { Text(s(Res.string.cancel)) } },
+    )
 }
