@@ -43,6 +43,7 @@ import dev.himma.app.res.routines
 import dev.himma.app.res.save
 import dev.himma.app.res.sets
 import dev.himma.app.res.n_sets_kg_lifted
+import dev.himma.app.res.personal_best
 import dev.himma.app.res.seconds_n
 import dev.himma.app.res.start
 import dev.himma.app.res.n_ticked_sets_not_saved
@@ -115,7 +116,7 @@ internal fun GymTab(store: HimmaStore, onStart: (Routine?) -> Unit) {
         item { Text(s(Res.string.routines), style = MaterialTheme.typography.titleMedium) }
         if (store.routines.isEmpty()) item { EmptyHint(s(Res.string.no_routines_yet), s(Res.string.a_routine_lists_your_exercises)) }
         items(store.routines, key = { it.id }) { r ->
-            Panel(Modifier.clickable { editing = r }) {
+            Panel(Modifier.clickable(role = androidx.compose.ui.semantics.Role.Button) { editing = r }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text(r.name, style = MaterialTheme.typography.titleMedium)
@@ -127,7 +128,7 @@ internal fun GymTab(store: HimmaStore, onStart: (Routine?) -> Unit) {
         }
         if (store.workouts.isNotEmpty()) item { Text(s(Res.string.history), style = MaterialTheme.typography.titleMedium) }
         items(store.workouts.takeLast(12).reversed(), key = { it.id }) { w ->
-            Panel(Modifier.clickable { deleting = w }) {
+            Panel(Modifier.clickable(role = androidx.compose.ui.semantics.Role.Button) { deleting = w }) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(w.name, style = MaterialTheme.typography.titleSmall)
                     Text(num(w.date), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -141,7 +142,7 @@ internal fun GymTab(store: HimmaStore, onStart: (Routine?) -> Unit) {
                 Panel {
                     bests.entries.sortedByDescending { it.value.oneRepMaxKg }.take(10).forEach { (name, b) ->
                         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Rounded.EmojiEvents, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
+                            Icon(Icons.Rounded.EmojiEvents, s(Res.string.personal_best), Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
                             Text("  " + name.replaceFirstChar { it.uppercase() }, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
                             Text(s(Res.string.rm, weightText(b.maxWeightKg), weightText(b.oneRepMaxKg)), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }

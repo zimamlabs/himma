@@ -38,6 +38,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -88,7 +89,7 @@ fun MedicineTab(store: HimmaStore, onEdit: (Medicine) -> Unit) {
         item { Text(s(Res.string.your_medicines), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp)) }
         if (store.medicines.isEmpty()) item { EmptyHint(s(Res.string.no_medicines_yet), s(Res.string.tap_to_add_one_with)) }
         items(store.medicines, key = { "m" + it.id }) { m ->
-            Column(Modifier.fillMaxWidth().clickable { onEdit(m) }.padding(vertical = 6.dp)) {
+            Column(Modifier.fillMaxWidth().heightIn(min = 48.dp).clickable(role = androidx.compose.ui.semantics.Role.Button) { onEdit(m) }.padding(vertical = 6.dp), verticalArrangement = Arrangement.Center) {
                 Text(m.name + if (m.dose.isNotBlank()) "  ·  ${m.dose}" else "", style = MaterialTheme.typography.bodyLarge)
                 Text(num("${m.times.joinToString(", ")}") + "  ·  ${daysLabel(m.days)}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
