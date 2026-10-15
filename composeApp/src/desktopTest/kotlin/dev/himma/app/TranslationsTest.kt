@@ -46,4 +46,9 @@ class TranslationsTest {
         val plurals = entries("src/commonMain/composeResources/values/strings.xml").filterKeys { it.startsWith("plurals:") }
         for ((key, body) in plurals) for (q in listOf("one", "other")) assertTrue("quantity=\"$q\"" in body, "$key lacks $q")
     }
+
+    // Shared resources show an escaped apostrophe with its backslash ("What\'s new"); a plain ' is correct there.
+    @Test fun sharedStringsHaveNoEscapedApostrophe() {
+        for (f in listOf("values", "values-ar")) assertTrue("\\'" !in File("src/commonMain/composeResources/$f/strings.xml").readText(), "$f has a backslash before an apostrophe")
+    }
 }

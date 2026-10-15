@@ -31,11 +31,11 @@ internal val accents: Map<String, Accent> = mapOf(
 internal fun colorSchemeFor(palette: String, dark: Boolean): ColorScheme {
     val a = accents[palette] ?: accents.getValue(Palettes.DEFAULT)
     return if (dark) darkColorScheme(
-        primary = a.dark, onPrimary = a.onDark, primaryContainer = a.darkContainer, onPrimaryContainer = Color(0xFFFFEDE6),
+        primary = a.dark, onPrimary = a.onDark, primaryContainer = a.darkContainer, onPrimaryContainer = Color(0xFFFFEDE6), secondaryContainer = a.darkContainer, onSecondaryContainer = Color(0xFFFFEDE6),
         secondary = Color(0xFFD9B99A), tertiary = Color(0xFFE2B857), background = Color(0xFF0F0F0F), surface = Color(0xFF0F0F0F), surfaceContainer = Color(0xFF1A1613),
         surfaceContainerHigh = Color(0xFF2A241F), onSurface = Color(0xFFF5EFE6), onSurfaceVariant = Color(0xFFA89E92), outlineVariant = Color(0xFF332C26),
     ) else lightColorScheme(
-        primary = a.light, onPrimary = a.onLight, primaryContainer = a.lightContainer, onPrimaryContainer = Color(0xFF1A1613),
+        primary = a.light, onPrimary = a.onLight, primaryContainer = a.lightContainer, onPrimaryContainer = Color(0xFF1A1613), secondaryContainer = a.lightContainer, onSecondaryContainer = Color(0xFF1A1613),
         secondary = Color(0xFF8A6A4F), tertiary = Color(0xFFC79A3B), background = Color(0xFFFFF8F0), surface = Color(0xFFFFF8F0), surfaceContainer = Color(0xFFFFFFFF),
         surfaceContainerHigh = Color(0xFFF1E7DA), onSurface = Color(0xFF1A1613), onSurfaceVariant = Color(0xFF6B6157), outlineVariant = Color(0xFFE6DACB),
     )

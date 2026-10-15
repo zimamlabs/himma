@@ -7,7 +7,7 @@
     <string name="show_the_tour_again">Show the tour again</string>
     <string name="a_quick_walk_through_what">A quick walk through what Himma does and where your data lives.</string>
     <string name="start_the_tour">Start the tour</string>
-    <string name="what_s_new_in">What\'s new in %1$s</string>
+    <string name="what_s_new_in">What's new in %1$s</string>
     <string name="private_by_design">Private by design</string>
     <string name="no_account_no_tracking_your">No account, no tracking. Your data stays in %1$s.</string>
     <string name="links">Links</string>
@@ -17,7 +17,7 @@
     <string name="licence">Licence</string>
     <string name="by_zimam_labs_mit_licence">by Zimam Labs  ·  MIT licence</string>
     <string name="of_steps">of %1$s steps</string>
-    <string name="counting_with_your_phone_s">Counting with your phone\'s step sensor while Himma is open or recently used. Steps taken on a day you never open Himma cannot be split by day, so they are not counted.</string>
+    <string name="counting_with_your_phone_s">Counting with your phone's step sensor while Himma is open or recently used. Steps taken on a day you never open Himma cannot be split by day, so they are not counted.</string>
     <string name="himma_needs_permission_to_read">Himma needs permission to read the step sensor. It never leaves your phone.</string>
     <string name="allow_step_counting">Allow step counting</string>
     <string name="this_phone_has_no_step">This phone has no step sensor, so steps cannot be counted.</string>
@@ -26,7 +26,7 @@
     <string name="no_weight_logged">No weight logged</string>
     <string name="over_weeks">%1$s%2$s over 4 weeks</string>
     <string name="trend_kg_a_week">Trend %1$s%2$s kg a week</string>
-    <string name="today_s_weight_kg">Today\'s weight (kg)</string>
+    <string name="today_s_weight_kg">Today's weight (kg)</string>
     <string name="save">Save</string>
     <string name="last_days_a369">Last 90 days</string>
     <string name="empty_workout">Empty workout</string>
@@ -63,7 +63,7 @@
     <string name="leave_this_workout">Leave this workout?</string>
     <string name="discard">Discard</string>
     <string name="keep_going">Keep going</string>
-    <string name="all_of_today_s_goals">All of today\'s goals are done.</string>
+    <string name="all_of_today_s_goals">All of today's goals are done.</string>
     <string name="protein_g">Protein %1$s g</string>
     <string name="carbs_g">Carbs %1$s g</string>
     <string name="fat_g">Fat %1$s g</string>
@@ -147,7 +147,7 @@
     <string name="where_your_data_lives">Where your data lives</string>
     <string name="himma_keeps_plain_files_you">Himma keeps plain files you can open in any editor.</string>
     <string name="they_are_in_together_with">They are in %1$s, together with your other Zimam apps.</string>
-    <string name="they_are_in_the_app">They are in the app\'s private folder now. Allow All files access and Himma moves a verified copy to Zimam/Himma on your phone, so your files survive a reinstall and sit next to the other Zimam apps. The old copy is kept until you remove it.</string>
+    <string name="they_are_in_the_app">They are in the app's private folder now. Allow All files access and Himma moves a verified copy to Zimam/Himma on your phone, so your files survive a reinstall and sit next to the other Zimam apps. The old copy is kept until you remove it.</string>
     <string name="add_a_medicine_with_its">Add a medicine with its times and days and Himma tells you when a dose is due. Mark it Taken or Skip right from the notification.</string>
     <string name="android_asks_once_to_show">Android asks once to show notifications. If exact alarms are not allowed, a reminder can come a few minutes late.</string>
     <string name="allow_notifications">Allow notifications</string>
@@ -155,7 +155,7 @@
     <string name="light_dark_or_follow_the">Light, Dark, or follow the phone. You can change it later in Settings.</string>
     <string name="ready_when_you_are">Ready when you are</string>
     <string name="set_your_daily_goals_you">Set your daily goals. You can change them later in Settings.</string>
-    <string name="what_s_new">What\'s new</string>
+    <string name="what_s_new">What's new</string>
     <string name="close">Close</string>
     <string name="back">Back</string>
     <string name="water">Water</string>
@@ -180,7 +180,7 @@
     <string name="next">Next</string>
     <string name="every_day">Every day</string>
     <string name="n_min_after">"  ·  %1$s min"</string>
-    <string name="percent_of_goals">%1$s of today\'s goals</string>
+    <string name="percent_of_goals">%1$s of today's goals</string>
     <string name="n_over">%1$s over</string>
     <string name="n_of_m_taken">%1$s of %2$s taken</string>
     <string name="kcal_a_day">kcal a day</string>
@@ -197,7 +197,7 @@
     <string name="note_4">A short tour on first install and this note after each update.</string>
     <string name="note_5">A richer Home: rings, a macro bar, 7-day charts and a weekly summary.</string>
     <string name="note_6">Gym: routines, workouts with every set, personal bests and a rest timer.</string>
-    <string name="note_7">Steps from the phone\'s step counter, a weight log with a trend, and meal templates.</string>
+    <string name="note_7">Steps from the phone's step counter, a weight log with a trend, and meal templates.</string>
     <string name="note_8">Light, Dark or System theme.</string>
     <string name="note_9">A new look: warm surfaces, a soft orange glow, rounded cards and the diamond accent.</string>
     <string name="note_10">A new About page.</string>
@@ -244,11 +244,15 @@
     <string name="lb_label">lb</string>
     <string name="weight_unit">Body weight unit</string>
     <string name="trend_unit_a_week">Trend %1$s%2$s %3$s a week</string>
-    <string name="today_s_weight_unit">Today\'s weight (%1$s)</string>
+    <string name="today_s_weight_unit">Today's weight (%1$s)</string>
     <string name="lifted">lifted</string>
     <plurals name="n_sets_kg_lifted"><item quantity="one">%1$s set  ·  %2$s kg lifted</item><item quantity="other">%1$s sets  ·  %2$s kg lifted</item></plurals>
     <plurals name="n_ticked_sets_not_saved"><item quantity="one">The %1$s set you ticked off will not be saved.</item><item quantity="other">The %1$s sets you ticked off will not be saved.</item></plurals>
     <plurals name="last_days_doses_taken"><item quantity="one">Last 7 days: %1$s of %2$s dose taken</item><item quantity="other">Last 7 days: %1$s of %2$s doses taken</item></plurals>
     <string name="seconds_n">%1$s s</string>
     <string name="personal_best">Personal best</string>
+    <string name="quick_actions">Quick actions</string>
+    <string name="add_a_glass">Add a glass of water</string>
+    <string name="log_weight">Log your weight</string>
+    <string name="added_n">Added %1$s</string>
 </resources>
