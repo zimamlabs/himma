@@ -125,7 +125,7 @@ private fun SectionTitle(icon: ImageVector, title: String, trailing: String = ""
 
 @Composable
 private fun MiniRing(progress: Float, value: String, label: String, onClick: () -> Unit) {
-    Column(Modifier.clickable(onClick = onClick), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(Modifier.clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onClick), horizontalAlignment = Alignment.CenterHorizontally) {
         Ring(progress, Modifier.size(84.dp)) { Text(value, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold) }
         Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
@@ -173,7 +173,7 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
             }
         }
         item {
-            Panel(Modifier.clickable { nav.go(Tab.Meals, null) }) {
+            Panel(Modifier.clickable(role = androidx.compose.ui.semantics.Role.Button) { nav.go(Tab.Meals, null) }) {
                 SectionTitle(Icons.Rounded.Restaurant, s(Res.string.calories), if (left >= 0) s(Res.string.left, left) else s(Res.string.n_over, -left))
                 MacroBar(totals.protein, totals.carbs, totals.fat)
                 Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -184,7 +184,7 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
             }
         }
         item {
-            Panel(Modifier.clickable { nav.go(Tab.Track, TrackPage.Fasting) }) {
+            Panel(Modifier.clickable(role = androidx.compose.ui.semantics.Role.Button) { nav.go(Tab.Track, TrackPage.Fasting) }) {
                 SectionTitle(Icons.Rounded.Timer, s(Res.string.fasting, s.fastHours, 24 - s.fastHours), s(Res.string.left, durationText(fast.minutesLeft)))
                 Text(if (fast.eating) s(Res.string.eating_window_is_open) else s(Res.string.fasting_now), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                 val total = if (fast.eating) (24 - s.fastHours) * 60 else s.fastHours * 60
@@ -206,7 +206,7 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
             }
         }
         item {
-            Panel(Modifier.clickable { nav.go(Tab.Medicine, null) }) {
+            Panel(Modifier.clickable(role = androidx.compose.ui.semantics.Role.Button) { nav.go(Tab.Medicine, null) }) {
                 SectionTitle(Icons.Rounded.Medication, s(Res.string.medicine), if (doses.isEmpty()) "" else s(Res.string.n_of_m_taken, taken, doses.size))
                 Text(
                     when {
@@ -220,7 +220,7 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
         item {
             val lastWorkout = store.workouts.lastOrNull()
             val suggestion = store.routines.firstOrNull()
-            Panel(Modifier.clickable { nav.go(Tab.Gym, null) }) {
+            Panel(Modifier.clickable(role = androidx.compose.ui.semantics.Role.Button) { nav.go(Tab.Gym, null) }) {
                 SectionTitle(Icons.Rounded.FitnessCenter, s(Res.string.workout), if (todayWorkouts.isNotEmpty()) s(Res.string.done_today) else "")
                 when {
                     todayWorkouts.isNotEmpty() -> Text(sp(Res.plurals.workouts_kg_lifted, todayWorkouts.size, volume(todayWorkouts.flatMap { it.sets }).toInt()), style = MaterialTheme.typography.titleMedium)

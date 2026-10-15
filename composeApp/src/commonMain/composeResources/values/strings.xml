@@ -250,4 +250,5 @@
     <plurals name="n_ticked_sets_not_saved"><item quantity="one">The %1$s set you ticked off will not be saved.</item><item quantity="other">The %1$s sets you ticked off will not be saved.</item></plurals>
     <plurals name="last_days_doses_taken"><item quantity="one">Last 7 days: %1$s of %2$s dose taken</item><item quantity="other">Last 7 days: %1$s of %2$s doses taken</item></plurals>
     <string name="seconds_n">%1$s s</string>
+    <string name="personal_best">Personal best</string>
 </resources>

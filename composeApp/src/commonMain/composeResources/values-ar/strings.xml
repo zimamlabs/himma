@@ -262,4 +262,5 @@
         <item quantity="few">آخر 7 أيام: %1$s من %2$s جرعات</item><item quantity="many">آخر 7 أيام: %1$s من %2$s جرعة</item><item quantity="other">آخر 7 أيام: %1$s من %2$s جرعة</item>
     </plurals>
     <string name="seconds_n">%1$s ث</string>
+    <string name="personal_best">رقم شخصي قياسي</string>
 </resources>

@@ -315,7 +315,7 @@ private fun MealsTab(store: HimmaStore, onTemplates: () -> Unit, onEdit: (Meal) 
         }
         if (store.meals.isEmpty()) item { EmptyHint(s(Res.string.no_meals_logged), s(Res.string.tap_to_add_one_each)) }
         items(store.meals, key = { it.id }) { m ->
-            Row(Modifier.fillMaxWidth().clickable { onEdit(m) }.padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().clickable(role = androidx.compose.ui.semantics.Role.Button) { onEdit(m) }.padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(m.name, style = MaterialTheme.typography.bodyLarge)
                     val macros = listOfNotNull(m.protein?.let { s(Res.string.protein_g, it) }, m.carbs?.let { s(Res.string.carbs_g, it) }, m.fat?.let { s(Res.string.fat_g, it) }).joinToString("  ")
