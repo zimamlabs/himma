@@ -84,7 +84,15 @@ object MedicineAlarms {
         manager.createNotificationChannel(NotificationChannel(CHANNEL, context.getString(R.string.channel_medicine), NotificationManager.IMPORTANCE_HIGH))
         val open = PendingIntent.getActivity(context, 1, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
         val text = if (dose.medicine.dose.isNotBlank()) context.getString(R.string.notify_dose_at, dose.medicine.dose, dose.time) else context.getString(R.string.notify_it_is, dose.time)
+        val showNames = vault(context).settings().lockScreenNames
+        // A locked screen shows only the generic version unless the user allowed names; the full text appears after unlocking.
+        val generic = NotificationCompat.Builder(context, CHANNEL)
+            .setSmallIcon(R.drawable.ic_launcher_monochrome)
+            .setContentTitle(context.getString(R.string.notify_public_title))
+            .build()
         val n = NotificationCompat.Builder(context, CHANNEL)
+            .setVisibility(if (showNames) NotificationCompat.VISIBILITY_PUBLIC else NotificationCompat.VISIBILITY_PRIVATE)
+            .setPublicVersion(if (showNames) null else generic)
             .setSmallIcon(R.drawable.ic_launcher_monochrome)
             .setContentTitle(context.getString(R.string.notify_title, dose.medicine.name))
             .setContentText(text)

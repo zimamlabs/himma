@@ -26,4 +26,6 @@ data class Settings(
     /** "system", "light" or "dark". */
     val themeMode: String = "system",
     val stepGoal: Int = 8000,
+    /** Whether a dose notification shows the medicine name on a locked screen. Off unless the user turns it on. */
+    val lockScreenNames: Boolean = false,
 )

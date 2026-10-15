@@ -4,6 +4,7 @@
     <string name="notify_title">حان موعد %1$s</string>
     <string name="notify_dose_at">%1$s، عند %2$s</string>
     <string name="notify_it_is">الساعة الآن %1$s</string>
+    <string name="notify_public_title">تذكير بالدواء</string>
     <string name="notify_taken">تم تناوله</string>
     <string name="notify_skip">تخطّي</string>
 </resources>

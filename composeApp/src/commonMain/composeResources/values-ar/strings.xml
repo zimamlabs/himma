@@ -192,6 +192,7 @@
     <string name="steps_a_day">خطوة في اليوم</string>
     <string name="remove_x">إزالة %1$s</string>
     <string name="language">اللغة</string>
+    <string name="show_medicine_names_on_the_lock_screen">إظهار أسماء الأدوية على شاشة القفل</string>
     <string name="arabic_digits">الأرقام الهندية (٠١٢٣)</string>
     <string name="note_1">صفحة رئيسية تعرض اليوم في لمحة مع اختصارات.</string>
     <string name="note_2">تذكيرات الدواء: مواعيد وأيام، و«تم تناوله» أو «تخطّي» من الإشعار.</string>

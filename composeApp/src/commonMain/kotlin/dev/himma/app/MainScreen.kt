@@ -71,6 +71,7 @@ import dev.himma.app.res.save
 import dev.himma.app.res.save_as_meal
 import dev.himma.app.res.saved_meals
 import dev.himma.app.res.settings
+import dev.himma.app.res.show_medicine_names_on_the_lock_screen
 import dev.himma.app.res.show_the_tour_again
 import dev.himma.app.res.tap_to_add_one_each
 import dev.himma.app.res.theme
@@ -424,6 +425,7 @@ private fun SettingsDialog(store: HimmaStore, onDismiss: () -> Unit, onTour: () 
     var confirmRemove by remember { mutableStateOf(false) }
     var steps by remember { mutableStateOf(current.stepGoal.toString()) }
     var theme by remember { mutableStateOf(current.themeMode) }
+    var lockNames by remember { mutableStateOf(current.lockScreenNames) }
     val stepsValue = steps.trim().toIntOrNull()?.takeIf { it in 100..100000 }
     val kcalValue = kcal.trim().toIntOrNull()?.takeIf { it in 1..20000 }
     val waterValue = water.trim().toIntOrNull()?.takeIf { it in 1..20000 }
@@ -449,6 +451,10 @@ private fun SettingsDialog(store: HimmaStore, onDismiss: () -> Unit, onTour: () 
                     Text(s(Res.string.arabic_digits), Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
                     androidx.compose.material3.Switch(UiText.arabicDigits, { store.platform.setArabicDigits(it) })
                 }
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text(s(Res.string.show_medicine_names_on_the_lock_screen), Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                    androidx.compose.material3.Switch(lockNames, { lockNames = it })
+                }
                 Text(s(Res.string.data_folder), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(store.folderPath, style = MaterialTheme.typography.bodyMedium)
                 if (store.platform.canAskAllFiles && !store.sharedFolder) OutlinedButton(onClick = { store.platform.allowAllFiles() }) { Text(s(Res.string.allow_all_files_access)) }
@@ -456,7 +462,7 @@ private fun SettingsDialog(store: HimmaStore, onDismiss: () -> Unit, onTour: () 
                 TextButton(onClick = onTour) { Text(s(Res.string.show_the_tour_again)) }
             }
         },
-        confirmButton = { TextButton(enabled = kcalValue != null && waterValue != null && stepsValue != null, onClick = { onSave(current.copy(calorieGoal = kcalValue!!, waterGoalMl = waterValue!!, stepGoal = stepsValue!!, themeMode = theme)) }) { Text(s(Res.string.save)) } },
+        confirmButton = { TextButton(enabled = kcalValue != null && waterValue != null && stepsValue != null, onClick = { onSave(current.copy(calorieGoal = kcalValue!!, waterGoalMl = waterValue!!, stepGoal = stepsValue!!, themeMode = theme, lockScreenNames = lockNames)) }) { Text(s(Res.string.save)) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(s(Res.string.cancel)) } },
     )
     if (confirmRemove) AlertDialog(

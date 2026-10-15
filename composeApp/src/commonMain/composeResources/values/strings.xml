@@ -192,6 +192,7 @@
     <string name="steps_a_day">steps a day</string>
     <string name="remove_x">Remove %1$s</string>
     <string name="language">Language</string>
+    <string name="show_medicine_names_on_the_lock_screen">Show medicine names on the lock screen</string>
     <string name="arabic_digits">Arabic-Indic digits (٠١٢٣)</string>
     <string name="note_1">A Home page with today at a glance and shortcuts.</string>
     <string name="note_2">Medicine reminders: times, days, and Taken or Skip on the notification.</string>
