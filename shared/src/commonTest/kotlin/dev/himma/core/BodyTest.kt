@@ -52,10 +52,6 @@ class GymTest {
         assertEquals(5, sets.size)
         assertEquals(SetEntry("Dip", 12, 0.0), sets.last())
     }
-
-    @Test fun formatKgDropsTheZeroDecimal() {
-        assertEquals("60 kg", formatKg(60.0)); assertEquals("62.5 kg", formatKg(62.5))
-    }
 }
 
 class StepsTest {

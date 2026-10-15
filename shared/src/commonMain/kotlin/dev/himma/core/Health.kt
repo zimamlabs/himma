@@ -19,12 +19,6 @@ fun waterProgress(ml: Int, goalMl: Int): Float = if (goalMl <= 0) 0f else (ml.to
 /** Adds [deltaMl] to a day's total, never going below zero (so undo cannot overshoot). */
 fun addWater(totalMl: Int, deltaMl: Int): Int = (totalMl + deltaMl).coerceAtLeast(0)
 
-/** "1.25 L" for 1250, "250 ml" under a litre. */
-fun formatWater(ml: Int): String = if (ml < 1000) "$ml ml" else {
-    val l = ml / 1000.0
-    (kotlin.math.round(l * 100) / 100).toString().removeSuffix(".0") + " L"
-}
-
 private const val DAY = 24 * 60
 
 /** Where the fasting clock is: [eating] now or fasting, and [minutesLeft] until it flips. */
@@ -39,9 +33,6 @@ fun fastState(eatStartMinutes: Int, fastHours: Int, nowMinutes: Int): FastState 
     val offset = ((nowMinutes - eatStartMinutes) % DAY + DAY) % DAY
     return if (offset < eatMinutes) FastState(true, eatMinutes - offset) else FastState(false, DAY - offset)
 }
-
-/** "6 h 05 min" or "42 min". */
-fun formatDuration(minutes: Int): String = if (minutes < 60) "$minutes min" else "${minutes / 60} h ${(minutes % 60).toString().padStart(2, '0')} min"
 
 fun formatClock(minutesOfDay: Int): String {
     val m = ((minutesOfDay % DAY) + DAY) % DAY

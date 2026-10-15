@@ -92,7 +92,6 @@ import dev.himma.core.Routine
 import dev.himma.core.SetEntry
 import dev.himma.core.Workout
 import dev.himma.core.beatsBest
-import dev.himma.core.formatKg
 import dev.himma.core.personalBests
 import dev.himma.core.plannedSets
 import dev.himma.core.volume
@@ -143,7 +142,7 @@ internal fun GymTab(store: HimmaStore, onStart: (Routine?) -> Unit) {
                         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Rounded.EmojiEvents, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
                             Text("  " + name.replaceFirstChar { it.uppercase() }, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                            Text(s(Res.string.rm, formatKg(b.maxWeightKg), formatKg(b.oneRepMaxKg)), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(s(Res.string.rm, weightText(b.maxWeightKg), weightText(b.oneRepMaxKg)), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }

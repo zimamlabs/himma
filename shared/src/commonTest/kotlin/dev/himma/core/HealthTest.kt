@@ -27,9 +27,6 @@ class HealthTest {
         assertEquals(0f, waterProgress(500, 0))
         assertEquals(750, addWater(500, 250))
         assertEquals(0, addWater(100, -250))
-        assertEquals("250 ml", formatWater(250))
-        assertEquals("1.25 L", formatWater(1250))
-        assertEquals("2 L", formatWater(2000))
     }
 
     @Test fun fastingWindowInsideTheDay() {
@@ -59,8 +56,6 @@ class HealthTest {
         assertNull(parseClock("24:00"))
         assertNull(parseClock("12:60"))
         assertNull(parseClock("noon"))
-        assertEquals("6 h 05 min", formatDuration(365))
-        assertEquals("42 min", formatDuration(42))
     }
 
     @Test fun mealsRoundTripThroughCsvIncludingCommasQuotesAndMissingMacros() {

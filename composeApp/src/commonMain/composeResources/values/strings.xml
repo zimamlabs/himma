@@ -237,4 +237,16 @@
     <string name="delete_all_body">This removes every meal, water, medicine, workout, step and weight file in %1$s, and your settings. It cannot be undone. Export a zip first if you want a copy.</string>
     <string name="delete_all_word">DELETE</string>
     <string name="type_to_confirm">Type %1$s to confirm</string>
+    <string name="water_ml">%1$s ml</string>
+    <string name="water_litres">%1$s L</string>
+    <string name="duration_minutes">%1$s min</string>
+    <string name="duration_hours_minutes">%1$s h %2$s min</string>
+    <string name="unit_kg">%1$s kg</string>
+    <string name="unit_lb">%1$s lb</string>
+    <string name="kg_label">kg</string>
+    <string name="lb_label">lb</string>
+    <string name="weight_unit">Body weight unit</string>
+    <string name="trend_unit_a_week">Trend %1$s%2$s %3$s a week</string>
+    <string name="today_s_weight_unit">Today\'s weight (%1$s)</string>
+    <string name="lifted">lifted</string>
 </resources>
