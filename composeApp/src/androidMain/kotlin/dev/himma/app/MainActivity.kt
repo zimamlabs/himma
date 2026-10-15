@@ -26,6 +26,11 @@ class MainActivity : ComponentActivity() {
     private lateinit var store: HimmaStore
     private lateinit var storage: Storage
     private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { if (::store.isInitialized) store.refreshReminders() }
+    private var pendingExport: (() -> ByteArray)? = null
+    private val exportTarget = registerForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
+        val bytes = pendingExport; pendingExport = null
+        if (uri != null && bytes != null) runCatching { contentResolver.openOutputStream(uri)?.use { it.write(bytes()) } }
+    }
     private val activityPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { startSteps() }
     private var stepSupportState by mutableStateOf(StepSupport.Unavailable)
     private val sensors by lazy { getSystemService(SENSOR_SERVICE) as SensorManager }
@@ -66,6 +71,8 @@ class MainActivity : ComponentActivity() {
         override fun openExactAlarmSettings() {
             if (Build.VERSION.SDK_INT >= 31) runCatching { startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:$packageName"))) }
         }
+        override val canExport: Boolean get() = true
+        override fun exportData(fileName: String, bytes: () -> ByteArray) { pendingExport = bytes; exportTarget.launch(fileName) }
         override val language: String get() = AppLanguagePrefs.load(this@MainActivity).code
         override fun setLanguage(code: String) { AppLanguagePrefs.save(this@MainActivity, code); recreate() }
         override val arabicDigits: Boolean get() = UiText.arabicDigits

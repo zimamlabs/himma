@@ -76,7 +76,7 @@ Himma helps you remember and keep a record. It is not medical advice and does no
 
 ## Privacy
 
-No account, no ads, no tracking. Himma keeps your data on your phone in plain files you can open anywhere, and sends nothing over the network.
+No account, no ads, no tracking. Android cloud backup of the app is switched off, so nothing is copied to a Google account behind your back; use *Export all data* in Settings (a zip of the plain files) for your own backup, and *Delete all data* to wipe everything (it asks you to type a word). With All files access on, other apps that also hold that permission can read the folder. Himma keeps your data on your phone in plain files you can open anywhere, and sends nothing over the network.
 
 ## Build
 

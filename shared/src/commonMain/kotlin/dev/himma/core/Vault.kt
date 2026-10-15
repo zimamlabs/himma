@@ -88,6 +88,19 @@ class Vault(
         return out
     }
 
+    private val ownDirs = listOf("meals", "water", "medicines", "gym", "steps", "body", ".himma")
+
+    /** Every Himma file as (name relative to the folder, bytes), for an export; files that are not Himma's are left out. */
+    fun exportEntries(): List<Pair<String, ByteArray>> = ownDirs.flatMap { dir ->
+        if (!fs.exists(root / dir)) emptyList() else fs.listRecursively(root / dir).filter { fs.metadata(it).isRegularFile && !it.name.endsWith(".tmp") }
+            .map { it.relativeTo(root).toString() to fs.read(it) { readByteArray() } }.toList()
+    }.sortedBy { it.first }
+
+    fun exportZip(): ByteArray = Zip.write(exportEntries())
+
+    /** Removes Himma's own folders and files (including the kept .corrupt copies) and nothing else. Only call after the user confirmed. */
+    fun deleteAllData() { ownDirs.forEach { fs.deleteRecursively(root / it, mustExist = false) } }
+
     private val settingsPath get() = root / ".himma" / "settings.json"
 
     fun settings(): Settings = readJson(settingsPath, Settings.serializer(), Settings())
