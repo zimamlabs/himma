@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+- **A new app icon.** A rising peak with a small diamond, on the launcher, the splash, the About page and the desktop window. The old icon is kept in `branding/drafts`.
+
 ## 0.4.0
 
 - **Arabic and right-to-left.** Himma speaks Arabic (همّة) with a full right-to-left layout: every screen, the tour, the release notes and the medicine notifications. Choose English, العربية or the phone's language in Settings, and optionally show numbers in Arabic-Indic digits. A check in CI fails when an English text has no Arabic one.
