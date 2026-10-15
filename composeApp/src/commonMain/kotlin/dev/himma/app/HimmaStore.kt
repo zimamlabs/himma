@@ -22,6 +22,7 @@ import dev.himma.core.dosesOn
 import dev.himma.core.newId
 import dev.himma.core.Settings
 import dev.himma.core.Startup
+import dev.himma.core.DataProblem
 import dev.himma.core.ReminderProblem
 import dev.himma.core.Vault
 import dev.himma.core.reminderProblems
@@ -65,6 +66,9 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
     var stepsToday by mutableStateOf(0)
         private set
     /** What on the phone can stop medicine reminders; refreshed whenever the app comes back to the front. */
+    /** Data files that could not be read this session; each was copied aside before anything was written. */
+    var dataProblems by mutableStateOf(emptyList<DataProblem>())
+        private set
     var reminderProblems by mutableStateOf(emptyList<ReminderProblem>())
         private set
     /** The last seven days, oldest first, for the Home charts and the weekly summary. */
@@ -111,6 +115,7 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
 
     /** Re-reads the files and the clock; moves the Meals tab along when the day rolls over. */
     fun reload() {
+        vault.clearProblems()
         now = vault.now()
         if (mealDay == lastToday) mealDay = today
         if (today != lastToday) added.clear()
@@ -130,7 +135,10 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
         stepsToday = if (stepState.date == today.toString()) stepState.steps else vault.steps(today)
         recent = recentMealsFor()
         rebuildWeek()
+        dataProblems = vault.problems()
     }
+
+    fun dismissDataProblems() { vault.clearProblems(); dataProblems = emptyList() }
 
     fun refreshReminders() { reminderProblems = reminderProblems(medicines, platform.notificationsOn, platform.exactAlarmsOn) }
 

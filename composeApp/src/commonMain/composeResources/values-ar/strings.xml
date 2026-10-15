@@ -231,4 +231,7 @@
     <string name="routine_will_be_removed">سيُحذف %1$s وقائمة تمارينه. التمارين التي سجّلتها سابقًا تبقى.</string>
     <string name="not_medical_advice_title">ليست نصيحة طبية</string>
     <string name="not_medical_advice">همّة تساعدك على التذكّر وحفظ سجلّك. هي ليست نصيحة طبية ولا تغني عمّا يقوله لك طبيبك أو صيدلانيك.</string>
+    <string name="data_file_unreadable">تعذّرت قراءة ملف</string>
+    <string name="data_file_unreadable_body">تعذّرت قراءة %1$s، فبدأت همّة به فارغًا. أصلك محفوظ كما هو باسم %2$s في المجلد نفسه. أصلحه أو استعده ثم أعد فتح همّة.</string>
+    <string name="got_it">فهمت</string>
 </resources>

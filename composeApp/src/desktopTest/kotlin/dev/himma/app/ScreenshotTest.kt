@@ -76,4 +76,10 @@ class ScreenshotTest {
         shot("about-en") { AboutScreen(store(), {}, {}) }
         shot("about-ar", "ar") { AboutScreen(store(), {}, {}) }
     }
+
+    @Test fun unreadableFileCard() {
+        val problems = listOf(dev.himma.core.DataProblem("medicines/medicines.json", "medicines.json.corrupt-20261015-101500"))
+        shot("data-problem-en") { DataProblemsCard(problems) {} }
+        shot("data-problem-ar", "ar") { DataProblemsCard(problems) {} }
+    }
 }
