@@ -220,4 +220,12 @@
     <string name="exact_alarms_off_body">Exact alarms are not allowed, so a reminder can come a few minutes late. Allow them for on-time reminders.</string>
     <string name="notification_settings">Notification settings</string>
     <string name="allow_exact_alarms">Allow exact alarms</string>
+    <string name="delete_this_medicine">Delete this medicine?</string>
+    <string name="medicine_will_be_removed">%1$s and its reminders will be removed. This cannot be undone.</string>
+    <string name="delete_this_meal">Delete this meal?</string>
+    <string name="meal_will_be_removed">%1$s (%2$s kcal) will be removed from this day. This cannot be undone.</string>
+    <string name="delete_this_routine">Delete this routine?</string>
+    <string name="routine_will_be_removed">%1$s and its list of exercises will be removed. Workouts you already logged are kept.</string>
+    <string name="not_medical_advice_title">Not medical advice</string>
+    <string name="not_medical_advice">Himma helps you remember and keep a record. It is not medical advice and does not replace what your doctor or pharmacist tells you.</string>
 </resources>

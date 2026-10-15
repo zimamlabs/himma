@@ -9,6 +9,9 @@ import dev.himma.app.res.skipped
 import dev.himma.app.res.upcoming
 
 import dev.himma.app.res.Res
+import dev.himma.app.res.delete_this_medicine
+import dev.himma.app.res.medicine_will_be_removed
+import dev.himma.app.res.not_medical_advice
 import dev.himma.app.res.add_a_medicine
 import dev.himma.app.res.cancel
 import dev.himma.app.res.days_none_selected_means_every
@@ -121,6 +124,7 @@ fun MedicineDialog(existing: Medicine?, onDismiss: () -> Unit, onDelete: (() -> 
     var times by remember { mutableStateOf(existing?.times?.joinToString(", ") ?: "08:00") }
     var days by remember { mutableStateOf(existing?.days ?: emptySet()) }
     val parsed = parseTimes(times)
+    var confirmDelete by remember { mutableStateOf(false) }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(if (existing == null) s(Res.string.add_a_medicine) else s(Res.string.edit_medicine)) },
@@ -129,6 +133,7 @@ fun MedicineDialog(existing: Medicine?, onDismiss: () -> Unit, onDelete: (() -> 
                 OutlinedTextField(name, { name = it }, singleLine = true, label = { Text(s(Res.string.name)) }, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(dose, { dose = it }, singleLine = true, label = { Text(s(Res.string.dose_optional_for_example_tablet)) }, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(times, { times = it }, singleLine = true, isError = parsed == null, label = { Text(s(Res.string.times_hh_mm_separated_by)) }, modifier = Modifier.fillMaxWidth())
+                Text(s(Res.string.not_medical_advice), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(s(Res.string.days_none_selected_means_every), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     items((1..7).toList()) { n ->
@@ -140,9 +145,10 @@ fun MedicineDialog(existing: Medicine?, onDismiss: () -> Unit, onDelete: (() -> 
         confirmButton = { TextButton(enabled = name.isNotBlank() && parsed != null, onClick = { onSave(Medicine(existing?.id ?: "", name.trim(), dose.trim(), parsed!!, if (days.size == 7) emptySet() else days)) }) { Text(s(Res.string.save)) } },
         dismissButton = {
             Row {
-                onDelete?.let { TextButton(onClick = it) { Text(s(Res.string.delete), color = MaterialTheme.colorScheme.error) } }
+                onDelete?.let { TextButton(onClick = { confirmDelete = true }) { Text(s(Res.string.delete), color = MaterialTheme.colorScheme.error) } }
                 TextButton(onClick = onDismiss) { Text(s(Res.string.cancel)) }
             }
         },
     )
+    if (confirmDelete && existing != null) ConfirmDelete(s(Res.string.delete_this_medicine), s(Res.string.medicine_will_be_removed, existing.name), { confirmDelete = false; onDelete?.invoke() }, { confirmDelete = false })
 }

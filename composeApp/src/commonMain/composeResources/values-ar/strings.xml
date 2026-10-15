@@ -223,4 +223,12 @@
     <string name="exact_alarms_off_body">المنبهات الدقيقة غير مسموح بها، فقد يتأخر التذكير بضع دقائق. اسمح بها ليصل التذكير في وقته.</string>
     <string name="notification_settings">إعدادات الإشعارات</string>
     <string name="allow_exact_alarms">السماح بالمنبهات الدقيقة</string>
+    <string name="delete_this_medicine">حذف هذا الدواء؟</string>
+    <string name="medicine_will_be_removed">سيُحذف %1$s وتذكيراته. لا يمكن التراجع عن ذلك.</string>
+    <string name="delete_this_meal">حذف هذه الوجبة؟</string>
+    <string name="meal_will_be_removed">ستُحذف %1$s (%2$s سعرة) من هذا اليوم. لا يمكن التراجع عن ذلك.</string>
+    <string name="delete_this_routine">حذف هذا الروتين؟</string>
+    <string name="routine_will_be_removed">سيُحذف %1$s وقائمة تمارينه. التمارين التي سجّلتها سابقًا تبقى.</string>
+    <string name="not_medical_advice_title">ليست نصيحة طبية</string>
+    <string name="not_medical_advice">همّة تساعدك على التذكّر وحفظ سجلّك. هي ليست نصيحة طبية ولا تغني عمّا يقوله لك طبيبك أو صيدلانيك.</string>
 </resources>

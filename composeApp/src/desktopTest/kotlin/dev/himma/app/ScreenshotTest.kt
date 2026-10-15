@@ -69,4 +69,11 @@ class ScreenshotTest {
         assertTrue(s.reminderProblems.isEmpty())
         shot("medicine-ok-en") { MedicineTab(s) {} }
     }
+
+    @Test fun confirmDeleteAndAbout() {
+        shot("confirm-delete-en") { ConfirmDelete("Delete this medicine?", "Vitamin D and its reminders will be removed. This cannot be undone.", {}, {}) }
+        shot("confirm-delete-ar", "ar") { ConfirmDelete("حذف هذا الدواء؟", "سيُحذف Vitamin D وتذكيراته. لا يمكن التراجع عن ذلك.", {}, {}) }
+        shot("about-en") { AboutScreen(store(), {}, {}) }
+        shot("about-ar", "ar") { AboutScreen(store(), {}, {}) }
+    }
 }
