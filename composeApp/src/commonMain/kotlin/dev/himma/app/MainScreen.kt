@@ -106,7 +106,7 @@ class WorkoutStart(val routine: dev.himma.core.Routine?)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MainScreen(
-    store: HimmaStore, onAbout: () -> Unit, onTour: () -> Unit,
+    store: HimmaStore, onAbout: () -> Unit, onTour: () -> Unit, onSettings: () -> Unit = {},
     initialTab: Tab? = null, initialTrack: TrackPage = TrackPage.Water,
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed),
     onPageChanged: (Tab) -> Unit = {},
@@ -119,7 +119,6 @@ internal fun MainScreen(
     val current = tabs[pager.currentPage.coerceIn(0, tabs.lastIndex)]
     var track by remember { mutableStateOf(initialTrack) }
     var workout by remember { mutableStateOf<WorkoutStart?>(null) }
-    var settings by remember { mutableStateOf(false) }
     var showNew by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<Meal?>(null) }
     var adding by remember { mutableStateOf(false) }
@@ -133,7 +132,8 @@ internal fun MainScreen(
     fun goTo(tab: Tab, page: TrackPage? = null) {
         if (page != null) track = page
         if (tab !in tabs) extra = tab
-        scope.launch { pager.animateScrollToPage((visibleTabs(store.settings) + listOfNotNull(extra)).indexOf(tab).coerceAtLeast(0)) }
+        val index = (visibleTabs(store.settings) + listOfNotNull(extra)).indexOf(tab).coerceAtLeast(0)
+        scope.launch { if (store.settings.reduceMotion) pager.scrollToPage(index) else pager.animateScrollToPage(index) }
     }
     LaunchedEffect(pager) { snapshotFlow { pager.currentPage }.collect { onPageChanged(tabs[it.coerceIn(0, tabs.lastIndex)]) } }
     // An extra page goes away once the user leaves it.
@@ -153,7 +153,7 @@ internal fun MainScreen(
                 onAddWater = { closeDrawerThen { store.addWater(250); scope.launch { snackbar.showSnackbar(addedText) } } },
                 onAddMedicine = { closeDrawerThen { goTo(Tab.Medicine); addingMedicine = true } },
                 onLogWeight = { closeDrawerThen { goTo(Tab.Track, TrackPage.Weight) } },
-                onSettings = { closeDrawerThen { settings = true } },
+                onSettings = { closeDrawerThen(onSettings) },
                 onAbout = { closeDrawerThen(onAbout) },
                 onWhatsNew = { closeDrawerThen { showNew = true } },
                 onTour = { closeDrawerThen(onTour) },
@@ -198,12 +198,14 @@ internal fun MainScreen(
     if (addingMedicine || editingMedicine != null) MedicineDialog(editingMedicine, onDismiss = { addingMedicine = false; editingMedicine = null },
         onDelete = editingMedicine?.let { m -> { store.deleteMedicine(m.id); editingMedicine = null } }) { store.saveMedicine(it); addingMedicine = false; editingMedicine = null }
     if (templatesDialog) TemplatesDialog(store) { templatesDialog = false }
-    if (settings) SettingsDialog(store, { settings = false }, onTour = { settings = false; onTour() }) { store.saveSettings(it); settings = false }
     if (adding || editing != null) MealDialog(editing, store.nowTime(), onDismiss = { adding = false; editing = null },
         onDelete = editing?.let { m -> { store.deleteMeal(m.id); editing = null } }, onTemplate = { store.saveTemplate(dev.himma.core.MealTemplate("", it.name, it.kcal, it.protein, it.carbs, it.fat)) }) { store.saveMeal(it); adding = false; editing = null }
 }
 
-internal val tabPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp)
+/** Comfortable by default (12 dp between cards, 16 dp gutters); the Compact density setting tightens both. */
+internal val LocalCompact = androidx.compose.runtime.compositionLocalOf { false }
+internal val rowGap: androidx.compose.ui.unit.Dp @Composable get() = if (LocalCompact.current) 8.dp else 12.dp
+@Composable internal fun tabPadding() = PaddingValues(start = if (LocalCompact.current) 12.dp else 16.dp, end = if (LocalCompact.current) 12.dp else 16.dp, top = 8.dp, bottom = 96.dp)
 
 /** A ring that fills as [progress] goes 0 to 1, with [content] in the middle. */
 @Composable

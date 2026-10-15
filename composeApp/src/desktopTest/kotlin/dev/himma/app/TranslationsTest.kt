@@ -9,8 +9,10 @@ import kotlin.test.assertTrue
 
 /** English and Arabic must never drift apart: same keys, same placeholders, and every shared English text has a translation. */
 class TranslationsTest {
+    // A path ending in strings.xml stands for every strings*.xml next to it (new screens keep their texts in their own file).
     private fun entries(path: String): Map<String, String> {
-        val text = File(path).readText()
+        val dir = File(path).parentFile
+        val text = dir.listFiles { f -> f.name.startsWith("strings") && f.name.endsWith(".xml") }!!.sortedBy { it.name }.joinToString("\n") { it.readText() }
         val found = Regex("""<(string|plurals|string-array) name="([^"]+)"[^>]*>(.*?)</\1>""", RegexOption.DOT_MATCHES_ALL).findAll(text)
         return found.associate { "${it.groupValues[1]}:${it.groupValues[2]}" to it.groupValues[3] }
     }
@@ -49,6 +51,6 @@ class TranslationsTest {
 
     // Shared resources show an escaped apostrophe with its backslash ("What\'s new"); a plain ' is correct there.
     @Test fun sharedStringsHaveNoEscapedApostrophe() {
-        for (f in listOf("values", "values-ar")) assertTrue("\\'" !in File("src/commonMain/composeResources/$f/strings.xml").readText(), "$f has a backslash before an apostrophe")
+        for (f in listOf("values", "values-ar")) for (x in File("src/commonMain/composeResources/$f").listFiles()!!) assertTrue("\\'" !in x.readText(), "${x.name} has a backslash before an apostrophe")
     }
 }

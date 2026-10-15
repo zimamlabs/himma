@@ -60,7 +60,7 @@ import dev.himma.core.weightTrend
 internal fun StepsTab(store: HimmaStore) {
     val goal = store.settings.stepGoal
     val support = store.platform.stepSupport
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(rowGap)) {
         item {
             Ring(stepProgress(store.stepsToday, goal), Modifier.size(220.dp)) {
                 Text(num(store.stepsToday), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
@@ -94,7 +94,7 @@ internal fun WeightTab(store: HimmaStore) {
     val kg = text.trim().replace(',', '.').toDoubleOrNull()?.let { unit.toKg(it) }?.takeIf { it in 20.0..500.0 }
     val trend = weightTrend(store.weights, store.today, 28)
     val last30 = store.weights.filter { it.date >= kotlinx.datetime.LocalDate.fromEpochDays(store.today.toEpochDays() - 90) }
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding(), verticalArrangement = Arrangement.spacedBy(rowGap)) {
         item {
             Panel {
                 Text(trend.latestKg?.let { weightText(it, unit) } ?: s(Res.string.no_weight_logged), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)

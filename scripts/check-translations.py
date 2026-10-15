@@ -2,9 +2,14 @@
 """Fail when the Arabic strings drift from the English ones: same keys and the same placeholders."""
 import re, sys
 from xml.etree import ElementTree as ET
-pairs = [("composeApp/src/commonMain/composeResources/values/strings.xml", "composeApp/src/commonMain/composeResources/values-ar/strings.xml"),
-         ("composeApp/src/androidMain/res/values/strings.xml", "composeApp/src/androidMain/res/values-ar/strings.xml")]
+import glob, os
+pairs = []
+for base in ("composeApp/src/commonMain/composeResources", "composeApp/src/androidMain/res"):
+    for en in sorted(glob.glob(base + "/values/strings*.xml")):
+        pairs.append((en, en.replace("/values/", "/values-ar/")))
 def load(path):
+    if not os.path.exists(path):
+        return {}
     return {(el.tag, el.get("name")): "".join(el.itertext()) for el in ET.parse(path).getroot()}
 ph = lambda t: sorted(re.findall(r"%\d\$s", t))
 problems = []

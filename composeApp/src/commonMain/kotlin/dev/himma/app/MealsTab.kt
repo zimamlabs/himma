@@ -82,7 +82,7 @@ import dev.himma.core.parseClock
 internal fun MealsTab(store: HimmaStore, onTemplates: () -> Unit, onEdit: (Meal) -> Unit) {
     val totals = dayTotals(store.meals)
     val left = caloriesLeft(store.settings.calorieGoal, totals)
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding(), verticalArrangement = Arrangement.spacedBy(rowGap)) {
         item {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                 IconButton(onClick = { store.shiftMealDay(-1) }) { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowLeft, s(Res.string.previous_day)) }
