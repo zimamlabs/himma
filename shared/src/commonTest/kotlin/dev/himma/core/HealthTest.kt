@@ -109,4 +109,15 @@ class HealthTest {
         v.fs.write("/h/.himma/settings.json".toPath()) { writeUtf8("{ not json") }
         assertEquals(Settings(), v.settings())
     }
+
+    @Test fun medicineNamesStayOffTheLockScreenByDefaultAndForOldFiles() {
+        assertEquals(false, Settings().lockScreenNames)
+        val v = vault()
+        v.fs.createDirectories("/h/.himma".toPath())
+        v.fs.write("/h/.himma/settings.json".toPath()) { writeUtf8("""{ "calorieGoal": 2100 }""") }
+        assertEquals(2100, v.settings().calorieGoal)
+        assertEquals(false, v.settings().lockScreenNames, "a file written by an older version")
+        v.saveSettings(Settings(lockScreenNames = true))
+        assertEquals(true, v.settings().lockScreenNames)
+    }
 }
