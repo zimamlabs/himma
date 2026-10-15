@@ -26,4 +26,7 @@ fun durationText(minutes: Int): String {
 /** A weight stored in kg, shown in [unit]. */
 @Composable
 fun weightText(kg: Double, unit: WeightUnit = WeightUnit.Kg): String =
-    s(if (unit == WeightUnit.Lb) Res.string.unit_lb else Res.string.unit_kg, numberText(unit.fromKg(kg)))
+    s(if (unit == WeightUnit.Lb) Res.string.unit_lb else Res.string.unit_kg, ltr(numberText(unit.fromKg(kg))))
+
+/** Keeps a number with its sign in one piece inside right-to-left text (a bare minus sign would end up on the wrong side). */
+fun ltr(number: String): String = "\u2066$number\u2069"

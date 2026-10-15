@@ -27,7 +27,7 @@
         </activity>
         <receiver android:name="dev.himma.app.DoseReceiver" android:exported="false" />
         <receiver android:name="dev.himma.app.DoseActionReceiver" android:exported="false" />
-        <receiver android:name="dev.himma.app.BootReceiver" android:exported="true">
+        <receiver android:name="dev.himma.app.BootReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />

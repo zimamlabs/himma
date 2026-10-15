@@ -10,6 +10,12 @@ fun dayTotals(meals: List<Meal>) = DayTotals(
     fat = meals.sumOf { it.fat ?: 0 },
 )
 
+/** A meal above this is almost certainly a typo (a missing decimal point), so the form refuses it. */
+const val MAX_MEAL_KCAL = 10000
+
+/** Calories typed for one meal, or null when it is not a whole number from 0 to [MAX_MEAL_KCAL]. */
+fun mealKcal(text: String): Int? = text.trim().toIntOrNull()?.takeIf { it in 0..MAX_MEAL_KCAL }
+
 /** Calories left for the day; negative once the goal is passed. */
 fun caloriesLeft(goal: Int, totals: DayTotals): Int = goal - totals.kcal
 

@@ -70,6 +70,8 @@ By default Himma keeps its files in the app's private folder. If you allow *All 
 
 Moving there never risks your data: Himma copies the old folder, checks every file by size and SHA-256, writes a marker and only then starts using the new folder. Nothing is deleted or overwritten: a different file with the same name stays and the old one is kept beside it as `name (old copy)`. If anything goes wrong the old folder stays in use and Himma tries again later. The old copy is kept as a backup until you choose *Remove the old copy* in Settings, which asks first and checks again that everything is safe.
 
+Medicine times are wall-clock times ("08:00" wherever you are): after travelling or a change of the clock or time zone the next reminder follows the new local time, and doses missed in the gap are announced (up to three hours back).
+
 ## Not medical advice
 
 Himma helps you remember and keep a record. It is not medical advice and does not replace what your doctor or pharmacist tells you. Reminders can fail (a phone switched off, a setting, a bug), so do not rely on them alone for a medicine that matters.
