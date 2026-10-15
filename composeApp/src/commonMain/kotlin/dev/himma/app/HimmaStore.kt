@@ -22,7 +22,9 @@ import dev.himma.core.dosesOn
 import dev.himma.core.newId
 import dev.himma.core.Settings
 import dev.himma.core.Startup
+import dev.himma.core.ReminderProblem
 import dev.himma.core.Vault
+import dev.himma.core.reminderProblems
 import dev.himma.core.startupFor
 import dev.himma.core.addWater
 import kotlinx.datetime.LocalDate
@@ -61,6 +63,9 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
     var weights by mutableStateOf(emptyList<WeightEntry>())
         private set
     var stepsToday by mutableStateOf(0)
+        private set
+    /** What on the phone can stop medicine reminders; refreshed whenever the app comes back to the front. */
+    var reminderProblems by mutableStateOf(emptyList<ReminderProblem>())
         private set
     /** The last seven days, oldest first, for the Home charts and the weekly summary. */
     var week by mutableStateOf(emptyList<DayRecord>())
@@ -115,6 +120,7 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
         todayMeals = vault.meals(today)
         waterMl = vault.water(today)
         medicines = vault.medicines()
+        refreshReminders()
         doseMarks = vault.doseMarks()
         routines = vault.routines()
         workouts = vault.allWorkouts()
@@ -125,6 +131,8 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
         recent = recentMealsFor()
         rebuildWeek()
     }
+
+    fun refreshReminders() { reminderProblems = reminderProblems(medicines, platform.notificationsOn, platform.exactAlarmsOn) }
 
     private fun recentMealsFor(): List<dev.himma.core.Meal> =
         dev.himma.core.recentMeals(lastDays(today, 14).reversed().flatMap { vault.meals(it).sortedByDescending { m -> m.time } }, 8)

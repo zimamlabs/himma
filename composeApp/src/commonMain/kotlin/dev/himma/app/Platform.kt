@@ -13,6 +13,12 @@ interface PlatformActions {
     val canAskAllFiles: Boolean get() = false
     fun allowAllFiles() {}
     fun allowNotifications() {}
+    /** Medicine notifications can appear (permission given, app and channel not switched off). */
+    val notificationsOn: Boolean get() = true
+    /** Alarms can ring at the exact minute. */
+    val exactAlarmsOn: Boolean get() = true
+    fun openNotificationSettings() {}
+    fun openExactAlarmSettings() {}
     /** The language of the app: "system", "en" or "ar". */
     val language: String get() = "system"
     fun setLanguage(code: String) {}

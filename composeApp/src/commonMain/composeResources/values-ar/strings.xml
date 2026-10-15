@@ -218,4 +218,9 @@
         <item quantity="zero">%1$s تمرين، %2$s كغ مرفوعة</item><item quantity="one">تمرين واحد، %2$s كغ مرفوعة</item><item quantity="two">تمرينان، %2$s كغ مرفوعة</item>
         <item quantity="few">%1$s تمارين، %2$s كغ مرفوعة</item><item quantity="many">%1$s تمرينًا، %2$s كغ مرفوعة</item><item quantity="other">%1$s تمرين، %2$s كغ مرفوعة</item>
     </plurals>
+    <string name="reminders_may_not_work">قد لا تعمل التذكيرات</string>
+    <string name="notifications_off_body">الإشعارات متوقفة لهمّة، لذلك لن يظهر موعد الجرعة. فعّلها.</string>
+    <string name="exact_alarms_off_body">المنبهات الدقيقة غير مسموح بها، فقد يتأخر التذكير بضع دقائق. اسمح بها ليصل التذكير في وقته.</string>
+    <string name="notification_settings">إعدادات الإشعارات</string>
+    <string name="allow_exact_alarms">السماح بالمنبهات الدقيقة</string>
 </resources>

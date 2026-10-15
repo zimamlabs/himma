@@ -10,6 +10,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import dev.himma.core.Dose
 import dev.himma.core.DoseMark
 import dev.himma.core.Medicine
@@ -47,10 +48,20 @@ object MedicineAlarms {
         if (!prefs.contains(CHECKED)) prefs.edit().putLong(CHECKED, System.currentTimeMillis()).apply()
         val next = nextDoseTime(vault(context).medicines(), now()) ?: return
         val at = next.toInstant(zone).toEpochMilliseconds()
-        val exact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || manager.canScheduleExactAlarms()
+        val exact = exactAlarmsOn(context)
         if (exact) manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, intent)
         else manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, intent)
     }
+
+    /** Notifications can appear: allowed for the app and the medicine channel not switched off. */
+    fun notificationsOn(context: Context): Boolean {
+        if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) return false
+        val channel = (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).getNotificationChannel(CHANNEL)
+        return channel == null || channel.importance != NotificationManager.IMPORTANCE_NONE
+    }
+
+    fun exactAlarmsOn(context: Context): Boolean =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.S || (context.getSystemService(Context.ALARM_SERVICE) as AlarmManager).canScheduleExactAlarms()
 
     /** After the list changes: a dose that was just added for a time already past must not ring now. */
     fun medicinesChanged(context: Context) {

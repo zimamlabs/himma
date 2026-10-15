@@ -25,7 +25,7 @@ import okio.Path.Companion.toOkioPath
 class MainActivity : ComponentActivity() {
     private lateinit var store: HimmaStore
     private lateinit var storage: Storage
-    private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { if (::store.isInitialized) store.refreshReminders() }
     private val activityPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { startSteps() }
     private var stepSupportState by mutableStateOf(StepSupport.Unavailable)
     private val sensors by lazy { getSystemService(SENSOR_SERVICE) as SensorManager }
@@ -56,6 +56,15 @@ class MainActivity : ComponentActivity() {
         }
         override fun allowNotifications() {
             if (Build.VERSION.SDK_INT >= 33) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+        override val notificationsOn: Boolean get() = MedicineAlarms.notificationsOn(this@MainActivity)
+        override val exactAlarmsOn: Boolean get() = MedicineAlarms.exactAlarmsOn(this@MainActivity)
+        override fun openNotificationSettings() {
+            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+            runCatching { startActivity(intent) }
+        }
+        override fun openExactAlarmSettings() {
+            if (Build.VERSION.SDK_INT >= 31) runCatching { startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:$packageName"))) }
         }
         override val language: String get() = AppLanguagePrefs.load(this@MainActivity).code
         override fun setLanguage(code: String) { AppLanguagePrefs.save(this@MainActivity, code); recreate() }
