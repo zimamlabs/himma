@@ -46,7 +46,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import dev.himma.core.formatKg
+import dev.himma.app.res.kg_label
+import dev.himma.app.res.lb_label
+import dev.himma.app.res.today_s_weight_unit
+import dev.himma.app.res.trend_unit_a_week
+import dev.himma.core.WeightUnit
+import dev.himma.core.numberText
 import dev.himma.core.movingAverage
 import dev.himma.core.stepProgress
 import dev.himma.core.weightTrend
@@ -85,33 +90,34 @@ internal fun StepsTab(store: HimmaStore) {
 @Composable
 internal fun WeightTab(store: HimmaStore) {
     var text by remember { mutableStateOf("") }
-    val kg = text.trim().replace(',', '.').toDoubleOrNull()?.takeIf { it in 20.0..500.0 }
+    val unit = WeightUnit.fromCode(store.settings.weightUnit)
+    val kg = text.trim().replace(',', '.').toDoubleOrNull()?.let { unit.toKg(it) }?.takeIf { it in 20.0..500.0 }
     val trend = weightTrend(store.weights, store.today, 28)
     val last30 = store.weights.filter { it.date >= kotlinx.datetime.LocalDate.fromEpochDays(store.today.toEpochDays() - 90) }
     LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             Panel {
-                Text(trend.latestKg?.let { formatKg(it) } ?: s(Res.string.no_weight_logged), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
-                trend.changeKg?.let { Text(s(Res.string.over_weeks, if (it > 0) "+" else "", formatKg(it)), style = MaterialTheme.typography.bodyMedium) }
-                trend.kgPerWeek?.let { Text(s(Res.string.trend_kg_a_week, if (it > 0) "+" else "", kotlin.math.round(it * 100) / 100), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                Text(trend.latestKg?.let { weightText(it, unit) } ?: s(Res.string.no_weight_logged), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
+                trend.changeKg?.let { Text(s(Res.string.over_weeks, if (it > 0) "+" else "", weightText(it, unit)), style = MaterialTheme.typography.bodyMedium) }
+                trend.kgPerWeek?.let { Text(s(Res.string.trend_unit_a_week, if (it > 0) "+" else "", kotlin.math.round(unit.fromKg(it) * 100) / 100, s(if (unit == WeightUnit.Lb) Res.string.lb_label else Res.string.kg_label)), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
             }
         }
         item {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                OutlinedTextField(text, { text = it }, Modifier.weight(1f), singleLine = true, isError = text.isNotBlank() && kg == null, label = { Text(s(Res.string.today_s_weight_kg)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
+                OutlinedTextField(text, { text = it }, Modifier.weight(1f), singleLine = true, isError = text.isNotBlank() && kg == null, label = { Text(s(Res.string.today_s_weight_unit, s(if (unit == WeightUnit.Lb) Res.string.lb_label else Res.string.kg_label))) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                 Button(enabled = kg != null, onClick = { store.saveWeight(kg!!); text = "" }) { Text(s(Res.string.save)) }
             }
         }
         if (last30.size >= 2) item {
             Panel {
                 Text(s(Res.string.last_days_a369), style = MaterialTheme.typography.titleSmall)
-                LineChart(last30.map { it.kg.toFloat() }, smooth = movingAverage(last30, 7).map { it.kg.toFloat() })
+                LineChart(last30.map { unit.fromKg(it.kg).toFloat() }, smooth = movingAverage(last30, 7).map { unit.fromKg(it.kg).toFloat() })
             }
         }
         items(store.weights.reversed().take(20), key = { it.date.toString() }) { e ->
             Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(prettyDate(e.date), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                Text(formatKg(e.kg), style = MaterialTheme.typography.titleSmall)
+                Text(weightText(e.kg, unit), style = MaterialTheme.typography.titleSmall)
                 IconButton(onClick = { store.saveWeight(0.0, e.date) }) { Icon(Icons.Rounded.Close, s(Res.string.remove)) }
             }
         }

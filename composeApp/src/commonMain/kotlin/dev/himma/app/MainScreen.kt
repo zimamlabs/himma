@@ -71,6 +71,9 @@ import dev.himma.app.res.save
 import dev.himma.app.res.save_as_meal
 import dev.himma.app.res.saved_meals
 import dev.himma.app.res.settings
+import dev.himma.app.res.weight_unit
+import dev.himma.app.res.kg_label
+import dev.himma.app.res.lb_label
 import dev.himma.app.res.export_all_data_as_zip
 import dev.himma.app.res.delete_all_data
 import dev.himma.app.res.delete_all_data_question
@@ -165,8 +168,6 @@ import dev.himma.core.caloriesLeft
 import dev.himma.core.dayTotals
 import dev.himma.core.fastState
 import dev.himma.core.formatClock
-import dev.himma.core.formatDuration
-import dev.himma.core.formatWater
 import dev.himma.core.parseClock
 import dev.himma.core.waterProgress
 
@@ -329,8 +330,8 @@ private fun WaterTab(store: HimmaStore) {
     val goal = store.settings.waterGoalMl
     Column(Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Ring(waterProgress(store.waterMl, goal), Modifier.size(220.dp)) {
-            Text(formatWater(store.waterMl), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
-            Text(s(Res.string.of_fcd7, formatWater(goal)), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(waterText(store.waterMl), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
+            Text(s(Res.string.of_fcd7, waterText(goal)), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Button(onClick = { store.addWater(250) }, Modifier.fillMaxWidth()) { Text(s(Res.string.ml_glass)) }
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -366,7 +367,7 @@ private fun FastingTab(store: HimmaStore) {
         val total = if (fast.eating) (24 - s.fastHours) * 60 else s.fastHours * 60
         Ring(1f - fast.minutesLeft.toFloat() / total, Modifier.size(220.dp)) {
             Text(if (fast.eating) s(Res.string.eating) else s(Res.string.fasting_label), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
-            Text(s(Res.string.left, formatDuration(fast.minutesLeft)), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(s(Res.string.left, durationText(fast.minutesLeft)), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Text(s(Res.string.eating_to, formatClock(s.eatStartMinutes), formatClock(eatEnd)), style = MaterialTheme.typography.bodyLarge)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -437,6 +438,7 @@ private fun SettingsDialog(store: HimmaStore, onDismiss: () -> Unit, onTour: () 
     var theme by remember { mutableStateOf(current.themeMode) }
     var confirmDeleteAll by remember { mutableStateOf(false) }
     var typed by remember { mutableStateOf("") }
+    var weightUnit by remember { mutableStateOf(current.weightUnit) }
     var lockNames by remember { mutableStateOf(current.lockScreenNames) }
     val stepsValue = steps.trim().toIntOrNull()?.takeIf { it in 100..100000 }
     val kcalValue = kcal.trim().toIntOrNull()?.takeIf { it in 1..20000 }
@@ -449,6 +451,10 @@ private fun SettingsDialog(store: HimmaStore, onDismiss: () -> Unit, onTour: () 
                 OutlinedTextField(kcal, { kcal = it }, singleLine = true, isError = kcalValue == null, label = { Text(s(Res.string.daily_calorie_goal)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(water, { water = it }, singleLine = true, isError = waterValue == null, label = { Text(s(Res.string.daily_water_goal_ml)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(steps, { steps = it }, singleLine = true, isError = stepsValue == null, label = { Text(s(Res.string.daily_step_goal)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
+                Text(s(Res.string.weight_unit), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf("kg" to s(Res.string.kg_label), "lb" to s(Res.string.lb_label)).forEach { (k, label) -> FilterChip(weightUnit == k, { weightUnit = k }, { Text(label) }) }
+                }
                 Text(s(Res.string.theme), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     listOf("system" to s(Res.string.system), "light" to s(Res.string.light), "dark" to s(Res.string.dark)).forEach { (k, label) -> FilterChip(theme == k, { theme = k }, { Text(label) }) }
@@ -476,7 +482,7 @@ private fun SettingsDialog(store: HimmaStore, onDismiss: () -> Unit, onTour: () 
                 TextButton(onClick = onTour) { Text(s(Res.string.show_the_tour_again)) }
             }
         },
-        confirmButton = { TextButton(enabled = kcalValue != null && waterValue != null && stepsValue != null, onClick = { onSave(current.copy(calorieGoal = kcalValue!!, waterGoalMl = waterValue!!, stepGoal = stepsValue!!, themeMode = theme, lockScreenNames = lockNames)) }) { Text(s(Res.string.save)) } },
+        confirmButton = { TextButton(enabled = kcalValue != null && waterValue != null && stepsValue != null, onClick = { onSave(current.copy(calorieGoal = kcalValue!!, waterGoalMl = waterValue!!, stepGoal = stepsValue!!, themeMode = theme, lockScreenNames = lockNames, weightUnit = weightUnit)) }) { Text(s(Res.string.save)) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(s(Res.string.cancel)) } },
     )
     if (confirmDeleteAll) {

@@ -91,15 +91,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import dev.himma.app.res.lifted
 import dev.himma.core.DoseMark
 import dev.himma.core.Routine
 import dev.himma.core.caloriesLeft
 import dev.himma.core.dayScore
+import dev.himma.core.WeightUnit
 import dev.himma.core.dayTotals
 import dev.himma.core.fastState
-import dev.himma.core.formatDuration
-import dev.himma.core.formatKg
-import dev.himma.core.formatWater
 import dev.himma.core.stepProgress
 import dev.himma.core.volume
 import dev.himma.core.waterProgress
@@ -167,7 +166,7 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
         item {
             Panel {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                    MiniRing(waterP, formatWater(store.waterMl), s(Res.string.water)) { nav.go(Tab.Track, TrackPage.Water) }
+                    MiniRing(waterP, waterText(store.waterMl), s(Res.string.water)) { nav.go(Tab.Track, TrackPage.Water) }
                     MiniRing(kcalP, "${totals.kcal}", s(Res.string.calories)) { nav.go(Tab.Meals, null) }
                     MiniRing(stepP, if (stepsReady) "${store.stepsToday}" else "-", s(Res.string.steps)) { nav.go(Tab.Track, TrackPage.Steps) }
                 }
@@ -186,7 +185,7 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
         }
         item {
             Panel(Modifier.clickable { nav.go(Tab.Track, TrackPage.Fasting) }) {
-                SectionTitle(Icons.Rounded.Timer, s(Res.string.fasting, s.fastHours, 24 - s.fastHours), s(Res.string.left, formatDuration(fast.minutesLeft)))
+                SectionTitle(Icons.Rounded.Timer, s(Res.string.fasting, s.fastHours, 24 - s.fastHours), s(Res.string.left, durationText(fast.minutesLeft)))
                 Text(if (fast.eating) s(Res.string.eating_window_is_open) else s(Res.string.fasting_now), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                 val total = if (fast.eating) (24 - s.fastHours) * 60 else s.fastHours * 60
                 LinearProgressIndicator(progress = { 1f - fast.minutesLeft.toFloat() / total }, Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)), trackColor = MaterialTheme.colorScheme.surfaceContainerHigh)
@@ -243,8 +242,8 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Stat(if (summary.avgSteps > 0) "${summary.avgSteps}" else "-", s(Res.string.steps_a_day))
-                    Stat(s(Res.string.kg_aae5, summary.volumeKg), "lifted")
-                    Stat(summary.weightChangeKg?.let { (if (it > 0) "+" else "") + formatKg(it) } ?: "-", "weight")
+                    Stat(s(Res.string.kg_aae5, summary.volumeKg), s(Res.string.lifted))
+                    Stat(summary.weightChangeKg?.let { (if (it > 0) "+" else "") + weightText(it, WeightUnit.fromCode(store.settings.weightUnit)) } ?: "-", s(Res.string.weight))
                 }
             }
         }

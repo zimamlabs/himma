@@ -55,5 +55,3 @@ fun beatsBest(before: Map<String, Best>, set: SetEntry): Boolean {
 fun plannedSets(routine: Routine): List<SetEntry> =
     routine.exercises.flatMap { e -> List(e.sets.coerceAtLeast(0)) { SetEntry(e.name, e.reps, e.weightKg) } }
 
-/** "62.5 kg" or "60 kg". */
-fun formatKg(kg: Double): String = (kotlin.math.round(kg * 10) / 10).toString().removeSuffix(".0") + " kg"

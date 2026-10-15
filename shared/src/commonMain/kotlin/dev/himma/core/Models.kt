@@ -27,5 +27,7 @@ data class Settings(
     val themeMode: String = "system",
     val stepGoal: Int = 8000,
     /** Whether a dose notification shows the medicine name on a locked screen. Off unless the user turns it on. */
+    /** "kg" or "lb": how body weight is shown and typed (stored in kg either way). */
+    val weightUnit: String = "kg",
     val lockScreenNames: Boolean = false,
 )

@@ -240,4 +240,16 @@
     <string name="delete_all_body">سيُحذف كل ملف للوجبات والماء والأدوية والتمارين والخطوات والوزن في %1$s، مع إعداداتك. لا يمكن التراجع عن ذلك. صدّر ملفًا مضغوطًا أولًا إن أردت نسخة.</string>
     <string name="delete_all_word">احذف</string>
     <string name="type_to_confirm">اكتب %1$s للتأكيد</string>
+    <string name="water_ml">%1$s مل</string>
+    <string name="water_litres">%1$s لتر</string>
+    <string name="duration_minutes">%1$s د</string>
+    <string name="duration_hours_minutes">%1$s س %2$s د</string>
+    <string name="unit_kg">%1$s كغ</string>
+    <string name="unit_lb">%1$s رطل</string>
+    <string name="kg_label">كغ</string>
+    <string name="lb_label">رطل</string>
+    <string name="weight_unit">وحدة وزن الجسم</string>
+    <string name="trend_unit_a_week">الاتجاه %1$s%2$s %3$s في الأسبوع</string>
+    <string name="today_s_weight_unit">وزن اليوم (%1$s)</string>
+    <string name="lifted">مرفوع</string>
 </resources>

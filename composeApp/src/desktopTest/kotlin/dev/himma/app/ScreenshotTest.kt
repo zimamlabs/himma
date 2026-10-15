@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import dev.himma.core.Medicine
+import kotlinx.datetime.minus
 import dev.himma.core.Vault
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
@@ -81,5 +82,17 @@ class ScreenshotTest {
         val problems = listOf(dev.himma.core.DataProblem("medicines/medicines.json", "medicines.json.corrupt-20261015-101500"))
         shot("data-problem-en") { DataProblemsCard(problems) {} }
         shot("data-problem-ar", "ar") { DataProblemsCard(problems) {} }
+    }
+
+    @Test fun homeAndWeightWithUnits() {
+        val s = store()
+        s.addWater(1250)
+        s.saveSettings(s.settings.copy(weightUnit = "lb"))
+        s.saveWeight(80.0, s.today.minus(kotlinx.datetime.DatePeriod(days = 7))); s.saveWeight(78.5)
+        val nav = Nav(go = { _, _ -> }, logMeal = {}, startWorkout = {})
+        shot("home-en") { HomeTab(s, nav) }
+        shot("home-ar", "ar") { HomeTab(s, nav) }
+        shot("weight-lb-en") { WeightTab(s) }
+        shot("weight-lb-ar", "ar") { WeightTab(s) }
     }
 }
