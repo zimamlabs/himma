@@ -2,6 +2,17 @@ package dev.himma.app
 
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.foundation.layout.size
+import dev.himma.app.res.by_zimam_labs
+import dev.himma.app.res.quick_add
+import dev.himma.app.res.zimam_labs
+import dev.himma.app.res.version
+import dev.himma.app.res.cancel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -43,46 +54,66 @@ import dev.himma.app.res.add_a_glass
 import dev.himma.app.res.himma
 import dev.himma.app.res.log_a_meal
 import dev.himma.app.res.log_weight
-import dev.himma.app.res.quick_actions
 import dev.himma.app.res.settings
 import dev.himma.app.res.show_the_tour_again
 import dev.himma.app.res.what_s_new
 
-/** The side menu: the app mark, the sections, quick actions, then Settings, About, What's new and the tour. */
+/**
+ * The side menu, in the order fixed by ui-spec-shared.md: header (mark tile, name, tagline, version), the sections,
+ * a divider, then Quick add, Settings, What's new, Tour, About, and a small footer. Items are 56 dp high with 16 dp
+ * side padding. Himma has nothing to search yet, so the spec's Search item is left out.
+ */
 @Composable
 internal fun AppDrawer(
     tabs: List<Tab>, current: Tab,
-    onSection: (Tab) -> Unit, onLogMeal: () -> Unit, onAddWater: () -> Unit, onAddMedicine: () -> Unit, onLogWeight: () -> Unit,
+    onSection: (Tab) -> Unit, onQuickAdd: () -> Unit,
     onSettings: () -> Unit, onAbout: () -> Unit, onWhatsNew: () -> Unit, onTour: () -> Unit,
 ) {
     ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.surfaceContainer) {
-        Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 16.dp)) {
-            Row(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                BrandMark(Modifier.size(48.dp))
+        Column(Modifier.fillMaxHeight().padding(horizontal = 16.dp)) {
+            Row(Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 16.dp, start = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Box(Modifier.size(56.dp).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) { BrandMark(Modifier.size(40.dp)) }
                 Column {
                     Text(s(Res.string.himma), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
-                    Text("همّة", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+                    Text(s(Res.string.by_zimam_labs), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(s(Res.string.version, APP_VERSION), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
-            tabs.forEach { t -> Item(s(t.label), { Icon(t.icon, null) }, current == t) { onSection(t) } }
-            HorizontalDivider(Modifier.padding(vertical = 8.dp, horizontal = 24.dp))
-            Text(s(Res.string.quick_actions), Modifier.padding(horizontal = 28.dp, vertical = 4.dp), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Item(s(Res.string.log_a_meal), { Icon(Icons.Rounded.Add, null) }, false, onLogMeal)
-            Item(s(Res.string.add_a_glass), { Icon(Icons.Rounded.WaterDrop, null) }, false, onAddWater)
-            Item(s(Res.string.add_a_medicine), { Icon(Icons.Rounded.Add, null) }, false, onAddMedicine)
-            Item(s(Res.string.log_weight), { Icon(Icons.Rounded.MonitorWeight, null) }, false, onLogWeight)
-            HorizontalDivider(Modifier.padding(vertical = 8.dp, horizontal = 24.dp))
-            Item(s(Res.string.settings), { Icon(Icons.Rounded.Settings, null) }, false, onSettings)
-            Item(s(Res.string.about), { Icon(Icons.Rounded.Info, null) }, false, onAbout)
-            Item(s(Res.string.what_s_new), { Icon(Icons.Rounded.AutoAwesome, null) }, false, onWhatsNew)
-            Item(s(Res.string.show_the_tour_again), { Icon(Icons.Rounded.Tour, null) }, false, onTour)
+            Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+                tabs.forEach { t -> Item(s(t.label), { Icon(t.icon, null) }, current == t) { onSection(t) } }
+                HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                Item(s(Res.string.quick_add), { Icon(Icons.Rounded.Add, null) }, false, onQuickAdd)
+                Item(s(Res.string.settings), { Icon(Icons.Rounded.Settings, null) }, false, onSettings)
+                Item(s(Res.string.what_s_new), { Icon(Icons.Rounded.AutoAwesome, null) }, false, onWhatsNew)
+                Item(s(Res.string.show_the_tour_again), { Icon(Icons.Rounded.Tour, null) }, false, onTour)
+                Item(s(Res.string.about), { Icon(Icons.Rounded.Info, null) }, false, onAbout)
+            }
+            Text(s(Res.string.zimam_labs), Modifier.fillMaxWidth().padding(vertical = 16.dp), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
         }
     }
 }
 
+/** The small form behind Quick add: the four things people add most often. */
+@Composable
+internal fun QuickAddDialog(onDismiss: () -> Unit, onLogMeal: () -> Unit, onAddWater: () -> Unit, onAddMedicine: () -> Unit, onLogWeight: () -> Unit) {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(s(Res.string.quick_add)) },
+        text = {
+            Column {
+                Item(s(Res.string.log_a_meal), { Icon(Icons.Rounded.Add, null) }, false, onLogMeal)
+                Item(s(Res.string.add_a_glass), { Icon(Icons.Rounded.WaterDrop, null) }, false, onAddWater)
+                Item(s(Res.string.add_a_medicine), { Icon(Icons.Rounded.Add, null) }, false, onAddMedicine)
+                Item(s(Res.string.log_weight), { Icon(Icons.Rounded.MonitorWeight, null) }, false, onLogWeight)
+            }
+        },
+        confirmButton = { androidx.compose.material3.TextButton(onClick = onDismiss) { Text(s(Res.string.cancel)) } },
+    )
+}
+
 @Composable
 private fun Item(label: String, icon: @Composable () -> Unit, selected: Boolean, onClick: () -> Unit) =
-    NavigationDrawerItem(label = { Text(label) }, icon = icon, selected = selected, onClick = onClick, modifier = Modifier.padding(horizontal = 12.dp))
+    NavigationDrawerItem(label = { Text(label) }, icon = icon, selected = selected, onClick = onClick, modifier = Modifier.heightIn(min = 56.dp))
 
 /**
  * The pager takes every horizontal swipe, so on the first section a thin strip at the start edge opens the side menu
