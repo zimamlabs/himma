@@ -13,7 +13,7 @@
 
 ## What it is
 
-Himma (همّة, drive and determination) keeps your meals, water, fasting, medicine, workouts, steps and weight in a folder of plain files you own. It works offline, has no account and sends nothing anywhere.
+Himma (همّة, drive and determination) keeps your meals, water, fasting, medicine, workouts, steps and weight in a folder of plain files you own. It works offline, has no account and sends nothing anywhere. Android today, Linux later.
 
 ## Features
 
@@ -66,7 +66,7 @@ apksigner verify --print-certs Himma_<version>_Android_arm64-v8a.apk
 
 ## Where your data lives
 
-By default Himma keeps its files in the app's private folder. If you allow *All files access* (the tour and Settings offer it), they live in a visible `Zimam/Himma` folder on the phone, next to the other Zimam apps, and survive a reinstall. On the desktop it is `~/Zimam/Himma`.
+By default Himma keeps its files in the app's private folder. If you allow *All files access* (the tour and Settings offer it), they live in a visible `Zimam/Himma` folder on the phone, next to the other Zimam apps, and survive a reinstall. When run from source on a computer it is `~/Zimam/Himma`.
 
 Moving there never risks your data: Himma copies the old folder, checks every file by size and SHA-256, writes a marker and only then starts using the new folder. Nothing is deleted or overwritten: a different file with the same name stays and the old one is kept beside it as `name (old copy)`. If anything goes wrong the old folder stays in use and Himma tries again later. The old copy is kept as a backup until you choose *Remove the old copy* in Settings, which asks first and checks again that everything is safe.
 
@@ -80,7 +80,7 @@ You need JDK 17 or newer and, for Android, the Android SDK (platform 36).
 
 ```
 ./gradlew :shared:desktopTest            # the tests
-./gradlew :composeApp:run                # run it on the desktop (data in ~/Zimam/Himma)
+./gradlew :composeApp:run                # run it on the desktop (development only, data in ~/Zimam/Himma)
 ./gradlew :composeApp:assembleDebug      # Android debug APKs
 ```
 
@@ -88,7 +88,7 @@ You need JDK 17 or newer and, for Android, the Android SDK (platform 36).
 
 ## Roadmap
 
-Meal and water reminders, gym plans and streaks, other sports, diet plans, more body measurements, backup and export, and a Linux edition after version 1.
+Meal and water reminders, gym plans and streaks, other sports, diet plans, more body measurements, backup and export, and a Linux edition later. Only Android is released and supported today.
 
 ## Licence
 
