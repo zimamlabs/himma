@@ -1,4 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -53,11 +52,11 @@ android {
     }
     signingConfigs {
         create("release") {
-            // Every scheme: v1 for old Android, v2 and v3 (which lets the key be rotated later) and v4 for streamed installs.
+            // Every scheme: v1 for old Android, v2 and v3 (which lets the key be rotated later). v4 is off because no .idsig file is published.
             enableV1Signing = true
             enableV2Signing = true
             enableV3Signing = true
-            enableV4Signing = true
+            enableV4Signing = false
             val store = System.getenv("HIMMA_KEYSTORE")
             if (store != null) {
                 storeFile = file(store)
@@ -93,18 +92,6 @@ android {
 compose.desktop {
     application {
         mainClass = "dev.himma.app.MainKt"
-        nativeDistributions {
-            targetFormats(TargetFormat.Deb)
-            packageName = "himma"
-            packageVersion = "1.0.0"
-            description = "Health and training in plain files"
-            vendor = "Zimam"
-            linux {
-                menuGroup = "Utility"
-                appCategory = "Utility"
-                iconFile.set(project.file("src/desktopMain/resources/icon.png"))
-            }
-        }
     }
 }
 
