@@ -34,6 +34,13 @@ private class BlockedPhone(override val notificationsOn: Boolean = false, overri
 class ScreenshotTest {
     private fun store(platform: PlatformActions = NoPlatform("/v")): HimmaStore {
         val vault = Vault(FakeFileSystem(), "/v".toPath())
+        val today = vault.today()
+        vault.saveMeal(today, dev.himma.core.Meal("", "08:10", "Eggs and bread", 420, 24, 38, 18))
+        vault.saveMeal(today, dev.himma.core.Meal("", "13:00", "Rice and chicken", 650, 45, 70, 15))
+        vault.saveWater(today, 750)
+        vault.saveRoutines(listOf(dev.himma.core.Routine("r1", "Push day", listOf(dev.himma.core.Exercise("Bench press", 3, 8, 60.0), dev.himma.core.Exercise("Dips", 3, 12)))))
+        vault.saveWorkout(dev.himma.core.Workout("", today.toString(), "Push day", List(6) { dev.himma.core.SetEntry("Bench press", 8, 60.0) }, 45))
+        vault.saveWeight(today, 78.4)
         vault.saveMedicines(listOf(Medicine("a", "Vitamin D", "1 tablet", listOf("08:00", "20:00")), Medicine("b", "Iron", "", listOf("09:00"), setOf(1, 3))))
         return HimmaStore(vault, platform)
     }
@@ -94,5 +101,14 @@ class ScreenshotTest {
         shot("home-ar", "ar") { HomeTab(s, nav) }
         shot("weight-lb-en") { WeightTab(s) }
         shot("weight-lb-ar", "ar") { WeightTab(s) }
+    }
+
+    /** The whole screen with each tab, as a before and after check when UI code moves. */
+    @Test fun mainScreenEveryTab() {
+        for (lang in listOf("en", "ar")) {
+            val s = store()
+            for (tab in Tab.entries) shot("main-${tab.name.lowercase()}-$lang", lang) { MainScreen(s, {}, {}, initialTab = tab) }
+            for (page in TrackPage.entries) shot("main-track-${page.name.lowercase()}-$lang", lang) { MainScreen(s, {}, {}, initialTab = Tab.Track, initialTrack = page) }
+        }
     }
 }
