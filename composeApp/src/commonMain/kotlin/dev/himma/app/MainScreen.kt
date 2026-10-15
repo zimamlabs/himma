@@ -120,6 +120,7 @@ internal fun MainScreen(
     var track by remember { mutableStateOf(initialTrack) }
     var workout by remember { mutableStateOf<WorkoutStart?>(null) }
     var showNew by remember { mutableStateOf(false) }
+    var quickAdd by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<Meal?>(null) }
     var adding by remember { mutableStateOf(false) }
     var editingMedicine by remember { mutableStateOf<dev.himma.core.Medicine?>(null) }
@@ -149,10 +150,7 @@ internal fun MainScreen(
             AppDrawer(
                 tabs = shown, current = current,
                 onSection = { t -> closeDrawerThen { goTo(t) } },
-                onLogMeal = { closeDrawerThen { goTo(Tab.Meals); adding = true } },
-                onAddWater = { closeDrawerThen { store.addWater(250); scope.launch { snackbar.showSnackbar(addedText) } } },
-                onAddMedicine = { closeDrawerThen { goTo(Tab.Medicine); addingMedicine = true } },
-                onLogWeight = { closeDrawerThen { goTo(Tab.Track, TrackPage.Weight) } },
+                onQuickAdd = { closeDrawerThen { quickAdd = true } },
                 onSettings = { closeDrawerThen(onSettings) },
                 onAbout = { closeDrawerThen(onAbout) },
                 onWhatsNew = { closeDrawerThen { showNew = true } },
@@ -194,6 +192,13 @@ internal fun MainScreen(
             }
         }
     }
+    if (quickAdd) QuickAddDialog(
+        onDismiss = { quickAdd = false },
+        onLogMeal = { quickAdd = false; goTo(Tab.Meals); adding = true },
+        onAddWater = { quickAdd = false; store.addWater(250); scope.launch { snackbar.showSnackbar(addedText) } },
+        onAddMedicine = { quickAdd = false; goTo(Tab.Medicine); addingMedicine = true },
+        onLogWeight = { quickAdd = false; goTo(Tab.Track, TrackPage.Weight) },
+    )
     if (showNew) dev.himma.core.releaseNotes.lastOrNull()?.let { WhatsNewDialog(listOf(it)) { showNew = false } }
     if (addingMedicine || editingMedicine != null) MedicineDialog(editingMedicine, onDismiss = { addingMedicine = false; editingMedicine = null },
         onDelete = editingMedicine?.let { m -> { store.deleteMedicine(m.id); editingMedicine = null } }) { store.saveMedicine(it); addingMedicine = false; editingMedicine = null }

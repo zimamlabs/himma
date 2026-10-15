@@ -38,4 +38,7 @@
     <string name="privacy_summary">Plain files, no network</string>
     <string name="privacy_body">Himma has no account and no network permission. Your files stay in %1$s. It asks for Notifications (reminders), Alarms and reminders (exact times), Physical activity (steps) and, only if you allow it, All files access (a visible Zimam/Himma folder).</string>
     <string name="goals_summary">%1$s kcal · %2$s · %3$s steps</string>
+    <string name="by_zimam_labs">by Zimam Labs</string>
+    <string name="quick_add">Quick add</string>
+    <string name="zimam_labs">Zimam Labs</string>
 </resources>

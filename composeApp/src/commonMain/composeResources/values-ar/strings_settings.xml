@@ -38,4 +38,7 @@
     <string name="privacy_summary">ملفات عادية، بلا شبكة</string>
     <string name="privacy_body">همّة بلا حساب وبلا إذن شبكة. تبقى ملفاتك في %1$s. تطلب الإشعارات (للتذكير) والمنبهات والتذكيرات (للتوقيت الدقيق) والنشاط البدني (للخطوات)، ولا تطلب الوصول إلى كل الملفات (مجلد Zimam/Himma الظاهر) إلا إذا سمحت.</string>
     <string name="goals_summary">%1$s سعرة · %2$s · %3$s خطوة</string>
+    <string name="by_zimam_labs">من زمام لابز</string>
+    <string name="quick_add">إضافة سريعة</string>
+    <string name="zimam_labs">زمام لابز</string>
 </resources>
