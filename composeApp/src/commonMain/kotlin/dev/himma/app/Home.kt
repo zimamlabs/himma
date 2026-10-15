@@ -151,6 +151,7 @@ internal fun HomeTab(store: HimmaStore, nav: Nav) {
     val note = dev.himma.core.releaseNotes.lastOrNull()
     val summary = weekSummary(store.week, s.waterGoalMl, weightTrend(store.weights, store.today, 7).changeKg)
     LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        if (store.dataProblems.isNotEmpty()) item { DataProblemsCard(store.dataProblems, store::dismissDataProblems) }
         item {
             Glow(Modifier.clip(RoundedCornerShape(28.dp))) { Panel {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {

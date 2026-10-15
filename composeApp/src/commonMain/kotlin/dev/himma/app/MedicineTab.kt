@@ -75,6 +75,7 @@ fun MedicineTab(store: HimmaStore, onEdit: (Medicine) -> Unit) {
     val doses = store.todayDoses
     val week = adherence(store.medicines, store.doseMarks, store.today.minus(DatePeriod(days = 6)), store.today, store.now)
     LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        if (store.dataProblems.isNotEmpty()) item { DataProblemsCard(store.dataProblems, store::dismissDataProblems) }
         if (store.reminderProblems.isNotEmpty()) item { RemindersCard(store.reminderProblems, store.platform::openNotificationSettings, store.platform::openExactAlarmSettings) }
         item {
             Panel {

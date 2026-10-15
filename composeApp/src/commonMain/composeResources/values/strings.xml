@@ -228,4 +228,7 @@
     <string name="routine_will_be_removed">%1$s and its list of exercises will be removed. Workouts you already logged are kept.</string>
     <string name="not_medical_advice_title">Not medical advice</string>
     <string name="not_medical_advice">Himma helps you remember and keep a record. It is not medical advice and does not replace what your doctor or pharmacist tells you.</string>
+    <string name="data_file_unreadable">A file could not be read</string>
+    <string name="data_file_unreadable_body">%1$s could not be read, so Himma started with it empty. Your original is kept untouched as %2$s in the same folder. Fix or restore it and reopen Himma.</string>
+    <string name="got_it">Got it</string>
 </resources>

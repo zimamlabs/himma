@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import okio.FileSystem
@@ -49,16 +50,54 @@ class Vault(
         fs.atomicMove(tmp, path)
     }
 
+    private val found = ArrayList<DataProblem>()
+
+    /** Files read in this session that could not be understood; each was copied to [DataProblem.copy] first. */
+    fun problems(): List<DataProblem> = found.toList()
+
+    fun clearProblems() = found.clear()
+
+    /** Saves the unreadable [text] beside [path] as `name.corrupt-<stamp>` (once per distinct content) and records the problem. */
+    private fun keepCopy(path: Path, text: String) {
+        val dir = path.parent ?: return
+        val prefix = path.name + ".corrupt-"
+        val same = fs.listOrNull(dir).orEmpty().firstOrNull { it.name.startsWith(prefix) && read(it) == text }
+        val copy = same ?: newCopyPath(dir, prefix).also { fs.write(it) { writeUtf8(text) } }
+        val rel = path.relativeTo(root).toString()
+        if (found.none { it.file == rel }) found += DataProblem(rel, copy.name)
+    }
+
+    private fun newCopyPath(dir: Path, prefix: String): Path {
+        val stamp = now().toString().substringBefore('.').replace("-", "").replace(":", "").replace("T", "-")
+        var candidate = dir / (prefix + stamp)
+        var n = 1
+        while (fs.exists(candidate)) candidate = dir / "$prefix$stamp-${n++}"
+        return candidate
+    }
+
+    private fun <T> readJson(path: Path, serializer: KSerializer<T>, default: T): T {
+        val text = read(path)?.takeIf { it.isNotBlank() } ?: return default
+        return runCatching { json.decodeFromString(serializer, text) }.getOrElse { keepCopy(path, text); default }
+    }
+
+    private fun <T : Any> readCsv(path: Path, parse: (List<String>) -> T): List<T> {
+        val text = read(path) ?: return emptyList()
+        var bad = false
+        val out = Csv.parse(text).drop(1).mapNotNull { r -> runCatching { parse(r) }.getOrElse { bad = true; null } }
+        if (bad) keepCopy(path, text)
+        return out
+    }
+
     private val settingsPath get() = root / ".himma" / "settings.json"
 
-    fun settings(): Settings = read(settingsPath)?.let { runCatching { json.decodeFromString(Settings.serializer(), it) }.getOrNull() } ?: Settings()
+    fun settings(): Settings = readJson(settingsPath, Settings.serializer(), Settings())
 
     fun saveSettings(settings: Settings) = write(settingsPath, json.encodeToString(Settings.serializer(), settings))
 
     private fun mealPath(date: LocalDate) = root / "meals" / date.year.toString() / "$date.csv"
 
-    fun meals(date: LocalDate): List<Meal> = Csv.parse(read(mealPath(date)) ?: "").drop(1).mapNotNull { r ->
-        runCatching { Meal(r[0], r[1], r[2], r[3].toInt(), r.getOrNull(4)?.toIntOrNull(), r.getOrNull(5)?.toIntOrNull(), r.getOrNull(6)?.toIntOrNull()) }.getOrNull()
+    fun meals(date: LocalDate): List<Meal> = readCsv(mealPath(date)) { r ->
+        Meal(r[0], r[1], r[2], r[3].toInt(), r.getOrNull(4)?.toIntOrNull(), r.getOrNull(5)?.toIntOrNull(), r.getOrNull(6)?.toIntOrNull())
     }
 
     /** Adds the meal, or replaces the one with the same id. */
@@ -80,9 +119,7 @@ class Vault(
 
     private fun waterPath(year: Int) = root / "water" / "$year.csv"
 
-    private fun waterYear(year: Int): Map<LocalDate, Int> = Csv.parse(read(waterPath(year)) ?: "").drop(1).mapNotNull { r ->
-        runCatching { LocalDate.parse(r[0]) to r[1].toInt() }.getOrNull()
-    }.toMap()
+    private fun waterYear(year: Int): Map<LocalDate, Int> = readCsv(waterPath(year)) { r -> LocalDate.parse(r[0]) to r[1].toInt() }.toMap()
 
     fun water(date: LocalDate): Int = waterYear(date.year)[date] ?: 0
 
@@ -97,16 +134,14 @@ class Vault(
 
     private val medicinesPath get() = root / "medicines" / "medicines.json"
 
-    fun medicines(): List<Medicine> = read(medicinesPath)?.let { runCatching { json.decodeFromString(ListSerializer(Medicine.serializer()), it) }.getOrNull() } ?: emptyList()
+    fun medicines(): List<Medicine> = readJson(medicinesPath, ListSerializer(Medicine.serializer()), emptyList())
 
     fun saveMedicines(list: List<Medicine>) = write(medicinesPath, json.encodeToString(ListSerializer(Medicine.serializer()), list))
 
     private val doseLogPath get() = root / "medicines" / "log.csv"
 
     /** Marks by [Dose.key]. */
-    fun doseMarks(): Map<String, DoseMark> = Csv.parse(read(doseLogPath) ?: "").drop(1).mapNotNull { r ->
-        runCatching { "${r[1]}|${r[0]}|${r[2]}" to DoseMark.valueOf(r[3]) }.getOrNull()
-    }.toMap()
+    fun doseMarks(): Map<String, DoseMark> = readCsv(doseLogPath) { r -> "${r[1]}|${r[0]}|${r[2]}" to DoseMark.valueOf(r[3]) }.toMap()
 
     /** Records [mark] for a dose, or clears it when null. */
     fun setDoseMark(dose: Dose, mark: DoseMark?) {
@@ -118,19 +153,19 @@ class Vault(
 
     private val templatesPath get() = root / "meals" / "templates.json"
 
-    fun templates(): List<MealTemplate> = read(templatesPath)?.let { runCatching { json.decodeFromString(ListSerializer(MealTemplate.serializer()), it) }.getOrNull() } ?: emptyList()
+    fun templates(): List<MealTemplate> = readJson(templatesPath, ListSerializer(MealTemplate.serializer()), emptyList())
 
     fun saveTemplates(list: List<MealTemplate>) = write(templatesPath, json.encodeToString(ListSerializer(MealTemplate.serializer()), list))
 
     private val routinesPath get() = root / "gym" / "routines.json"
 
-    fun routines(): List<Routine> = read(routinesPath)?.let { runCatching { json.decodeFromString(ListSerializer(Routine.serializer()), it) }.getOrNull() } ?: emptyList()
+    fun routines(): List<Routine> = readJson(routinesPath, ListSerializer(Routine.serializer()), emptyList())
 
     fun saveRoutines(list: List<Routine>) = write(routinesPath, json.encodeToString(ListSerializer(Routine.serializer()), list))
 
     private fun workoutsPath(year: Int) = root / "gym" / "$year.json"
 
-    fun workouts(year: Int): List<Workout> = read(workoutsPath(year))?.let { runCatching { json.decodeFromString(ListSerializer(Workout.serializer()), it) }.getOrNull() } ?: emptyList()
+    fun workouts(year: Int): List<Workout> = readJson(workoutsPath(year), ListSerializer(Workout.serializer()), emptyList())
 
     /** Every logged workout, oldest first. */
     fun allWorkouts(): List<Workout> = (fs.listOrNull(root / "gym").orEmpty().mapNotNull { it.name.removeSuffix(".json").toIntOrNull() }).sorted().flatMap { workouts(it) }.sortedBy { it.date }
@@ -150,9 +185,7 @@ class Vault(
 
     private fun stepsPath(year: Int) = root / "steps" / "$year.csv"
 
-    private fun stepsYear(year: Int): Map<LocalDate, Int> = Csv.parse(read(stepsPath(year)) ?: "").drop(1).mapNotNull { r ->
-        runCatching { LocalDate.parse(r[0]) to r[1].toInt() }.getOrNull()
-    }.toMap()
+    private fun stepsYear(year: Int): Map<LocalDate, Int> = readCsv(stepsPath(year)) { r -> LocalDate.parse(r[0]) to r[1].toInt() }.toMap()
 
     fun steps(date: LocalDate): Int = stepsYear(date.year)[date] ?: 0
 
@@ -164,15 +197,13 @@ class Vault(
 
     private val stepStatePath get() = root / ".himma" / "steps.json"
 
-    fun stepState(): StepState = read(stepStatePath)?.let { runCatching { json.decodeFromString(StepState.serializer(), it) }.getOrNull() } ?: StepState()
+    fun stepState(): StepState = readJson(stepStatePath, StepState.serializer(), StepState())
 
     fun saveStepState(s: StepState) = write(stepStatePath, json.encodeToString(StepState.serializer(), s))
 
     private val weightPath get() = root / "body" / "weight.csv"
 
-    fun weights(): List<WeightEntry> = Csv.parse(read(weightPath) ?: "").drop(1).mapNotNull { r ->
-        runCatching { WeightEntry(LocalDate.parse(r[0]), r[1].toDouble()) }.getOrNull()
-    }.sortedBy { it.date }
+    fun weights(): List<WeightEntry> = readCsv(weightPath) { r -> WeightEntry(LocalDate.parse(r[0]), r[1].toDouble()) }.sortedBy { it.date }
 
     /** One weight per day: logging again on the same day replaces it. [kg] of zero or less removes the day. */
     fun saveWeight(date: LocalDate, kg: Double) {
@@ -181,3 +212,6 @@ class Vault(
         write(weightPath, Csv.format(listOf(listOf("date", "kg")) + all.map { listOf(it.date.toString(), it.kg.toString()) }))
     }
 }
+
+/** A data file that could not be read; [copy] is the file name its content was kept under, next to the original. */
+data class DataProblem(val file: String, val copy: String)
