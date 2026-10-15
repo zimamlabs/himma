@@ -15,6 +15,7 @@ import dev.himma.app.res.note_10
 import dev.himma.app.res.note_11
 import dev.himma.app.res.note_12
 import dev.himma.app.res.note_13
+import dev.himma.app.res.note_14
 import dev.himma.app.res.greet_morning
 import dev.himma.app.res.greet_afternoon
 import dev.himma.app.res.greet_evening
@@ -35,6 +36,7 @@ internal val knownTexts: Map<String, StringResource> = mapOf(
     "Himma now speaks Arabic, with a right-to-left layout. Choose the language in Settings." to Res.string.note_11,
     "Numbers can be shown in Arabic-Indic digits." to Res.string.note_12,
     "Today, Meals, Water and Fasting." to Res.string.note_13,
+    "A new app icon: a rising peak with a diamond." to Res.string.note_14,
     "Good morning" to Res.string.greet_morning,
     "Good afternoon" to Res.string.greet_afternoon,
     "Good evening" to Res.string.greet_evening,

@@ -26,6 +26,9 @@ val releaseNotes: List<ReleaseNote> = listOf(
         "Himma now speaks Arabic, with a right-to-left layout. Choose the language in Settings.",
         "Numbers can be shown in Arabic-Indic digits.",
     )),
+    ReleaseNote("0.4.1", listOf(
+        "A new app icon: a rising peak with a diamond.",
+    )),
 )
 
 /** What the first open should show. */
