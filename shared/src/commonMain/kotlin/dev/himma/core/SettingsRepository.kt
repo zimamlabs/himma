@@ -27,6 +27,7 @@ fun Settings.normalized(): Settings = copy(
     eatStartMinutes = eatStartMinutes.coerceIn(0, 24 * 60 - 1),
     themeMode = themeMode.takeIf { it in setOf("system", "light", "dark") } ?: "system",
     weightUnit = WeightUnit.fromCode(weightUnit).code,
+    density = density.takeIf { it in setOf("comfortable", "compact") } ?: "comfortable",
     palette = palette.takeIf { it in Palettes.ids } ?: Palettes.DEFAULT,
     textSize = textSize.coerceIn(0, 3),
     startSection = startSection.takeIf { it in Sections.all && (it == Sections.HOME || it !in hiddenSections) } ?: Sections.HOME,

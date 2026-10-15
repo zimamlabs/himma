@@ -30,16 +30,17 @@ class SettingsRepositoryTest {
         val s = SettingsRepository(vault).current
         assertEquals(2300, s.calorieGoal); assertEquals("dark", s.themeMode); assertTrue(s.tourDone)
         assertEquals(Palettes.DEFAULT, s.palette); assertEquals(1, s.textSize); assertTrue(s.hiddenSections.isEmpty())
+        assertEquals("comfortable", s.density); assertEquals(false, s.reduceMotion)
     }
 
     @Test fun valuesOutOfRangeAreBroughtBack() {
         put("""{ "calorieGoal": -5, "waterGoalMl": 99999999, "stepGoal": 3, "fastHours": 40, "eatStartMinutes": 5000, "themeMode": "neon",
-            "palette": "nope", "textSize": 9, "weightUnit": "stone", "startSection": "settings", "hiddenSections": ["home", "gym", "ghost"], "sectionOrder": ["x", "gym", "gym"] }""")
+            "palette": "nope", "textSize": 9, "weightUnit": "stone", "startSection": "settings", "density": "tight", "hiddenSections": ["home", "gym", "ghost"], "sectionOrder": ["x", "gym", "gym"] }""")
         val s = SettingsRepository(vault).current
         assertEquals(1, s.calorieGoal); assertEquals(20000, s.waterGoalMl); assertEquals(100, s.stepGoal)
         assertEquals(23, s.fastHours); assertEquals(1439, s.eatStartMinutes); assertEquals("system", s.themeMode)
         assertEquals("zimam", s.palette); assertEquals(3, s.textSize); assertEquals("kg", s.weightUnit)
-        assertEquals("home", s.startSection); assertEquals(setOf("gym"), s.hiddenSections); assertEquals(listOf("gym"), s.sectionOrder)
+        assertEquals("comfortable", s.density); assertEquals("home", s.startSection); assertEquals(setOf("gym"), s.hiddenSections); assertEquals(listOf("gym"), s.sectionOrder)
     }
 
     @Test fun theStartSectionCannotBeAHiddenOne() {

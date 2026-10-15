@@ -30,6 +30,10 @@ data class Settings(
     val weightUnit: String = "kg",
     /** Whether a dose notification shows the medicine name on a locked screen. Off unless the user turns it on. */
     val lockScreenNames: Boolean = false,
+    /** "comfortable" (default) or "compact": how much room rows and cards get. */
+    val density: String = "comfortable",
+    /** Skip the splash and the page animations. */
+    val reduceMotion: Boolean = false,
     /** Colour theme id, one of [Palettes.ids]. */
     val palette: String = Palettes.DEFAULT,
     /** Text size step, 0 (small) to 3 (largest); 1 is normal. */

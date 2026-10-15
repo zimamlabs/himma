@@ -106,7 +106,7 @@ internal fun GymTab(store: HimmaStore, onStart: (Routine?) -> Unit) {
     var creating by remember { mutableStateOf(false) }
     var deleting by remember { mutableStateOf<Workout?>(null) }
     val bests = remember(store.workouts) { personalBests(store.workouts) }
-    LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = tabPadding(), verticalArrangement = Arrangement.spacedBy(rowGap)) {
         item {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = { onStart(null) }, Modifier.weight(1f)) { Text(s(Res.string.empty_workout)) }
