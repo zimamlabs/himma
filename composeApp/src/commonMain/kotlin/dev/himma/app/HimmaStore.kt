@@ -138,6 +138,12 @@ class HimmaStore(vault: Vault, val platform: PlatformActions = NoPlatform()) {
         dataProblems = vault.problems()
     }
 
+    /** Hands every Himma file, zipped, to the phone's save dialog. */
+    fun exportZip() { val v = vault; platform.exportData("himma-${v.today()}.zip") { v.exportZip() } }
+
+    /** Removes all of Himma's data after the user confirmed; reminders are cancelled because no medicine is left. */
+    fun deleteAllData() { vault.deleteAllData(); stepState = StepState(); reload(); onMedicinesChanged() }
+
     fun dismissDataProblems() { vault.clearProblems(); dataProblems = emptyList() }
 
     fun refreshReminders() { reminderProblems = reminderProblems(medicines, platform.notificationsOn, platform.exactAlarmsOn) }

@@ -13,6 +13,10 @@ interface PlatformActions {
     val canAskAllFiles: Boolean get() = false
     fun allowAllFiles() {}
     fun allowNotifications() {}
+    /** The phone can hand the user a file (export). */
+    val canExport: Boolean get() = false
+    /** Asks where to save, then writes [bytes] there as [fileName]. */
+    fun exportData(fileName: String, bytes: () -> ByteArray) {}
     /** Medicine notifications can appear (permission given, app and channel not switched off). */
     val notificationsOn: Boolean get() = true
     /** Alarms can ring at the exact minute. */

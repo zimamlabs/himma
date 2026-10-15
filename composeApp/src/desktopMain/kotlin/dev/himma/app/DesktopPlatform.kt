@@ -21,6 +21,9 @@ class DesktopPlatform(override val folderPath: String) : PlatformActions {
 
     private fun save() { runCatching { File(folderPath).mkdirs(); file.outputStream().use { props.store(it, "Himma interface choices") } } }
 
+    override val canExport: Boolean get() = true
+    /** The desktop has no save dialog here: the zip goes next to the data folder. */
+    override fun exportData(fileName: String, bytes: () -> ByteArray) { runCatching { File(File(folderPath).parentFile ?: File("."), fileName).writeBytes(bytes()) } }
     override val language: String get() = code
     override fun setLanguage(code: String) { this.code = code; props.setProperty("language", code); save(); apply() }
     override val arabicDigits: Boolean get() = UiText.arabicDigits

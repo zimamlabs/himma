@@ -71,6 +71,12 @@ import dev.himma.app.res.save
 import dev.himma.app.res.save_as_meal
 import dev.himma.app.res.saved_meals
 import dev.himma.app.res.settings
+import dev.himma.app.res.export_all_data_as_zip
+import dev.himma.app.res.delete_all_data
+import dev.himma.app.res.delete_all_data_question
+import dev.himma.app.res.delete_all_body
+import dev.himma.app.res.delete_all_word
+import dev.himma.app.res.type_to_confirm
 import dev.himma.app.res.delete_this_meal
 import dev.himma.app.res.meal_will_be_removed
 import dev.himma.app.res.show_medicine_names_on_the_lock_screen
@@ -429,6 +435,8 @@ private fun SettingsDialog(store: HimmaStore, onDismiss: () -> Unit, onTour: () 
     var confirmRemove by remember { mutableStateOf(false) }
     var steps by remember { mutableStateOf(current.stepGoal.toString()) }
     var theme by remember { mutableStateOf(current.themeMode) }
+    var confirmDeleteAll by remember { mutableStateOf(false) }
+    var typed by remember { mutableStateOf("") }
     var lockNames by remember { mutableStateOf(current.lockScreenNames) }
     val stepsValue = steps.trim().toIntOrNull()?.takeIf { it in 100..100000 }
     val kcalValue = kcal.trim().toIntOrNull()?.takeIf { it in 1..20000 }
@@ -463,12 +471,29 @@ private fun SettingsDialog(store: HimmaStore, onDismiss: () -> Unit, onTour: () 
                 Text(store.folderPath, style = MaterialTheme.typography.bodyMedium)
                 if (store.platform.canAskAllFiles && !store.sharedFolder) OutlinedButton(onClick = { store.platform.allowAllFiles() }) { Text(s(Res.string.allow_all_files_access)) }
                 if (store.canRemoveOld) OutlinedButton(onClick = { confirmRemove = true }) { Text(s(Res.string.remove_the_old_copy)) }
+                if (store.platform.canExport) OutlinedButton(onClick = { store.exportZip() }) { Text(s(Res.string.export_all_data_as_zip)) }
+                OutlinedButton(onClick = { typed = ""; confirmDeleteAll = true }) { Text(s(Res.string.delete_all_data), color = MaterialTheme.colorScheme.error) }
                 TextButton(onClick = onTour) { Text(s(Res.string.show_the_tour_again)) }
             }
         },
         confirmButton = { TextButton(enabled = kcalValue != null && waterValue != null && stepsValue != null, onClick = { onSave(current.copy(calorieGoal = kcalValue!!, waterGoalMl = waterValue!!, stepGoal = stepsValue!!, themeMode = theme, lockScreenNames = lockNames)) }) { Text(s(Res.string.save)) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(s(Res.string.cancel)) } },
     )
+    if (confirmDeleteAll) {
+        val word = s(Res.string.delete_all_word)
+        AlertDialog(
+            onDismissRequest = { confirmDeleteAll = false },
+            title = { Text(s(Res.string.delete_all_data_question)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(s(Res.string.delete_all_body, store.folderPath))
+                    OutlinedTextField(typed, { typed = it }, singleLine = true, label = { Text(s(Res.string.type_to_confirm, word)) }, modifier = Modifier.fillMaxWidth())
+                }
+            },
+            confirmButton = { TextButton(enabled = typed.trim().equals(word, ignoreCase = true), onClick = { store.deleteAllData(); confirmDeleteAll = false; onDismiss() }) { Text(s(Res.string.delete), color = MaterialTheme.colorScheme.error) } },
+            dismissButton = { TextButton(onClick = { confirmDeleteAll = false }) { Text(s(Res.string.keep_it)) } },
+        )
+    }
     if (confirmRemove) AlertDialog(
         onDismissRequest = { confirmRemove = false },
         title = { Text(s(Res.string.remove_the_old_copy_495b)) },

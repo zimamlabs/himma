@@ -231,4 +231,10 @@
     <string name="data_file_unreadable">A file could not be read</string>
     <string name="data_file_unreadable_body">%1$s could not be read, so Himma started with it empty. Your original is kept untouched as %2$s in the same folder. Fix or restore it and reopen Himma.</string>
     <string name="got_it">Got it</string>
+    <string name="export_all_data_as_zip">Export all data as a zip file</string>
+    <string name="delete_all_data">Delete all data</string>
+    <string name="delete_all_data_question">Delete all your data?</string>
+    <string name="delete_all_body">This removes every meal, water, medicine, workout, step and weight file in %1$s, and your settings. It cannot be undone. Export a zip first if you want a copy.</string>
+    <string name="delete_all_word">DELETE</string>
+    <string name="type_to_confirm">Type %1$s to confirm</string>
 </resources>
