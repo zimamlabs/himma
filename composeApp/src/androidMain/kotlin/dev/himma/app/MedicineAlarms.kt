@@ -116,7 +116,10 @@ class DoseActionReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) { MedicineAlarms.mark(context, intent) }
 }
 
-/** After a restart, an app update or a change of time or time zone the alarm is gone: set it again. */
+/**
+ * After a restart, an app update or a change of time or time zone the alarm is gone. [MedicineAlarms.fire] first
+ * notifies for doses that fell in the gap (up to three hours back) and then sets the next alarm.
+ */
 class BootReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) { MedicineAlarms.schedule(context) }
+    override fun onReceive(context: Context, intent: Intent) { MedicineAlarms.fire(context) }
 }
